@@ -48,7 +48,8 @@
       "defaultConfiguration": "development",
       "options": {
         "buildTarget": "gamehub:build",
-        "hmr": true
+        "hmr": true,
+        "proxyConfig": "apps/gamehub/proxy.conf.json"
       },
       "configurations": {
         "development": {
