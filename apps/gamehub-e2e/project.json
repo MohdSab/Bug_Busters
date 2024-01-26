@@ -1,22 +1,22 @@
 {
-  "name": "bug-buster-e2e",
+  "name": "gamehub-e2e",
   "$schema": "../../node_modules/nx/schemas/project-schema.json",
   "projectType": "application",
-  "sourceRoot": "apps/bug-buster-e2e/src",
+  "sourceRoot": "apps/gamehub-e2e/src",
   "targets": {
     "e2e": {
       "executor": "@nx/cypress:cypress",
       "options": {
-        "cypressConfig": "apps/bug-buster-e2e/cypress.config.ts",
+        "cypressConfig": "apps/gamehub-e2e/cypress.config.ts",
         "testingType": "e2e",
-        "devServerTarget": "bug-buster:serve"
+        "devServerTarget": "gamehub:serve"
       },
       "configurations": {
         "production": {
-          "devServerTarget": "bug-buster:serve:production"
+          "devServerTarget": "gamehub:serve:production"
         },
         "ci": {
-          "devServerTarget": "bug-buster:serve-static"
+          "devServerTarget": "gamehub:serve-static"
         }
       }
     },
@@ -25,6 +25,6 @@
       "outputs": ["{options.outputFile}"]
     }
   },
-  "implicitDependencies": ["bug-buster"],
+  "implicitDependencies": ["gamehub"],
   "tags": []
 }
