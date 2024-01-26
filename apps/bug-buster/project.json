@@ -1,0 +1,85 @@
+{
+  "name": "bug-buster",
+  "$schema": "../../node_modules/nx/schemas/project-schema.json",
+  "sourceRoot": "apps/bug-buster/src",
+  "projectType": "application",
+  "targets": {
+    "build": {
+      "executor": "@nx/webpack:webpack",
+      "outputs": ["{options.outputPath}"],
+      "defaultConfiguration": "production",
+      "options": {
+        "compiler": "babel",
+        "outputPath": "dist/apps/bug-buster",
+        "index": "apps/bug-buster/src/index.html",
+        "baseHref": "/",
+        "main": "apps/bug-buster/src/main.tsx",
+        "tsConfig": "apps/bug-buster/tsconfig.app.json",
+        "assets": [
+          "apps/bug-buster/src/favicon.ico",
+          "apps/bug-buster/src/assets"
+        ],
+        "styles": ["apps/bug-buster/src/styles.css"],
+        "scripts": [],
+        "webpackConfig": "apps/bug-buster/webpack.config.js"
+      },
+      "configurations": {
+        "development": {
+          "extractLicenses": false,
+          "optimization": false,
+          "sourceMap": true,
+          "vendorChunk": true
+        },
+        "production": {
+          "fileReplacements": [
+            {
+              "replace": "apps/bug-buster/src/environments/environment.ts",
+              "with": "apps/bug-buster/src/environments/environment.prod.ts"
+            }
+          ],
+          "optimization": true,
+          "outputHashing": "all",
+          "sourceMap": false,
+          "namedChunks": false,
+          "extractLicenses": true,
+          "vendorChunk": false
+        }
+      }
+    },
+    "serve": {
+      "executor": "@nx/webpack:dev-server",
+      "defaultConfiguration": "development",
+      "options": {
+        "buildTarget": "bug-buster:build",
+        "hmr": true
+      },
+      "configurations": {
+        "development": {
+          "buildTarget": "bug-buster:build:development"
+        },
+        "production": {
+          "buildTarget": "bug-buster:build:production",
+          "hmr": false
+        }
+      }
+    },
+    "lint": {
+      "executor": "@nx/eslint:lint",
+      "outputs": ["{options.outputFile}"]
+    },
+    "serve-static": {
+      "executor": "@nx/web:file-server",
+      "options": {
+        "buildTarget": "bug-buster:build"
+      }
+    },
+    "test": {
+      "executor": "@nx/jest:jest",
+      "outputs": ["{workspaceRoot}/coverage/{projectRoot}"],
+      "options": {
+        "jestConfig": "apps/bug-buster/jest.config.ts"
+      }
+    }
+  },
+  "tags": []
+}
