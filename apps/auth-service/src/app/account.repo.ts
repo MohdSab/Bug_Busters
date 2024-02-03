@@ -20,7 +20,10 @@ export class AccountRepo {
 
   async Create(acc: Account): Promise<Account> {
     // TODO hash the password
-    return this.accountRepo.save({ email: acc.email, password: acc.password });
+    return this.accountRepo.save({
+      username: acc.username,
+      password: acc.password,
+    });
   }
 
   Update(acc: Account): Promise<Account> {

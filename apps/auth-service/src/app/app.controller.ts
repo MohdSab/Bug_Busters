@@ -12,7 +12,9 @@ export class AppController {
   }
 
   @Post('/signup')
-  signup() {}
+  signup() {
+    this.appService.signup(/* Pass something here @Patricia*/);
+  }
 
   @Post('/signin')
   signin() {}

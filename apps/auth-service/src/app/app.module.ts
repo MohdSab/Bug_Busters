@@ -21,6 +21,6 @@ import { AccountRepo } from './account.repo';
     TypeOrmModule.forFeature([Account]),
   ],
   controllers: [AppController],
-  providers: [AppService, AccountRepo],
+  providers: [AppService],
 })
 export class AppModule {}
