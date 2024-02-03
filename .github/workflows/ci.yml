@@ -3,7 +3,8 @@ on:
   push:
     branches:
       # Change this if your primary branch is not main
-      - dev/9-autotesting
+      - dev/*
+      - main
   pull_request:
 
 jobs:
