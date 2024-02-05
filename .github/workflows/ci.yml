@@ -4,8 +4,8 @@ on:
     branches:
       # Change this if your primary branch is not main
       - dev/*
+      - bug/*
       - main
-  pull_request:
 
 jobs:
   main:
