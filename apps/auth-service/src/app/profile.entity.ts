@@ -2,11 +2,15 @@ import { Entity, Column, PrimaryGeneratedColumn } from 'typeorm';
 
 @Entity()
 export class Profile {
-  index: number;
+    @PrimaryGeneratedColumn()
+    id: number
+
+    @Column()
+    index: number
 
   public GetPicturePath(): string {
     let i = 0;
-    const assetFolder = '../assets/profiles';
+    const assetFolder = '../static/profiles';
     const fs = require('fs');
 
     fs.readdir(assetFolder, (err, files) => {
