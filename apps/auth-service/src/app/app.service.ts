@@ -3,6 +3,7 @@ import { Account } from './account.entity';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { JwtService } from '@nestjs/jwt';
+import { Profile } from './profile.entity';
 
 type TokenPayload = {
   sub: number,
@@ -16,7 +17,10 @@ export class AppService {
     // accountRepo: AccountRepo
     @InjectRepository(Account)
     private accountRepo: Repository<Account>,
-    private jwtService: JwtService
+    @InjectRepository(Profile)
+    private profileRepo: Repository<Profile>,
+    private jwtService: JwtService,
+
   ) {}
 
   getData(): { message: string } {
@@ -42,12 +46,19 @@ export class AppService {
 
   async signup(username: string, password: string) {
     let user: Account = await this.accountRepo.findOne({where: {username: username}}) 
-    if (user == null) {
+    if (user != null) {
         throw new UnauthorizedException("Username already exists.");
     }
+
+    const p: Profile = new Profile();
+    p.index = 3;
+    
+    await this.profileRepo.save(p);
+
     user = new Account();
     user.SetUsername(username);
     user.SetPassword(password);
+    user.profile = p;
     await this.accountRepo.save(user);
     const payload = { sub: user.uid, username: user.username };
       return {
@@ -66,11 +77,10 @@ export class AppService {
         secret: "mysecret", 
       });
 
-      console.log(decoded);
-      
-      const user: Account = await this.accountRepo.findOneBy({uid: decoded.sub});
+      const user: Account & { profile: {avatarUrl?: string} } = await this.accountRepo.findOneBy({uid: decoded.sub});
       if (user == null) return null;
-      console.log("User: ", user);
+      
+      user.profile.avatarUrl = user.profile.GetPicturePath();
       return user;
       
     } catch (error) {
