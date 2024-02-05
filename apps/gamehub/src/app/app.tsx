@@ -1,7 +1,7 @@
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 import styles from './app.module.css';
 
-// import NxWelcome from './nx-welcome';
+import NxWelcome from './nx-welcome';
 import SignIn from './pages/SignIn';
 
 import { createBrowserRouter, RouterProvider } from 'react-router-dom';
@@ -25,7 +25,7 @@ const router = createBrowserRouter([
 export function App() {
   return (
     <div>
-      {/* <NxWelcome title="bug-buster" /> */}
+      <NxWelcome title="bug-buster" />
       <RouterProvider router={router} />
     </div>
   );

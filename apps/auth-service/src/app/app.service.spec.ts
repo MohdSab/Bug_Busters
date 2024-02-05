@@ -137,7 +137,7 @@ describe('AppService', () => {
         .spyOn(accountRepo, 'findOne')
         .mockResolvedValueOnce(Promise.resolve(acc3));
 
-      return service.signin(acc1.username, acc1.password).then((res) => {
+      return service.signin(acc3.username, acc3.password).then((res) => {
         expect(res).toHaveProperty('access_token');
         // Not this sprint
         // expect(res).toHaveProperty('refresh_token');
