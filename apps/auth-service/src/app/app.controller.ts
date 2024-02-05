@@ -41,11 +41,11 @@ export class AppController {
     const [type, token] = req.headers.authorization?.split(' ') ?? [];
 
     if (type !== "Bearer")
-      throw new UnauthorizedException("Still fk off");
+      throw new UnauthorizedException("Where's your token?");
 
     const account = await this.appService.verify(token);
 
-    if (!account) throw new UnauthorizedException("Fuck off");
+    if (!account) throw new UnauthorizedException("Account doesn't exist");
     return account;
   }
 
