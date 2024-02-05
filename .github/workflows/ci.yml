@@ -1,0 +1,32 @@
+name: CI
+on:
+  push:
+    branches:
+      # Change this if your primary branch is not main
+      - dev/*
+      - main
+  pull_request:
+
+jobs:
+  main:
+    runs-on: ubuntu-latest
+    steps:
+      # Checkout the code
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      # Setup pnpm
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v2
+        with:
+          version: 8
+
+      # install dependencies
+      - name: Install dependencies
+        run: pnpm install --no-frozen-lockfile
+
+      # run tests
+      - name: Run tests
+        run: pnpm nx run-many --all --target=test
