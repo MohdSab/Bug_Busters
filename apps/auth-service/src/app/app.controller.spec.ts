@@ -1,30 +1,38 @@
 import { Test, TestingModule } from '@nestjs/testing';
+import { JwtModule } from '@nestjs/jwt';
+import { getRepositoryToken } from '@nestjs/typeorm';
+import { Repository } from 'typeorm';
 
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
-import { TypeOrmModule } from '@nestjs/typeorm';
 import { Account } from './account.entity';
+import { Profile } from './profile.entity';
 
 describe('AppController', () => {
   let app: TestingModule;
+  const accountRepoToken = getRepositoryToken(Account);
+  const profileRepoToken = getRepositoryToken(Profile);
 
   beforeAll(async () => {
     app = await Test.createTestingModule({
       imports: [
-        TypeOrmModule.forRoot({
-          type: 'postgres',
-          host: 'localhost',
-          port: 5432,
-          username: 'root',
-          password: 'root',
-          database: 'test',
-          entities: [Account],
-          synchronize: true,
+        JwtModule.register({
+          secret: 'mysecret',
+          signOptions: { expiresIn: '600s' },
         }),
-        TypeOrmModule.forFeature([Account]),
       ],
       controllers: [AppController],
-      providers: [AppService],
+      providers: [
+        AppService,
+        {
+          provide: accountRepoToken,
+          useClass: Repository,
+        },
+        {
+          provide: profileRepoToken,
+          useClass: Repository,
+        },
+      ],
     }).compile();
   });
 
