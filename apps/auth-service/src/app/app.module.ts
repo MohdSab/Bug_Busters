@@ -22,14 +22,11 @@ import { join } from 'path';
       entities: [Account, Profile],
       synchronize: true,
     }),
-    TypeOrmModule.forFeature([Account, ]),
+    TypeOrmModule.forFeature([Account, Profile]),
     JwtModule.register({
       secret: "mysecret",
       signOptions: { expiresIn: "600s" },
-    }),
-    ServeStaticModule.forRoot({
-      rootPath: join(__dirname, '..', 'static'),
-    }),
+    })
   ],
   controllers: [AppController],
   providers: [AppService],

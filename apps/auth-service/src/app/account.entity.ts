@@ -12,7 +12,7 @@ export class Account {
   @Column()
   password: string;
 
-  @OneToOne(() => Profile)
+  @OneToOne(() => Profile, p => p.id, { eager: true })
   @JoinColumn()
   profile: Profile;
 
