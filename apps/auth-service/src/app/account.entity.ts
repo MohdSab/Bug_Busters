@@ -1,4 +1,4 @@
-import { Entity, Column, PrimaryGeneratedColumn } from 'typeorm';
+import { Entity, Column, PrimaryGeneratedColumn, OneToOne, JoinColumn } from 'typeorm';
 import { Profile } from './profile.entity';
 
 @Entity()
@@ -12,8 +12,17 @@ export class Account {
   @Column()
   password: string;
 
-  @Column()
+  @OneToOne(() => Profile)
+  @JoinColumn()
   profile: Profile;
+
+  SetUsername(username: string) {
+    this.username = username;
+  }
+
+  SetPassword(password: string) {
+    this.password = password;
+  }
 
   public MatchPassword(password: string): boolean {
     return this.password == password;

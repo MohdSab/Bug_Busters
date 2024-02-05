@@ -1,6 +1,18 @@
-import { Controller, Get, Post, Put } from '@nestjs/common';
+import { Controller, Get, Post, Put, Body, Req, UnauthorizedException } from '@nestjs/common';
 
 import { AppService } from './app.service';
+
+import { Request } from "express";
+
+type SignUpDTO = {
+  username: string;
+  password: string;
+};
+
+type SignInDTO = {
+  username: string;
+  password: string;
+};
 
 @Controller()
 export class AppController {
@@ -12,15 +24,30 @@ export class AppController {
   }
 
   @Post('/signup')
-  signup() {
-    this.appService.signup(/* Pass something here @Patricia*/);
+  signup(@Body() body: SignUpDTO) {
+    return this.appService.signup(body.username, body.password);
   }
 
   @Post('/signin')
-  signin() {}
+  signin(@Body() body: SignInDTO) {
+    return this.appService.signin(body.username, body.password);
+  }
 
   @Post('/signout')
   signout() {}
+
+  @Get('/account') 
+  async getAccount(@Req() req: Request) {
+    const [type, token] = req.headers.authorization?.split(' ') ?? [];
+
+    if (type !== "Bearer")
+      throw new UnauthorizedException("Still fk off");
+
+    const account = await this.appService.verify(token);
+
+    if (!account) throw new UnauthorizedException("Fuck off");
+    return account;
+  }
 
   @Put('/profile')
   updateProfile() {}
