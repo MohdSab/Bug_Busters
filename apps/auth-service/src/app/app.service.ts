@@ -36,8 +36,6 @@ export class AppService {
       return {
         access_token: await this.jwtService.signAsync(payload),
       };
-      // const access_token = await this.jwtService.signAsync(payload);
-      // localStorage.setItem("access_token", access_token);
     } else {
       throw new UnauthorizedException('Wrong username/password.');
     }
@@ -53,7 +51,7 @@ export class AppService {
 
     const p: Profile = new Profile();
     p.index = 3;
-    
+
     await this.profileRepo.save(p);
 
     user = new Account();
@@ -65,8 +63,6 @@ export class AppService {
     return {
       access_token: await this.jwtService.signAsync(payload),
     };
-    // const access_token = await this.jwtService.signAsync(payload)
-    // localStorage.setItem("access_token", access_token);
   }
 
   signout() {}
@@ -78,10 +74,11 @@ export class AppService {
       });
 
       console.log(decoded);
-      
-      const user: Account & { profile: {avatarUrl?: string} } = await this.accountRepo.findOneBy({uid: decoded.sub});
+
+      const user: Account & { profile: { avatarUrl?: string } } =
+        await this.accountRepo.findOneBy({ uid: decoded.sub });
       if (user == null) return null;
-      console.log("User: ", user);
+
       user.profile.avatarUrl = user.profile.GetPicturePath();
       return user;
     } catch (error) {
