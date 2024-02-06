@@ -4,7 +4,6 @@ import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { Account } from './account.entity';
-import { AccountRepo } from './account.repo';
 import { JwtModule } from '@nestjs/jwt';
 import { Profile } from './profile.entity';
 import { ServeStaticModule } from '@nestjs/serve-static';
