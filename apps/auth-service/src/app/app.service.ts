@@ -53,7 +53,7 @@ export class AppService {
 
     const p: Profile = new Profile();
     p.index = 3;
-
+    
     await this.profileRepo.save(p);
 
     user = new Account();
@@ -77,10 +77,11 @@ export class AppService {
         secret: 'mysecret',
       });
 
-      const user: Account & { profile: { avatarUrl?: string } } =
-        await this.accountRepo.findOneBy({ uid: decoded.sub });
+      console.log(decoded);
+      
+      const user: Account & { profile: {avatarUrl?: string} } = await this.accountRepo.findOneBy({uid: decoded.sub});
       if (user == null) return null;
-
+      console.log("User: ", user);
       user.profile.avatarUrl = user.profile.GetPicturePath();
       return user;
     } catch (error) {
