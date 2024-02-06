@@ -1,15 +1,23 @@
-import { Controller, Get, Post, Put, Body, Req, UnauthorizedException } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Post,
+  Put,
+  Body,
+  Req,
+  UnauthorizedException,
+} from '@nestjs/common';
 
 import { AppService } from './app.service';
 
-import { Request } from "express";
+import { Request } from 'express';
 
-type SignUpDTO = {
+export type SignUpDTO = {
   username: string;
   password: string;
 };
 
-type SignInDTO = {
+export type SignInDTO = {
   username: string;
   password: string;
 };
@@ -36,11 +44,11 @@ export class AppController {
   @Post('/signout')
   signout() {}
 
-  @Get('/account') 
+  @Get('/account')
   async getAccount(@Req() req: Request) {
     const [type, token] = req.headers.authorization?.split(' ') ?? [];
 
-    if (type !== "Bearer")
+    if (type !== 'Bearer')
       throw new UnauthorizedException("Where's your token?");
 
     const account = await this.appService.verify(token);
