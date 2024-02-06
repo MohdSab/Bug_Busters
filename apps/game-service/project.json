@@ -1,0 +1,53 @@
+{
+  "name": "game-service",
+  "$schema": "../../node_modules/nx/schemas/project-schema.json",
+  "sourceRoot": "apps/game-service/src",
+  "projectType": "application",
+  "targets": {
+    "build": {
+      "executor": "@nx/webpack:webpack",
+      "outputs": ["{options.outputPath}"],
+      "defaultConfiguration": "production",
+      "options": {
+        "target": "node",
+        "compiler": "tsc",
+        "outputPath": "dist/apps/game-service",
+        "main": "apps/game-service/src/main.ts",
+        "tsConfig": "apps/game-service/tsconfig.app.json",
+        "assets": ["apps/game-service/src/assets"],
+        "webpackConfig": "apps/game-service/webpack.config.js"
+      },
+      "configurations": {
+        "development": {},
+        "production": {}
+      }
+    },
+    "serve": {
+      "executor": "@nx/js:node",
+      "defaultConfiguration": "development",
+      "options": {
+        "buildTarget": "game-service:build"
+      },
+      "configurations": {
+        "development": {
+          "buildTarget": "game-service:build:development"
+        },
+        "production": {
+          "buildTarget": "game-service:build:production"
+        }
+      }
+    },
+    "lint": {
+      "executor": "@nx/eslint:lint",
+      "outputs": ["{options.outputFile}"]
+    },
+    "test": {
+      "executor": "@nx/jest:jest",
+      "outputs": ["{workspaceRoot}/coverage/{projectRoot}"],
+      "options": {
+        "jestConfig": "apps/game-service/jest.config.ts"
+      }
+    }
+  },
+  "tags": []
+}
