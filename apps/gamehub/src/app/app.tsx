@@ -1,16 +1,17 @@
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 import styles from './app.module.css';
 
-import NxWelcome from './nx-welcome';
-import SignIn from './pages/SignIn';
-
 import { createBrowserRouter, RouterProvider } from 'react-router-dom';
+import Homepage from './pages/Homepage';
 import SignUp from './pages/SignUp';
+import SignIn from './pages/SignIn';
+import NxWelcome from './nx-welcome';
+import { AccountProvider } from './hooks/account';
 
 const router = createBrowserRouter([
   {
     path: '/',
-    element: <div>Home page</div>,
+    element: <Homepage />,
   },
   {
     path: '/signin',
@@ -20,14 +21,17 @@ const router = createBrowserRouter([
     path: '/signup',
     element: <SignUp />,
   },
+  {
+    path: '/nx',
+    element: <NxWelcome title="bug-buster" />,
+  },
 ]);
 
 export function App() {
   return (
-    <div>
-      <NxWelcome title="bug-buster" />
+    <AccountProvider>
       <RouterProvider router={router} />
-    </div>
+    </AccountProvider>
   );
 }
 

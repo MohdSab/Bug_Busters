@@ -1,24 +1,37 @@
-import axios from 'axios';
-import React from 'react';
-import { signin } from './auth';
+import React, { useEffect } from 'react';
+import { useNavigate } from 'react-router';
+import { useAccount } from '../hooks/account';
+import { Navbar } from '../components/Navbar';
 
-type Props = {};
-
-export default function SignIn({}: Props) {
+export default function SignIn() {
+  const { loading, account, signin } = useAccount();
   const [values, setValues] = React.useState({ username: '', password: '' });
+  const navigate = useNavigate();
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setValues((v) => ({ ...v, [e.target.name]: e.target.value }));
   };
 
   const onSubmit = () => {
-    signin(values).then(console.log);
+    signin(values.username, values.password).then(console.log);
   };
+
+  useEffect(() => {
+    if (!loading && account) {
+      // Fancy animation lol
+      setTimeout(() => {
+        navigate('/');
+      }, 300);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [loading, account]);
+
+  if (loading) return <h1>Loading...</h1>;
+  if (account) return <h1>Redirecting...</h1>;
 
   return (
     <div>
-      <h1>BugBuster</h1>
-
+      <Navbar />
       <h2>Sign in</h2>
 
       <div>
