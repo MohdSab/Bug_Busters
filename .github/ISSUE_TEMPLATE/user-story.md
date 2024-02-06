@@ -3,7 +3,7 @@ name: User Story
 about: Create a user story related to the project
 title: "[STORY]"
 labels: ''
-assignees: ''
+assignees: 'story'
 
 ---
 
