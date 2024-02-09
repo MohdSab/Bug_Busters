@@ -7,7 +7,7 @@ import SignUp from './pages/SignUp';
 import SignIn from './pages/SignIn';
 import NxWelcome from './nx-welcome';
 import { AccountProvider } from './hooks/account';
-import GameHubPage from './pages/GameListpage';
+import GameHubPage from './pages/GameListPage';
 import TicTacToeArrival from './pages/temptttpage';
 
 const router = createBrowserRouter([
