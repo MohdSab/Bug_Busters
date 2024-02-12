@@ -31,6 +31,7 @@ export class AppService {
   }
 
   createRoute(data: CreateRouteDto, ip: string): Promise<RouteResp> {
+    console.log('Creating: ', data);
     const newRoute: Route = {
       key: data.key,
       ip: ip,
@@ -58,7 +59,7 @@ export class AppService {
     if (!Object.keys(this.routes).includes(key)) throw new NotFoundException();
 
     const route = this.routes[key];
-    const url = `http://${route.ip}:${route.port}${route.prefix}${endpoint}`;
+    const url = `http://${route.ip}:${route.port}/${route.prefix}${endpoint}`;
     return fetch(url, {
       method: req.method,
       headers: {

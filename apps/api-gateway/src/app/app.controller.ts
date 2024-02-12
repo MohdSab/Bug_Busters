@@ -37,8 +37,9 @@ export class AppController {
   }
 
   @Post('/routes')
-  createRoute(@Body() data: CreateRouteDto, @Ip() ip: string) {
-    return this.appService.createRoute(data, ip);
+  createRoute(@Body() body: CreateRouteDto, @Ip() ip: string) {
+    console.log('Body: ', body);
+    return this.appService.createRoute(body, ip);
   }
 
   @Delete('/routes/:key')
