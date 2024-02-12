@@ -13,8 +13,8 @@ import {
 } from '@nestjs/common';
 
 import { AppService } from './app.service';
-import { CreateRouteDto } from './dto/CreateRoute.dto';
 import { Request, Response } from 'express';
+import { CreateRouteDto } from '@bb/gateway-lib';
 
 @Controller('/api')
 export class AppController {
