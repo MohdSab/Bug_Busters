@@ -1,0 +1,53 @@
+{
+  "name": "ttt-service",
+  "$schema": "../../node_modules/nx/schemas/project-schema.json",
+  "sourceRoot": "apps/ttt-service/src",
+  "projectType": "application",
+  "targets": {
+    "build": {
+      "executor": "@nx/webpack:webpack",
+      "outputs": ["{options.outputPath}"],
+      "defaultConfiguration": "production",
+      "options": {
+        "target": "node",
+        "compiler": "tsc",
+        "outputPath": "dist/apps/ttt-service",
+        "main": "apps/ttt-service/src/main.ts",
+        "tsConfig": "apps/ttt-service/tsconfig.app.json",
+        "assets": ["apps/ttt-service/src/assets"],
+        "webpackConfig": "apps/ttt-service/webpack.config.js"
+      },
+      "configurations": {
+        "development": {},
+        "production": {}
+      }
+    },
+    "serve": {
+      "executor": "@nx/js:node",
+      "defaultConfiguration": "development",
+      "options": {
+        "buildTarget": "ttt-service:build"
+      },
+      "configurations": {
+        "development": {
+          "buildTarget": "ttt-service:build:development"
+        },
+        "production": {
+          "buildTarget": "ttt-service:build:production"
+        }
+      }
+    },
+    "lint": {
+      "executor": "@nx/eslint:lint",
+      "outputs": ["{options.outputFile}"]
+    },
+    "test": {
+      "executor": "@nx/jest:jest",
+      "outputs": ["{workspaceRoot}/coverage/{projectRoot}"],
+      "options": {
+        "jestConfig": "apps/ttt-service/jest.config.ts"
+      }
+    }
+  },
+  "tags": []
+}
