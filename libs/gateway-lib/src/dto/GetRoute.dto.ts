@@ -1,4 +1,4 @@
-export class RouteResp {
+export interface RouteResp {
   key: string;
   endpoint: string;
 }

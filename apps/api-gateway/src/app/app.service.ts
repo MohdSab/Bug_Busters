@@ -3,10 +3,10 @@ import {
   Injectable,
   NotFoundException,
 } from '@nestjs/common';
-import { CreateRouteDto } from './dto/CreateRoute.dto';
-import { Route } from './entities/Route.entity';
-import { RouteResp } from './dto/GetRoute.dto';
 import { Request } from 'express';
+import { CreateRouteDto } from '@bb/gateway-lib';
+import { RouteResp } from '@bb/gateway-lib';
+import { Route } from './entities/Route.entity';
 
 @Injectable()
 export class AppService {
