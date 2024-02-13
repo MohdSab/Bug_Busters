@@ -47,6 +47,10 @@
       "options": {
         "jestConfig": "apps/api-gateway/jest.config.ts"
       }
+    },
+    "docker-build": {
+      "dependsOn": ["build"],
+      "command": "docker build -f apps/api-gateway/Dockerfile . -t api-gateway"
     }
   },
   "tags": []
