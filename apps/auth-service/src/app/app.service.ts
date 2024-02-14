@@ -85,4 +85,23 @@ export class AppService {
       return null;
     }
   }
+
+  async signinGuest() {
+    let user:Account = new Account();
+    await this.accountRepo.save(user);
+
+    user.SetUsername('HappyGuest' + user.GetUID());
+    user.SetPassword(null);
+    user.profile = new Profile();
+    user.profile.index = 3;
+
+    await this.profileRepo.save(user.profile);
+    await this.accountRepo.save(user);
+
+    const payload = { sub: user.uid, username: user.username };
+    return {
+      access_token: await this.jwtService.signAsync(payload),
+    };
+  }
+
 }

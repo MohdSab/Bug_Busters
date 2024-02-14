@@ -22,12 +22,19 @@ export class Account {
   @JoinColumn()
   profile: Profile;
 
+  @Column()
+  isGuest:boolean;
+
   SetUsername(username: string) {
     this.username = username;
   }
 
   SetPassword(password: string) {
     this.password = password;
+  }
+
+  GetUID() {
+    return this.uid;
   }
 
   public MatchPassword(password: string): boolean {

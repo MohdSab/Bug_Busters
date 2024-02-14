@@ -41,6 +41,11 @@ export class AppController {
     return this.appService.signin(body.username, body.password);
   }
 
+  @Post('/signinGuest')
+  signinGuest() {
+    return this.appService.signinGuest();
+  }
+
   @Post('/signout')
   signout() {}
 
