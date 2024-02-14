@@ -88,6 +88,7 @@ export class AppService {
 
   async signinGuest() {
     let user:Account = new Account();
+    user.isGuest = true;
     await this.accountRepo.save(user);
 
     user.SetUsername('HappyGuest' + user.GetUID());
