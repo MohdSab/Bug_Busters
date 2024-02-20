@@ -14,9 +14,9 @@ export function GameCard(props: Props) {
       }}
     >
       {/*TODO: figure out a way to dynamically display the image based on game.thumbnail*/}
-      <Link to="/gamehub/tictactoe">
+      <Link to={props.url}>
         <img
-          src={require('../temporaryassets/tempimage.jpg')}
+          src={props.thumbnail}
           alt=""
           style={{ height: 100, width: 100 }}
         />

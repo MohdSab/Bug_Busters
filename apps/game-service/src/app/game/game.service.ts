@@ -6,10 +6,20 @@ import {
 import { CreateGameDto } from './dto/create-game.dto';
 import { UpdateGameDto } from './dto/update-game.dto';
 import { Game } from './entities/game.entity';
+import { InjectRepository } from '@nestjs/typeorm';
+import { Repository } from 'typeorm';
 
 @Injectable()
 export class GameService {
   games: Game[] = [];
+
+  constructor(
+    @InjectRepository(Game)
+    private gameRepo: Repository<Game>,
+  ){
+    //TODO: perform a one time getAll request from the database to populate the games array
+    this.gameRepo.find().then((res) => {this.games = res.slice()});
+  }
 
   create(createGameDto: CreateGameDto) {
     if (
@@ -29,6 +39,16 @@ export class GameService {
     else newGame.gid = this.games.at(-1).gid + 1;
 
     this.games.push(newGame);
+
+    //TODO: Add game to database
+    const newGameDB = this.gameRepo.create({
+      gid: this.games.at(-1).gid + 1,
+      name: createGameDto.name,
+      description: createGameDto.description,
+      thumbnail: createGameDto.thumbnail,
+      url: createGameDto.url
+    });
+    this.gameRepo.save(newGameDB);
 
     return newGame;
   }
@@ -55,6 +75,9 @@ export class GameService {
 
         if (updateGameDto.url) game.url = updateGameDto.url;
 
+        //TODO: update game in database
+        this.gameRepo.save(updateGameDto);
+
         return game;
       }
     }
@@ -64,6 +87,15 @@ export class GameService {
 
   remove(id: number) {
     this.games = this.games.filter((game) => game.gid !== id);
+
+    //TODO: remove game from database
+    this.gameRepo.exists({ where: {gid: id}}).then(
+      (exists) => {
+        if(exists){
+          this.gameRepo.delete({gid: id});
+        }
+    })
+
     return;
   }
 }

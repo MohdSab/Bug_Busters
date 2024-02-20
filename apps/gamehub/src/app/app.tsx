@@ -32,7 +32,7 @@ const router = createBrowserRouter([
     element: <GameHubPage />,
   },
   {
-    path: '/gamehub/tictactoe',
+    path: '/tictactoe',
     element: <TicTacToeArrival />,
   },
 ]);

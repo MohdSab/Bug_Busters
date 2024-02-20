@@ -15,7 +15,7 @@ export function GameList({ row, rowNum }: Props) {
         display: 'flex',
         flexDirection: 'row',
         justifyContent: 'flex-start',
-        alignItems: 'left',
+        alignItems: 'center',
       }}
     >
       Row Number {rowNum}
