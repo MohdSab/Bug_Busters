@@ -1,7 +1,9 @@
 import { Injectable } from "@nestjs/common";
 import { MessageBody, SubscribeMessage, WebSocketGateway } from '@nestjs/websockets';
+// import { TicTacToe } from './ttt.entity';
 
 type NewGameState = {
+    roomNumber: number,
     board: string[],
     currPlayer: number,
     winner: number | null,
@@ -22,17 +24,44 @@ export class TicTacToeGameLogic{
         *   -check for winner
         * If invalid, change nothing
         * 
+        * json data format: 
+        * { 
+        *   roomCode: room number,
+        *   currentPlayer: uid,
+        *   move: index within board
+        * }
         */
         //TODO: IMPLEMENT
         return '';
     }
 
-    @SubscribeMessage('room')
-    handleRoom(@MessageBody() data: string): string{
+    @SubscribeMessage('create-room')
+    createRoom(@MessageBody() data: string): string{
         /* 
-        * Creates a room for exactly two unique users, designates a unique room id for this game
-        *
+        * Creates a room and designates a unique room id for this game
+        * only player 1 uid is here (will be xPlayer)
         * 
+        * json data format: 
+        * {
+        *   currentPlayer: uid
+        * }
+        */
+        //TODO: IMPLEMENT
+        return '';
+    }
+
+    @SubscribeMessage('join-room')
+    joinRoom(@MessageBody() data: string): string{
+        /* 
+        * Join a created room using the room id for the game
+        * becomes the oPlayer if oPlayer is null
+        * becomes spectator if oPlayer is not null
+        * 
+        * json data format: 
+        * {
+        *   roomCode: room number,
+        *   currentPlayer: uid
+        * }
         */
         //TODO: IMPLEMENT
         return '';
@@ -42,8 +71,7 @@ export class TicTacToeGameLogic{
     handleReplay(@MessageBody() data: string): string{
         /* 
         * Reset game state, winner, currPlayer, and board
-        *
-        * 
+        * no data needed, room code will be kept the same
         */
         //TODO: IMPLEMENT
         return '';
@@ -54,7 +82,11 @@ export class TicTacToeGameLogic{
         /* 
         * Upon encountering a disconnect, close the game. The remaining player is considered to have won
         * 
-        * 
+        * json data format: 
+        * {
+        *   roomCode: room number,
+        *   currentPlayer: uid of remaining player
+        * }
         */
         //TODO: IMPLEMENT
         return '';
