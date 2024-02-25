@@ -34,12 +34,13 @@ export function TttLandingPage() {
 
   const CreateRoom = () => {
     // socket
+    socket?.emit('create-room');
   };
 
   const modal = (
     <div>
       <input type="number" onChange={(e) => setMessage(e.target.value)} />
-      <button onClick={() => socket.emit('create-room')}>Submit</button>
+      <button onClick={() => socket?.emit('create-room')}>Submit</button>
     </div>
   );
 
