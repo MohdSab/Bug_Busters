@@ -4,6 +4,7 @@ import {
   ConnectedSocket,
   MessageBody,
   WebSocketServer,
+  OnGatewayConnection,
 } from '@nestjs/websockets';
 import { Server, Socket } from 'socket.io';
 import { InjectRepository } from '@nestjs/typeorm';
@@ -26,17 +27,28 @@ export type MessageDTO = {
 };
 
 // TODO: change to whatever port we end up using
-@WebSocketGateway({
+@WebSocketGateway(8000, {
+  path: '/ttt',
   cors: {
-    origin: ['http://localhost:4200']  // This is the URI of the frontend
-  }
+    origin: '*',
+    credentials: true,
+    allowedHeaders: true,
+  },
 })
-export class TicTacToeGateway {
+export class TicTacToeGateway implements OnGatewayConnection {
   @WebSocketServer()
   server: Server;
 
   @InjectRepository(TicTacToe)
   private tttRepo: Repository<TicTacToe>;
+
+  /**
+   * Special function of OnGatewayConnection
+   * @param client
+   */
+  handleConnection(client: Socket) {
+    console.log(client);
+  }
 
   @SubscribeMessage('move')
   handleMove(): // @ConnectedSocket() client: Socket,
@@ -59,35 +71,35 @@ export class TicTacToeGateway {
      * }
      */
     //TODO: IMPLEMENT
+    console.log('Move');
     return '';
   }
 
   @SubscribeMessage('create-room')
-  async createRoom(
-    @ConnectedSocket() client: Socket,
-    @MessageBody() data: MessageDTO
-  ): Promise<string> {
-    try {
-      // create a new TTT object and update attributes
-      const ttt = new TicTacToe();
-      ttt.SetXPlayer(data.currentPlayer);
-      await this.tttRepo.save(ttt);
+  async createRoom() // @MessageBody() data: MessageDTO // @ConnectedSocket() client: Socket,
+  {
+    console.log('Create');
+    // try {
+    //   // create a new TTT object and update attributes
+    //   const ttt = new TicTacToe();
+    //   ttt.SetXPlayer(data.currentPlayer);
+    //   await this.tttRepo.save(ttt);
 
-      // connect client to the room
-      client.join(String(ttt.roomCode));
+    //   // connect client to the room
+    //   client.join(String(ttt.roomCode));
 
-      // return results
-      const payload: NewGameState = {
-        board: ttt.board,
-        roomNumber: ttt.roomCode,
-        winner: ttt.winner,
-        wonBy: null,
-        validResponse: true,
-      };
-      return JSON.stringify(payload);
-    } catch (error) {
-      console.error('Error creating a room: oops :(((', error);
-    }
+    //   // return results
+    //   const payload: NewGameState = {
+    //     board: ttt.board,
+    //     roomNumber: ttt.roomCode,
+    //     winner: ttt.winner,
+    //     wonBy: null,
+    //     validResponse: true,
+    //   };
+    //   return JSON.stringify(payload);
+    // } catch (error) {
+    //   console.error('Error creating a room: oops :(((', error);
+    // }
   }
 
   @SubscribeMessage('join-room')
@@ -146,6 +158,7 @@ export class TicTacToeGateway {
      * required data: none
      */
     //TODO: IMPLEMENT
+    console.log('Replay');
     return '';
   }
 
@@ -160,6 +173,7 @@ export class TicTacToeGateway {
      * }
      */
     //TODO: IMPLEMENT
+    console.log('Disconnect');
     return '';
   }
 }
