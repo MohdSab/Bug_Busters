@@ -1,75 +1,97 @@
-import { Account } from './account.entity'; // TODO: somehow access the database?
 
-export class TicTacToe {
-    board: number[][];
-    xPlayer: Account; // x will be -1 in the board
-    oPlayer: Account; // y will be 1 in the board
-    xIsPlaying: boolean;
+import {
+    Entity,
+    Column,
+    PrimaryGeneratedColumn,
+  } from 'typeorm';
+
+  @Entity()
+  export class TicTacToe {
+    @PrimaryGeneratedColumn()
     roomCode: number;
-    gameWin: String;
 
-    constructor(xPlayerAcc: Account, oPlayerAcc: Account, xIsFirst: boolean) {
+    @Column()
+    board: string[];
+
+    @Column()
+    xPlayer: number; // uid
+
+    @Column()
+    oPlayer: number; // uid
+
+    @Column()
+    xIsPlaying: boolean;
+    
+    @Column()
+    winner: string | null; 
+
+    constructor() {
         this.board = [
-        [0, 0, 0],
-        [0, 0, 0],
-        [0, 0, 0]
+            '', '', '',
+            '', '', '',
+            '', '', ''
         ];
-        this.xPlayer = xPlayerAcc;
-        this.oPlayer = oPlayerAcc;
-        this.xIsPlaying = xIsFirst;
-        this.roomCode = this.GenerateRoomCode();
-        this.gameWin = "";
+        this.xPlayer = null;
+        this.oPlayer = null;
+        this.xIsPlaying = true; // assume x is the first player
+        this.winner = null;
     }
 
-    // true means a valid player made a move
-    // false means a spectator tried to make a move
-    MakeMove(currentPlayer: Account, row: number, col: number): boolean {
+    SetXPlayer(xPlayer: number) {
+        this.xPlayer = xPlayer;
+    }
+
+    SetOPlayer(oPlayer: number) {
+        this.oPlayer = oPlayer;
+    }
+
+    // returns winning tuple if someone wins, null otherwise
+    MakeMove(currentPlayer: number, ind: number) {
       if (this.xIsPlaying && currentPlayer == this.xPlayer) {
-        this.board[row][col] = -1;
+        this.board[ind] = "x";
         this.xIsPlaying = false;
-        if (this.CheckWin()) {
-            this.gameWin = "x";
+        let result = this.CheckWin();
+        if (result != null) {
+            this.winner = "x";
         }
-        return true;
+        return result; 
       } else if (!this.xIsPlaying && currentPlayer == this.oPlayer) {
-        this.board[row][col] = 1;
+        this.board[ind] = "o";
         this.xIsPlaying = true;
-        if (this.CheckWin()) {
-            this.gameWin = "o";
+        let result = this.CheckWin();
+        if (result != null) {
+            this.winner = "o";
         }
-        return true;
+        return result;
       }
-      return false;
+      return null;
     }
 
-    GenerateRoomCode(): number {
-        return 1234; // TODO
-    }
-
-    CheckWin(): boolean {
-        for (let i = 0; i < 3; i++) {
-          if (this.board[i][0] !== 0 &&
-              this.board[i][0] === this.board[i][1] &&
-              this.board[i][0] === this.board[i][2]) {
-            return true;
+    // returns winning tuple if someone wins, null otherwise
+    CheckWin() {
+        for (let i = 0; i < 3; i++) { 
+          if (this.board[i] !== '' && // check row
+              this.board[i] === this.board[i+1] &&
+              this.board[i] === this.board[i+2]) {
+            return [i, i+1, i+2];
           }
-          if (this.board[0][i] !== 0 &&
-              this.board[0][i] === this.board[1][i] &&
-              this.board[0][i] === this.board[2][i]) {
-            return true;
+          if (this.board[i] !== '' && // check column
+              this.board[i] === this.board[i+3] &&
+              this.board[i] === this.board[i+6]) {
+            return [i, i+3, i+6];
           }
         }
-        if (this.board[0][0] !== 0 &&
-            this.board[0][0] === this.board[1][1] &&
-            this.board[0][0] === this.board[2][2]) {
-          return true;
+        if (this.board[0] !== '' && // check diag \
+            this.board[0] === this.board[4] &&
+            this.board[0] === this.board[8]) {
+          return [0, 4, 8];
         }
-        if (this.board[0][2] !== 0 &&
-            this.board[0][2] === this.board[1][1] &&
-            this.board[0][2] === this.board[2][0]) {
-          return true;
+        if (this.board[2] !== '' && // check diag /
+            this.board[2] === this.board[4] &&
+            this.board[2] === this.board[6]) {
+          return [0, 4, 6];
         }
-        return false;
+        return null;
       }
 
   }
