@@ -5,6 +5,7 @@ import { AppService } from './app.service';
 import { TicTacToeGameLogic } from './ttt-game-logic-gateway';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { TicTacToe } from './ttt.entity';
+// import { TttRepo } from './ttt.repo';
 
 @Module({
   imports: [
