@@ -3,9 +3,15 @@ import { GameService } from './game.service';
 import { Game } from './entities/game.entity';
 import { CreateGameDto } from './dto/create-game.dto';
 import { BadRequestException, NotFoundException } from '@nestjs/common';
+import { Repository } from 'typeorm';
+import { getRepositoryToken } from '@nestjs/typeorm';
+
+class GameRepo extends Repository<Game> {}
 
 describe('GameService', () => {
   let service: GameService;
+  let gameRepo: GameRepo;
+
   const gameData = {
     name: 'Tic-tac-toe',
     description: 'A boring game',
@@ -21,11 +27,20 @@ describe('GameService', () => {
   };
 
   beforeEach(async () => {
+    const gameRepoToken = getRepositoryToken(Game);
+
     const module: TestingModule = await Test.createTestingModule({
-      providers: [GameService],
+      providers: [
+        GameService,
+        {
+          provide: gameRepoToken,
+          useClass: GameRepo,
+        },
+      ],
     }).compile();
 
     service = module.get<GameService>(GameService);
+    gameRepo = module.get<GameRepo>(gameRepoToken);
   });
 
   it('should be defined', () => {
@@ -34,6 +49,9 @@ describe('GameService', () => {
 
   it('should create a game', () => {
     try {
+      jest
+        .spyOn(gameRepo, 'findOne')
+        .mockResolvedValueOnce(Promise.resolve({ ...gameData, gid: 1 }));
       const g = service.create(gameData);
 
       expect(g.gid).toBeGreaterThanOrEqual(0);
@@ -95,14 +113,16 @@ describe('GameService', () => {
     expect(service.findAll()[0].url).toBe(gameData.url);
   });
 
-  it('should have 5 items', () => {
+  it('should have 5 items', async (done) => {
     service.create(gameData);
     service.create(gameData);
     service.create(gameData);
     service.create(gameData);
     service.create(gameData);
 
-    expect(service.findAll().length).toBe(5);
+    const games = await service.findAll();
+    expect(games.length).toBe(5);
+    done();
   });
 
   it('should be able to find the item', () => {
