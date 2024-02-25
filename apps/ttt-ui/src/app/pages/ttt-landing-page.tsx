@@ -6,7 +6,7 @@ import { checkIfExists } from '../api/join-room';
 import { WebsocketContext } from '../contexts/websocket-context';
 
 export function TttLandingPage() {
-  const { socket } = useContext(WebsocketContext);
+  const { socket, loading } = useContext(WebsocketContext);
   const [join, setJoin] = useState(false);
   const [message, setMessage] = useState('');
 
@@ -32,22 +32,28 @@ export function TttLandingPage() {
     };
   }, [socket]);
 
+  if (loading) return <h1>Loading...</h1>;
+
   const CreateRoom = () => {
     // socket
-    socket?.emit('create-room');
+    socket?.emit('create-room', (res: string) => {
+      console.log('create-room res: ', res);
+    });
   };
 
   const modal = (
     <div>
       <input type="number" onChange={(e) => setMessage(e.target.value)} />
-      <button onClick={() => socket?.emit('create-room')}>Submit</button>
+      <button>Submit</button>
     </div>
   );
 
   return (
     <div>
       <div className={styles.center}>
-        <button className={styles.button}>Create Room</button>
+        <button onClick={CreateRoom} className={styles.button}>
+          Create Room
+        </button>
         <button
           className={styles.button}
           onClick={() => {

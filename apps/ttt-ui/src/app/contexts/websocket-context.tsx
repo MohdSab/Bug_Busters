@@ -10,11 +10,15 @@ import { io, Socket } from 'socket.io-client';
 export interface WSContextPayload {
   loading: boolean;
   socket: Socket | null;
+  connect: () => void;
+  disconnect: () => void;
 }
 
 export const WebsocketContext = createContext<WSContextPayload>({
   loading: true,
   socket: null,
+  connect: () => {},
+  disconnect: () => {},
 });
 
 export function useSocket() {
@@ -24,6 +28,14 @@ export function useSocket() {
 export function WebsocketProvider({ children }: PropsWithChildren<{}>) {
   const [socket, setSocket] = useState<Socket | null>(null);
   const [loading, setLoading] = useState(false);
+
+  const connect = () => {
+    socket?.connect();
+  };
+
+  const disconnect = () => {
+    socket?.disconnect();
+  };
 
   useEffect(() => {
     // TODO change to configurable host
@@ -58,6 +70,8 @@ export function WebsocketProvider({ children }: PropsWithChildren<{}>) {
       value={{
         loading,
         socket,
+        connect,
+        disconnect,
       }}
     >
       {children}
