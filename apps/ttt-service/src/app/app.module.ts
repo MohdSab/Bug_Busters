@@ -1,28 +1,26 @@
 import { Module } from '@nestjs/common';
+import { TypeOrmModule } from '@nestjs/typeorm';
 
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
-import { TicTacToeGameLogic } from './ttt-game-logic-gateway';
-import { TypeOrmModule } from '@nestjs/typeorm';
-import { TicTacToe } from './ttt.entity';
-// import { TttRepo } from './ttt.repo';
+import { TttModule } from './ttt/ttt.module';
 
 @Module({
   imports: [
     TypeOrmModule.forRoot({
       type: 'postgres',
-      host: 'localhost',
-      port: 5432,
-      username: 'root',
-      password: 'root',
-      database: 'ttt',
-      entities: [TicTacToe],
+      host: process.env.DB_HOST || 'localhost',
+      port: +process.env.DB_PORT || 5432,
+      username: process.env.DB_USER || 'root',
+      password: process.env.DB_PW || 'root',
+      database: process.env.DB_DB || 'ttt',
+      autoLoadEntities: true,
       synchronize: true,
       logging: true,
     }),
-    TypeOrmModule.forFeature([TicTacToe]),
+    TttModule,
   ],
   controllers: [AppController],
-  providers: [AppService, TicTacToeGameLogic],
+  providers: [AppService],
 })
 export class AppModule {}

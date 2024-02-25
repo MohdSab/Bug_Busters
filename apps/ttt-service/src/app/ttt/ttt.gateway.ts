@@ -27,7 +27,7 @@ export type MessageDTO = {
 
 // TODO: change to whatever port we end up using
 @WebSocketGateway(8000)
-export class TicTacToeGameLogic {
+export class TicTacToeGateway {
   @WebSocketServer()
   server: Server;
 
@@ -35,10 +35,9 @@ export class TicTacToeGameLogic {
   private tttRepo: Repository<TicTacToe>;
 
   @SubscribeMessage('move')
-  handleMove(
-    @ConnectedSocket() client: Socket,
-    @MessageBody() data: MessageDTO
-  ): string {
+  handleMove(): // @ConnectedSocket() client: Socket,
+  // @MessageBody() data: MessageDTO
+  string {
     /*
      * Receives move from some player (stored in data), move may be valid/invalid
      * If valid,
@@ -133,10 +132,9 @@ export class TicTacToeGameLogic {
   }
 
   @SubscribeMessage('replay')
-  handleReplay(
-    @ConnectedSocket() client: Socket,
-    @MessageBody() data: MessageDTO
-  ): string {
+  handleReplay(): // @ConnectedSocket() client: Socket,
+  // @MessageBody() data: MessageDTO
+  string {
     /*
      * Reset game state, winner, currPlayer, and board
      * room code will be kept the same
@@ -148,10 +146,9 @@ export class TicTacToeGameLogic {
   }
 
   @SubscribeMessage('disconnect')
-  handleDisconnect(
-    @ConnectedSocket() client: Socket,
-    @MessageBody() data: MessageDTO
-  ): string {
+  handleDisconnect(): // @ConnectedSocket() client: Socket,
+  // @MessageBody() data: MessageDTO
+  string {
     /*
      * Upon encountering a disconnect, close the game. The remaining player is considered to have won
      *
