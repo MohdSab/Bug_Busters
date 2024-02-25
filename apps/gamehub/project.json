@@ -78,6 +78,10 @@
         "codeCoverage": true,
         "jestConfig": "apps/gamehub/jest.config.ts"
       }
+    },
+    "docker-build": {
+      "dependsOn": ["build"],
+      "command": "docker build -f apps/gamehub/Dockerfile . -t gamehub"
     }
   },
   "tags": []
