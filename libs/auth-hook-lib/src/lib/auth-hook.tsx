@@ -5,14 +5,8 @@ import {
   useEffect,
   useState,
 } from 'react';
-import { Account } from '../types/account';
-import {
-  SignUpPayload,
-  getAccount,
-  signin,
-  signout,
-  signup,
-} from '../api/account';
+import { Account } from './account.type';
+import { SignUpPayload, getAccount, signin, signout, signup } from './auth.api';
 
 interface AccountContextPaylaod {
   loading: boolean;

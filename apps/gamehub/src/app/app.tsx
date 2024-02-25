@@ -6,7 +6,7 @@ import Homepage from './pages/Homepage';
 import SignUp from './pages/SignUp';
 import SignIn from './pages/SignIn';
 import NxWelcome from './nx-welcome';
-import { AccountProvider } from './hooks/account';
+import { AccountProvider } from '@bb/auth-hook-lib';
 
 const router = createBrowserRouter([
   {

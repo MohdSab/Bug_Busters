@@ -1,6 +1,6 @@
 import { Link } from 'react-router-dom';
 import styles from './navbar.module.css';
-import { useAccount } from '../hooks/account';
+import { useAccount } from '@bb/auth-hook-lib';
 
 export function Navbar() {
   const { loading, account, signout } = useAccount();
