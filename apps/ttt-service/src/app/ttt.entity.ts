@@ -92,4 +92,11 @@ export class TicTacToe {
     }
     return null;
   }
+
+  ResetBoard() {
+    this.board = ['', '', '', '', '', '', '', '', ''];
+    this.xIsPlaying = true;
+    this.winner = null;
+  }
+
 }

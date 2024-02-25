@@ -21,7 +21,7 @@ export type NewGameState = {
 
 export type MessageDTO = {
   roomCode: number | null;
-  currentPlayer: number;
+  currentPlayer: number | null;
   move: number | null;
 };
 
@@ -35,10 +35,10 @@ export class TicTacToeGameLogic {
   private tttRepo: Repository<TicTacToe>;
 
   @SubscribeMessage('move')
-  handleMove(
+  async handleMove(
     @ConnectedSocket() client: Socket,
     @MessageBody() data: MessageDTO
-  ): string {
+  ): Promise<string> {
     /*
      * Receives move from some player (stored in data), move may be valid/invalid
      * If valid,
@@ -54,9 +54,28 @@ export class TicTacToeGameLogic {
      *   currentPlayer: uid,
      *   move: index within board
      * }
+     * 
+     * required data: roomCode, currentPlayer, move
      */
-    //TODO: IMPLEMENT
-    return '';
+    try {
+        let payload: NewGameState;
+        const ttt: TicTacToe = await this.tttRepo.findOne({
+            where: { roomCode: data.roomCode },
+        });
+
+        payload.wonBy = ttt.MakeMove(data.currentPlayer, data.move);
+        payload.board = ttt.board;
+        payload.winner = ttt.winner;
+        payload.roomNumber = ttt.roomCode;
+        payload.validResponse = true;
+
+        await this.tttRepo.save(ttt);
+
+        return JSON.stringify(payload);
+
+    } catch (error) {
+        console.log('Error making a move', error);
+    }
   }
 
   @SubscribeMessage('create-room')
@@ -64,6 +83,13 @@ export class TicTacToeGameLogic {
     @ConnectedSocket() client: Socket,
     @MessageBody() data: MessageDTO
   ): Promise<string> {
+
+    /*
+     * Create a room where the player who created it
+     * is the xPlayer
+     * 
+     * required data: currentPlayer
+     */
     try {
       // create a new TTT object and update attributes
       const ttt = new TicTacToe();
@@ -133,18 +159,41 @@ export class TicTacToeGameLogic {
   }
 
   @SubscribeMessage('replay')
-  handleReplay(
+  async handleReplay(
     @ConnectedSocket() client: Socket,
     @MessageBody() data: MessageDTO
-  ): string {
+  ): Promise<string> {
     /*
      * Reset game state, winner, currPlayer, and board
      * room code will be kept the same
      *
      * required data: none
      */
-    //TODO: IMPLEMENT
-    return '';
+    try {
+        let payload: NewGameState;
+
+        const ttt: TicTacToe = await this.tttRepo.findOne({
+            where: { roomCode: data.roomCode },
+        });
+        if (!ttt) {
+            payload.validResponse = false;
+            return JSON.stringify(payload);
+        }
+
+        ttt.ResetBoard();
+        await this.tttRepo.save(ttt);
+
+        payload.board = ttt.board;
+        payload.wonBy = null;
+        payload.winner = null;
+        payload.roomNumber = data.roomCode;
+        payload.validResponse = true;
+
+        return JSON.stringify(payload);
+
+    } catch (error) {
+        console.log('Error replaying', error);
+    }
   }
 
   @SubscribeMessage('disconnect')
@@ -156,7 +205,6 @@ export class TicTacToeGameLogic {
      * Upon encountering a disconnect, close the game. The remaining player is considered to have won
      *
      * required data: roomCode, currentPlayer (remaining player)
-     * }
      */
     //TODO: IMPLEMENT
     return '';
