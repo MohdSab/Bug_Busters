@@ -26,7 +26,11 @@ export type MessageDTO = {
 };
 
 // TODO: change to whatever port we end up using
-@WebSocketGateway(8000)
+@WebSocketGateway({
+  cors: {
+    origin: ['http://localhost:4200']  // This is the URI of the frontend
+  }
+})
 export class TicTacToeGateway {
   @WebSocketServer()
   server: Server;
