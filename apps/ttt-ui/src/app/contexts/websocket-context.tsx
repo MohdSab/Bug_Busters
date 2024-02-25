@@ -16,16 +16,23 @@ export const WebsocketContext = createContext<WSContextPayload>({
   loading: true,
   socket: null,
 });
+
 export function useSocket() {
   return useContext(WebsocketContext);
 }
 
 export function WebsocketProvider({ children }: PropsWithChildren<{}>) {
-  const [socket, setSocket] = useState<Socket | null>();
+  const [socket, setSocket] = useState<Socket | null>(null);
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
-    const socket = io('http://localhost:3000/ttt'); // TODO: maybe change URL/port?
+    // TODO change to configurable host
+    const socket = io('http://localhost:8000', {
+      autoConnect: false,
+      path: '/ttt',
+    }); // TODO: maybe change URL/port?
+
+    socket.connect();
 
     socket.on('connect', () => {
       console.log('Connecting as: ', socket.id);
@@ -40,8 +47,20 @@ export function WebsocketProvider({ children }: PropsWithChildren<{}>) {
     });
 
     return () => {
+      socket.disconnect();
       socket.off('connect');
       socket.off('disconnect');
     };
   }, []);
+
+  return (
+    <WebsocketContext.Provider
+      value={{
+        loading,
+        socket,
+      }}
+    >
+      {children}
+    </WebsocketContext.Provider>
+  );
 }
