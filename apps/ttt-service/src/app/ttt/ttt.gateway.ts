@@ -4,6 +4,7 @@ import {
   ConnectedSocket,
   MessageBody,
   WebSocketServer,
+  OnGatewayConnection,
 } from '@nestjs/websockets';
 import { Server, Socket } from 'socket.io';
 import { InjectRepository } from '@nestjs/typeorm';
@@ -26,13 +27,28 @@ export type MessageDTO = {
 };
 
 // TODO: change to whatever port we end up using
-@WebSocketGateway(8000)
-export class TicTacToeGameLogic {
+@WebSocketGateway(8000, {
+  path: '/ttt',
+  cors: {
+    origin: '*',
+    credentials: true,
+    allowedHeaders: true,
+  },
+})
+export class TicTacToeGateway implements OnGatewayConnection {
   @WebSocketServer()
   server: Server;
 
   @InjectRepository(TicTacToe)
   private tttRepo: Repository<TicTacToe>;
+
+  /**
+   * Special function of OnGatewayConnection
+   * @param client
+   */
+  handleConnection(client: Socket) {
+    console.log(client);
+  }
 
   @SubscribeMessage('move')
   async handleMove(
@@ -197,16 +213,16 @@ export class TicTacToeGameLogic {
   }
 
   @SubscribeMessage('disconnect')
-  handleDisconnect(
-    @ConnectedSocket() client: Socket,
-    @MessageBody() data: MessageDTO
-  ): string {
+  handleDisconnect(): // @ConnectedSocket() client: Socket,
+  // @MessageBody() data: MessageDTO
+  string {
     /*
      * Upon encountering a disconnect, close the game. The remaining player is considered to have won
      *
      * required data: roomCode, currentPlayer (remaining player)
      */
     //TODO: IMPLEMENT
+    console.log('Disconnect');
     return '';
   }
 }
