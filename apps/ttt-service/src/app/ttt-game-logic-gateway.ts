@@ -27,7 +27,7 @@ export class TicTacToeGameLogic{
     server: Server;
 
     @InjectRepository(TicTacToe)
-    private tttRepo: Repository<TicTacToe>,
+    private tttRepo: Repository<TicTacToe>;
     
     @SubscribeMessage('move')
     handleMove(@ConnectedSocket() client: Socket, @MessageBody() data: MessageDTO): string{
@@ -60,7 +60,7 @@ export class TicTacToeGameLogic{
             await this.tttRepo.save(ttt);
     
             // connect client to the room
-            client.join(ttt.roomCode);
+            client.join(String(ttt.roomCode));
     
             // return results
             let payload: NewGameState = {
@@ -77,7 +77,7 @@ export class TicTacToeGameLogic{
     }
 
     @SubscribeMessage('join-room')
-    joinRoom(@ConnectedSocket() client: Socket, @MessageBody() data: MessageDTO): string{
+    async joinRoom(@ConnectedSocket() client: Socket, @MessageBody() data: MessageDTO): Promise<string>{
         /* 
         * Join a created room using the room id for the game
         * becomes the oPlayer if oPlayer is null
