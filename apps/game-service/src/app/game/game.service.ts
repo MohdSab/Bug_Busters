@@ -11,14 +11,16 @@ import { Repository } from 'typeorm';
 
 @Injectable()
 export class GameService {
-  games: Game[] = [];
+  // games: Game[] = [];
 
   constructor(
     @InjectRepository(Game)
-    private gameRepo: Repository<Game>,
-  ){
+    private gameRepo: Repository<Game>
+  ) {
     //TODO: perform a one time getAll request from the database to populate the games array
-    this.gameRepo.find().then((res) => {this.games = res.slice()});
+    // this.gameRepo.find().then((res) => {
+    //   this.games = res.slice();
+    // });
   }
 
   create(createGameDto: CreateGameDto) {
@@ -35,18 +37,18 @@ export class GameService {
     newGame.description = createGameDto.description;
     newGame.thumbnail = createGameDto.thumbnail;
     newGame.url = createGameDto.url;
-    if (this.games.length === 0) newGame.gid = 0;
-    else newGame.gid = this.games.at(-1).gid + 1;
+    // if (this.games.length === 0) newGame.gid = 0;
+    // else newGame.gid = this.games.at(-1).gid + 1;
 
-    this.games.push(newGame);
+    // this.games.push(newGame);
 
     //TODO: Add game to database
     const newGameDB = this.gameRepo.create({
-      gid: this.games.at(-1).gid + 1,
+      // gid: this.games.at(-1).gid + 1,
       name: createGameDto.name,
       description: createGameDto.description,
       thumbnail: createGameDto.thumbnail,
-      url: createGameDto.url
+      url: createGameDto.url,
     });
     this.gameRepo.save(newGameDB);
 
@@ -54,48 +56,27 @@ export class GameService {
   }
 
   findAll() {
-    return this.games;
+    return this.gameRepo.find();
   }
 
   findOne(id: number) {
-    for (const game of this.games) if (game.gid === id) return game;
-
-    throw new NotFoundException();
+    // for (const game of this.games) if (game.gid === id) return game;
+    return this.gameRepo.findOneBy({ gid: id });
   }
 
-  update(id: number, updateGameDto: UpdateGameDto) {
-    for (const game of this.games) {
-      if (game.gid === id) {
-        if (updateGameDto.name) game.name = updateGameDto.name;
+  async update(id: number, updateGameDto: UpdateGameDto) {
+    const game = await this.findOne(id);
+    if (!game) throw new NotFoundException();
 
-        if (updateGameDto.description)
-          game.description = updateGameDto.description;
+    if (updateGameDto.name) game.name = updateGameDto.name;
+    if (updateGameDto.description) game.name = updateGameDto.description;
+    if (updateGameDto.thumbnail) game.name = updateGameDto.thumbnail;
+    if (updateGameDto.url) game.name = updateGameDto.url;
 
-        if (updateGameDto.thumbnail) game.thumbnail = updateGameDto.thumbnail;
-
-        if (updateGameDto.url) game.url = updateGameDto.url;
-
-        //TODO: update game in database
-        this.gameRepo.save(updateGameDto);
-
-        return game;
-      }
-    }
-
-    throw new NotFoundException();
+    return this.gameRepo.save(game);
   }
 
   remove(id: number) {
-    this.games = this.games.filter((game) => game.gid !== id);
-
-    //TODO: remove game from database
-    this.gameRepo.exists({ where: {gid: id}}).then(
-      (exists) => {
-        if(exists){
-          this.gameRepo.delete({gid: id});
-        }
-    })
-
-    return;
+    return this.gameRepo.delete(id);
   }
 }
