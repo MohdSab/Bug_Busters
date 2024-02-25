@@ -1,0 +1,12 @@
+.center {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 100vh; /* Adjust as needed */
+}
+
+.button {
+    margin: 20px;
+    padding: 10px;
+    font-size: 30px;
+}
