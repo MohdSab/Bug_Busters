@@ -6,26 +6,26 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { Account } from './account.entity';
 import { JwtModule } from '@nestjs/jwt';
 import { Profile } from './profile.entity';
-import { ServeStaticModule } from '@nestjs/serve-static';
-import { join } from 'path';
+// import { ServeStaticModule } from '@nestjs/serve-static';
+// import { join } from 'path';
 
 @Module({
   imports: [
     TypeOrmModule.forRoot({
       type: 'postgres',
-      host: 'localhost',
-      port: 5432,
-      username: 'root',
-      password: 'root',
-      database: 'test',
+      host: process.env.PG_HOST,
+      port: Number(process.env.PG_PORT),
+      username: process.env.PG_USER,
+      password: process.env.PG_PW,
+      database: process.env.PG_DB,
       entities: [Account, Profile],
       synchronize: true,
     }),
     TypeOrmModule.forFeature([Account, Profile]),
     JwtModule.register({
-      secret: "mysecret",
-      signOptions: { expiresIn: "600s" },
-    })
+      secret: 'mysecret',
+      signOptions: { expiresIn: '600s' },
+    }),
   ],
   controllers: [AppController],
   providers: [AppService],
