@@ -9,18 +9,18 @@ import { AccountProvider } from '@bb/auth-hook-lib';
 import { WebsocketProvider } from './contexts/websocket-context';
 
 const router = createBrowserRouter([
-  { path: '/', element: <TttLandingPage /> },
+  { path: '/', Component: TttLandingPage  },
   { path: '/game/:id', element: <TicTacToe /> },
   { path: '/error', element: <ErrorPage /> },
 ]);
 
 export function App() {
   return (
-    <WebsocketProvider>
-      <AccountProvider>
+    <AccountProvider>
+      <WebsocketProvider>
         <RouterProvider router={router} />
-      </AccountProvider>
-    </WebsocketProvider>
+      </WebsocketProvider>
+    </AccountProvider>
   );
 }
 

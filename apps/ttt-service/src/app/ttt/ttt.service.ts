@@ -1,7 +1,44 @@
-import { Injectable } from '@nestjs/common';
+import { BadRequestException, Injectable } from '@nestjs/common';
+import { Repository } from 'typeorm';
+import { Room } from './room.entity';
+import { InjectRepository } from '@nestjs/typeorm';
+import { TicTacToe } from './ttt.entity';
 
 @Injectable()
-export class TttService {
+export class TTTService {
+  constructor(
+    @InjectRepository(Room)
+    private roomRepo: Repository<Room>,
+
+    @InjectRepository(TicTacToe)
+    private tttRepo: Repository<TicTacToe>
+  ) {}
+
+  async createRoom(): Promise<Room> {
+    let newGame = new TicTacToe();
+    newGame = await this.tttRepo.save(newGame);
+
+    let newRoom = new Room();
+    newRoom.currentGame = newGame;
+
+    newRoom = await this.roomRepo.save(newRoom);
+
+    return newRoom;
+  }
+
+  async joinRoom(uid: number, roomId: number): Promise<Room> {
+    const room = await  this.roomRepo.findOneBy({ id: roomId });
+    if (!room) throw new BadRequestException("Room does not exist");
+
+    if (!room.p1) room.p1 = uid;
+    else if (!room.p2) room.p2 = uid;
+    else {
+      throw new BadRequestException("Room is fulllllll");
+    }
+
+    return this.roomRepo.save(room);
+  }
+
   // returns winning tuple if someone wins, null otherwise
   // MakeMove(currentPlayer: number, ind: number) {
   //   if (this.xIsPlaying && currentPlayer == this.xPlayer) {

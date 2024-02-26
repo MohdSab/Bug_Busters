@@ -1,24 +1,24 @@
-import { Entity, Column, PrimaryGeneratedColumn } from 'typeorm';
+import { Entity, Column, PrimaryGeneratedColumn, OneToOne, JoinColumn } from 'typeorm';
 
 @Entity()
 export class TicTacToe {
   @PrimaryGeneratedColumn()
-  roomCode: number;
+  gid: number;
 
   @Column('char', { array: true })
   board: string[];
 
-  @Column()
-  xPlayer: number; // uid
+  @Column({ nullable: true})
+  xPlayer?: number; // uid
 
-  @Column()
-  oPlayer: number; // uid
+  @Column({ nullable: true})
+  oPlayer?: number; // uid
 
   @Column()
   xIsPlaying: boolean;
 
-  @Column()
-  winner: string | null;
+  @Column({ nullable: true })
+  winner?: string;
 
   constructor() {
     this.board = ['', '', '', '', '', '', '', '', ''];

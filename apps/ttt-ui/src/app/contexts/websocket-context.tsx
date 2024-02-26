@@ -1,3 +1,4 @@
+import { useAccount } from '@bb/auth-hook-lib';
 import {
   PropsWithChildren,
   createContext,
@@ -26,6 +27,7 @@ export function useSocket() {
 }
 
 export function WebsocketProvider({ children }: PropsWithChildren<{}>) {
+  const { account, loading: accLoading } = useAccount();
   const [socket, setSocket] = useState<Socket | null>(null);
   const [loading, setLoading] = useState(false);
 
@@ -38,10 +40,14 @@ export function WebsocketProvider({ children }: PropsWithChildren<{}>) {
   };
 
   useEffect(() => {
+    if (accLoading) return;
     // TODO change to configurable host
     const socket = io('http://localhost:8000', {
       autoConnect: false,
       path: '/ttt',
+      auth: {
+        uid: account?.uid
+      }
     }); // TODO: maybe change URL/port?
 
     socket.connect();
@@ -63,7 +69,7 @@ export function WebsocketProvider({ children }: PropsWithChildren<{}>) {
       socket.off('connect');
       socket.off('disconnect');
     };
-  }, []);
+  }, [accLoading]);
 
   return (
     <WebsocketContext.Provider

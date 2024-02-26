@@ -81,6 +81,7 @@ export class AppService {
       if (user == null) return null;
 
       user.profile.avatarUrl = user.profile.GetPicturePath();
+      user.password = "nopasswordallowedintheresponsePatricia";
       return user;
     } catch (error) {
       return null;
