@@ -34,8 +34,6 @@ services:
   gamehub:
     image: gamehub
     depends_on:
-      - pg
-      - gateway
       - auth-service
     environment:
       PORT: 3020
