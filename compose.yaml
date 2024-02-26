@@ -30,3 +30,12 @@ services:
       POSTGRES_USER: test
       POSTGRES_PASSWORD: test
       POSTGRES_DB: auth
+
+  gamehub:
+    image: gamehub
+    depends_on:
+      - pg
+      - gateway
+      - auth-service
+    environment:
+      PORT: 3020
