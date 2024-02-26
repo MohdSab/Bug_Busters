@@ -31,9 +31,9 @@ services:
       POSTGRES_PASSWORD: test
       POSTGRES_DB: auth
 
-  gamehub:
-    image: gamehub
-    depends_on:
-      - auth-service
-    environment:
-      PORT: 3020
+  # gamehub:
+  #   image: gamehub
+  #   depends_on:
+  #     - auth-service
+  #   environment:
+  #     PORT: 3020

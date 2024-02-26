@@ -18,7 +18,7 @@ RUN addgroup --system gamehub && \
 COPY package.json .
 # You can remove this install step if you build with `--bundle` option.
 # The bundled output will include external dependencies.
-RUN npm --prefix gamehub --omit=dev -f install
+RUN npm gamehub --omit=dev -f install
 
 COPY dist/apps/gamehub gamehub
 RUN chown -R gamehub:gamehub .
