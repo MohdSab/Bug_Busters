@@ -26,14 +26,14 @@ export type NewGameState = {
 
 export type MessageDTO = {
   roomCode: number | null;
-  currentPlayer: number | null;
+  // currentPlayer: number | null;
   move: number | null;
 };
 
 type ResponseDTO<T> = {
   error?: string;
   data: T;
-}
+};
 
 const port = +process.env.WS_PORT || 8000;
 
@@ -46,29 +46,39 @@ const port = +process.env.WS_PORT || 8000;
     allowedHeaders: true,
   },
 })
-export class TicTacToeGateway implements OnGatewayConnection, OnGatewayInit, OnGatewayDisconnect {
+export class TicTacToeGateway
+  implements OnGatewayConnection, OnGatewayInit, OnGatewayDisconnect
+{
   @WebSocketServer()
   server: Server;
 
   // @InjectRepository(TicTacToe)
   // private tttRepo: Repository<TicTacToe>;
 
-  constructor(private tttService: TTTService){}
+  constructor(private tttService: TTTService) {}
 
   /**
    * Special function of OnGatewayConnection
    * @param client
    */
   handleConnection(client: Socket) {
-    console.log("client connected: ", client.id);
+    console.log('client connected: ', client.id);
   }
 
   afterInit(server: Server) {
-    console.log("WS server is running on port: ", port);
+    console.log('WS server is running on port: ', port);
   }
 
-  handleDisconnect(client: Socket) {
-    console.log("client disconencted: ", client.id);
+  async handleDisconnect(client: Socket) {
+    const room: Room = await this.tttService.onDisconnect(
+      client.handshake.auth.uid
+    );
+    console.log('Disconnecting from room', room.id);
+    this.server.to(String(room.id)).emit('player-disconnected', {
+      error: null,
+      data: room,
+    });
+    console.log('client disconencted: ', client.id);
   }
 
   @SubscribeMessage('move')
@@ -85,46 +95,23 @@ export class TicTacToeGateway implements OnGatewayConnection, OnGatewayInit, OnG
      *   -check for winner
      * If invalid, change nothing
      *
-     * json input data format:
-     * {
-     *   roomCode: room number (String),
-     *   currentPlayer: uid,
-     *   move: index within board
-     * }
-     * 
-     * required data: roomCode, currentPlayer, move
+     * required data: roomCode, move
      */
-    // try {
-    //     let payload: NewGameState;
-    //     const ttt: TicTacToe = await this.tttRepo.findOne({
-    //         where: { roomCode: data.roomCode },
-    //     });
-
-    //     payload.wonBy = ttt.MakeMove(data.currentPlayer, data.move);
-    //     payload.board = ttt.board;
-    //     payload.winner = ttt.winner;
-    //     payload.roomNumber = ttt.roomCode;
-    //     payload.validResponse = true;
-
-    //     await this.tttRepo.save(ttt);
-
-    //     return JSON.stringify(payload);
-
-    // } catch (error) {
-    //     console.log('Error making a move', error);
-    // }
+    const ttt = await this.tttService.MakeMove(
+      client.handshake.auth.uid,
+      data.move,
+      data.roomCode
+    );
+    this.server.to(String(data.roomCode)).emit('player-moved');
+    return ttt;
   }
 
   @SubscribeMessage('create-room')
-  async createRoom(
-    @ConnectedSocket() client: Socket,
-    @MessageBody() data: MessageDTO
-  ): Promise<Room> {
-
+  async createRoom(@ConnectedSocket() client: Socket): Promise<Room> {
     /*
      * Create a room where the player who created it
      * is the xPlayer
-     * 
+     *
      * required data: currentPlayer
      */
     // try {
@@ -148,33 +135,13 @@ export class TicTacToeGateway implements OnGatewayConnection, OnGatewayInit, OnG
     // } catch (error) {
     //   console.error('Error creating a room: oops :(((', error);
     // }
-    const room = await this.tttService.createRoom();
+    const room = await this.tttService.createRoom(client.handshake.auth.uid);
     client.join('' + room.id);
     return room;
   }
 
   @SubscribeMessage('join-room')
   async joinRoom(
-    @ConnectedSocket() client: Socket,
-    @MessageBody() roomId: number
-  ): Promise<ResponseDTO<Room>> {
-    const uid = client.handshake.auth.uid;
-
-    try {
-      const room = await this.tttService.joinRoom(uid, roomId);
-      
-      client.join(String(room));
-      client.to(String(room)).emit('player-joined', room);
-      return {
-        data: room
-      }
-    } catch(err) {
-      return {
-        error: err,
-        data: null
-      }
-    }
-
     /*
      * Join a created room using the room id for the game
      * becomes the oPlayer if oPlayer is null
@@ -182,37 +149,25 @@ export class TicTacToeGateway implements OnGatewayConnection, OnGatewayInit, OnG
      *
      * required data: roomCode, currentPlayer
      */
-    // try {
-    //   let payload: NewGameState;
+    @ConnectedSocket() client: Socket,
+    @MessageBody() roomId: number
+  ): Promise<ResponseDTO<Room>> {
+    const uid = client.handshake.auth.uid;
 
-    //   // check if a room with this code exists
-    //   const ttt: TicTacToe = await this.tttRepo.findOne({
-    //     where: { roomCode: data.roomCode },
-    //   });
-    //   if (!ttt) {
-    //     payload.validResponse = false;
-    //     return JSON.stringify(payload);
-    //   }
+    try {
+      const room = await this.tttService.joinRoom(uid, roomId);
 
-    //   // if the room exists, update TTT object and connect client
-    //   // if there is not an oPlayer, the client becomes the oPlater
-    //   // otherwise they are a specator (no change)
-    //   if (!ttt.oPlayer) {
-    //     ttt.SetOPlayer(data.currentPlayer);
-    //     await this.tttRepo.save(ttt);
-    //   }
-    //   client.join(String(ttt.roomCode));
-
-    //   // return results
-    //   payload.validResponse = true;
-    //   payload.board = ttt.board;
-    //   payload.roomNumber = ttt.roomCode;
-    //   payload.winner = ttt.winner;
-    //   payload.wonBy = null;
-    //   return JSON.stringify(payload);
-    // } catch (error) {
-    //   console.error('Error joining a room', error);
-    // }
+      client.join(String(room.id));
+      client.to(String(room.id)).emit('player-joined', room);
+      return {
+        data: room,
+      };
+    } catch (err) {
+      return {
+        error: err,
+        data: null,
+      };
+    }
   }
 
   @SubscribeMessage('replay')
@@ -224,32 +179,9 @@ export class TicTacToeGateway implements OnGatewayConnection, OnGatewayInit, OnG
      * Reset game state, winner, currPlayer, and board
      * room code will be kept the same
      *
-     * required data: none
+     * required data: roomCode
      */
-    // try {
-    //     let payload: NewGameState;
-
-    //     const ttt: TicTacToe = await this.tttRepo.findOne({
-    //         where: { roomCode: data.roomCode },
-    //     });
-    //     if (!ttt) {
-    //         payload.validResponse = false;
-    //         return JSON.stringify(payload);
-    //     }
-
-    //     ttt.ResetBoard();
-    //     await this.tttRepo.save(ttt);
-
-    //     payload.board = ttt.board;
-    //     payload.wonBy = null;
-    //     payload.winner = null;
-    //     payload.roomNumber = data.roomCode;
-    //     payload.validResponse = true;
-
-    //     return JSON.stringify(payload);
-
-    // } catch (error) {
-    //     console.log('Error replaying', error);
-    // }
+    this.tttService.ResetBoard(data.roomCode);
+    this.server.to(String(data.roomCode)).emit('replay');
   }
 }

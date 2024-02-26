@@ -14,7 +14,11 @@ export class TTTService {
     private tttRepo: Repository<TicTacToe>
   ) {}
 
-  async createRoom(): Promise<Room> {
+  async createRoom(uid: number): Promise<Room> {
+    if (await this.checkInRoom(uid)) {
+      throw new BadRequestException('ur already in a room smh');
+    }
+
     let newGame = new TicTacToe();
     newGame = await this.tttRepo.save(newGame);
 
@@ -23,76 +27,126 @@ export class TTTService {
 
     newRoom = await this.roomRepo.save(newRoom);
 
-    return newRoom;
+    return this.joinRoom(uid, newRoom.id);
   }
 
   async joinRoom(uid: number, roomId: number): Promise<Room> {
-    const room = await  this.roomRepo.findOneBy({ id: roomId });
-    if (!room) throw new BadRequestException("Room does not exist");
+    if (await this.checkInRoom(uid)) {
+      throw new BadRequestException('ur already in a room smh');
+    }
+
+    const room = await this.roomRepo.findOneBy({ id: roomId });
+    if (!room) throw new BadRequestException('Room does not exist');
 
     if (!room.p1) room.p1 = uid;
     else if (!room.p2) room.p2 = uid;
-    else {
-      throw new BadRequestException("Room is fulllllll");
-    }
+    // else {
+    //   throw new BadRequestException('Room is fulllllll');
+    // }
 
     return this.roomRepo.save(room);
   }
 
-  // returns winning tuple if someone wins, null otherwise
-  // MakeMove(currentPlayer: number, ind: number) {
-  //   if (this.xIsPlaying && currentPlayer == this.xPlayer) {
-  //     this.board[ind] = 'x';
-  //     this.xIsPlaying = false;
-  //     let result = this.CheckWin();
-  //     if (result != null) {
-  //       this.winner = 'x';
-  //     }
-  //     return result;
-  //   } else if (!this.xIsPlaying && currentPlayer == this.oPlayer) {
-  //     this.board[ind] = 'o';
-  //     this.xIsPlaying = true;
-  //     let result = this.CheckWin();
-  //     if (result != null) {
-  //       this.winner = 'o';
-  //     }
-  //     return result;
-  //   }
-  //   return null;
-  // }
+  async onDisconnect(uid: number): Promise<Room> {
+    let room: Room = await this.roomRepo.findOneBy({ p1: uid });
+    if (!room) {
+      room = await this.roomRepo.findOneBy({ p2: uid });
+      if (!room) {
+        return;
+      } else {
+        room.currentGame.winner = 'x';
+        room.p2 = null;
+        room = await this.roomRepo.save(room);
+        await this.tttRepo.save(room.currentGame);
+      }
+    } else {
+      room.currentGame.winner = 'o';
+      room.p1 = null;
+      room = await this.roomRepo.save(room);
+      await this.tttRepo.save(room.currentGame);
+    }
+    return room;
+  }
 
-  // // returns winning tuple if someone wins, null otherwise
-  // CheckWin() {
-  //   for (let i = 0; i < 3; i++) {
-  //     if (
-  //       this.board[i] !== '' && // check row
-  //       this.board[i] === this.board[i + 1] &&
-  //       this.board[i] === this.board[i + 2]
-  //     ) {
-  //       return [i, i + 1, i + 2];
-  //     }
-  //     if (
-  //       this.board[i] !== '' && // check column
-  //       this.board[i] === this.board[i + 3] &&
-  //       this.board[i] === this.board[i + 6]
-  //     ) {
-  //       return [i, i + 3, i + 6];
-  //     }
-  //   }
-  //   if (
-  //     this.board[0] !== '' && // check diag \
-  //     this.board[0] === this.board[4] &&
-  //     this.board[0] === this.board[8]
-  //   ) {
-  //     return [0, 4, 8];
-  //   }
-  //   if (
-  //     this.board[2] !== '' && // check diag /
-  //     this.board[2] === this.board[4] &&
-  //     this.board[2] === this.board[6]
-  //   ) {
-  //     return [0, 4, 6];
-  //   }
-  //   return null;
-  // }
+  /*
+   * returns winning tuple if someone wins, null otherwise
+   */
+  async MakeMove(currentPlayer: number, ind: number, roomId: number) {
+    const ttt = await this.findGame(roomId);
+    if (ttt.xIsPlaying && currentPlayer == ttt.xPlayer) {
+      ttt.board[ind] = 'x';
+      ttt.xIsPlaying = false;
+      ttt.CheckWin();
+      if (ttt.wonBy != null) {
+        ttt.winner = 'x';
+      }
+    } else if (!ttt.xIsPlaying && currentPlayer == ttt.oPlayer) {
+      ttt.board[ind] = 'o';
+      ttt.xIsPlaying = true;
+      ttt.CheckWin();
+      if (ttt.wonBy != null) {
+        ttt.winner = 'o';
+      }
+    }
+    await this.tttRepo.save(ttt);
+    return ttt;
+  }
+
+  /*
+   * update wonBy to the winning tuple if someone wins, null otherwise
+   */
+  CheckWin(ttt: TicTacToe) {
+    for (let i = 0; i < 3; i++) {
+      if (
+        ttt.board[i] !== '' && // check row
+        ttt.board[i] === ttt.board[i + 1] &&
+        ttt.board[i] === ttt.board[i + 2]
+      ) {
+        ttt.wonBy = [i, i + 1, i + 2];
+      }
+      if (
+        ttt.board[i] !== '' && // check column
+        ttt.board[i] === ttt.board[i + 3] &&
+        ttt.board[i] === ttt.board[i + 6]
+      ) {
+        ttt.wonBy = [i, i + 3, i + 6];
+      }
+    }
+    if (
+      ttt.board[0] !== '' && // check diag \
+      ttt.board[0] === ttt.board[4] &&
+      ttt.board[0] === ttt.board[8]
+    ) {
+      ttt.wonBy = [0, 4, 8];
+    }
+    if (
+      ttt.board[2] !== '' && // check diag /
+      ttt.board[2] === ttt.board[4] &&
+      ttt.board[2] === ttt.board[6]
+    ) {
+      ttt.wonBy = [2, 4, 6];
+    }
+    ttt.wonBy = null;
+  }
+
+  async checkInRoom(uid: number) {
+    const room = await this.roomRepo.findOneBy({ p1: uid });
+    if (room != null) {
+      return true;
+    }
+    return false;
+  }
+
+  async findGame(roomId: number) {
+    const room = await this.roomRepo.findOneBy({ id: roomId });
+    return room.currentGame;
+  }
+
+  async ResetBoard(roomId: number) {
+    const ttt = await this.findGame(roomId);
+    ttt.board = ['', '', '', '', '', '', '', '', ''];
+    ttt.xIsPlaying = true;
+    ttt.winner = null;
+    await this.tttRepo.save(ttt);
+  }
 }

@@ -1,17 +1,20 @@
-import { Entity, Column, PrimaryGeneratedColumn, OneToOne, JoinColumn } from 'typeorm';
+import { Entity, Column, PrimaryGeneratedColumn } from 'typeorm';
 
 @Entity()
 export class TicTacToe {
   @PrimaryGeneratedColumn()
   gid: number;
 
+  @Column({ nullable: true })
+  rid: number;
+
   @Column('char', { array: true })
   board: string[];
 
-  @Column({ nullable: true})
+  @Column({ nullable: true })
   xPlayer?: number; // uid
 
-  @Column({ nullable: true})
+  @Column({ nullable: true })
   oPlayer?: number; // uid
 
   @Column()
@@ -19,6 +22,8 @@ export class TicTacToe {
 
   @Column({ nullable: true })
   winner?: string;
+
+  wonBy?: number[];
 
   constructor() {
     this.board = ['', '', '', '', '', '', '', '', ''];
@@ -41,7 +46,7 @@ export class TicTacToe {
     if (this.xIsPlaying && currentPlayer == this.xPlayer) {
       this.board[ind] = 'x';
       this.xIsPlaying = false;
-      let result = this.CheckWin();
+      const result = this.CheckWin();
       if (result != null) {
         this.winner = 'x';
       }
@@ -49,7 +54,7 @@ export class TicTacToe {
     } else if (!this.xIsPlaying && currentPlayer == this.oPlayer) {
       this.board[ind] = 'o';
       this.xIsPlaying = true;
-      let result = this.CheckWin();
+      const result = this.CheckWin();
       if (result != null) {
         this.winner = 'o';
       }
