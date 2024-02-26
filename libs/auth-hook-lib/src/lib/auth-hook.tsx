@@ -6,7 +6,7 @@ import {
   useState,
 } from 'react';
 import { Account } from './account.type';
-import { SignUpPayload, getAccount, signin, signout, signup } from './auth.api';
+import { SignUpPayload, getAccount, setAccessToken, signin, signout, signup } from './auth.api';
 
 interface AccountContextPaylaod {
   loading: boolean;
@@ -14,6 +14,7 @@ interface AccountContextPaylaod {
   signin: (username: string, password: string) => Promise<Account | null>;
   signup: (data: SignUpPayload) => Promise<Account | null>;
   signout: () => Promise<void>;
+  useAccessToken: (token: string) => Promise<Account | null>;
 }
 
 export const AccountContext = createContext<AccountContextPaylaod>({
@@ -22,6 +23,7 @@ export const AccountContext = createContext<AccountContextPaylaod>({
   signin: (_, __) => Promise.resolve(null),
   signup: (_) => Promise.resolve(null),
   signout: () => Promise.resolve(),
+  useAccessToken: (_) => Promise.resolve(null)
 });
 
 export function useAccount() {
@@ -69,6 +71,17 @@ export function AccountProvider({ children }: PropsWithChildren<{}>) {
     });
   };
 
+  const useAccessToken = (accessToken: string) => {
+    setAccessToken(accessToken);
+    setLoading(true);
+    setAccount(null);
+    return getAccount().then(acc => {
+      setLoading(false);
+      setAccount(acc);
+      return acc;
+    });
+  }
+
   useEffect(() => {
     getAccount().then((account) => {
       setAccount(account);
@@ -84,6 +97,7 @@ export function AccountProvider({ children }: PropsWithChildren<{}>) {
         signin: signinn,
         signout: signoutt,
         signup: signupp,
+        useAccessToken
       }}
     >
       {children}

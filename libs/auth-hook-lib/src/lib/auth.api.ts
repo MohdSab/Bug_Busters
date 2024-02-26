@@ -10,6 +10,10 @@ export interface SignUpPayload {
 const hostUrl = 'http://localhost:3010';
 const hostAPIUrl = `${hostUrl}/api`;
 
+export function setAccessToken(accessToken: string) {
+  localStorage.setItem('access_token', accessToken);
+}
+
 export function getImageUrl(uri: string): string {
   return `${hostUrl}${uri}`;
 }
@@ -30,7 +34,6 @@ export function getAccount(): Promise<Account | null> {
   })
     .then((res) => res.json())
     .then((res) => {
-      console.log(res);
       return {
         uid: res.uid,
         username: res.username,
