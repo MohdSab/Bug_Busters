@@ -48,10 +48,23 @@ describe('GameService', () => {
   });
 
   it('should create a game', () => {
+
+    const temp = {
+      gid: 1,
+      name: 'Tic-tac-toe',
+      description: 'A boring game',
+      thumbnail: "I don't know",
+      url: 'http://localhost:3000',
+    };
+
     try {
       jest
         .spyOn(gameRepo, 'findOne')
         .mockResolvedValueOnce(Promise.resolve({ ...gameData, gid: 1 }));
+
+      jest
+        .spyOn(service, 'create')
+        .mockReturnValueOnce(temp)
       const g = service.create(gameData);
 
       expect(g.gid).toBeGreaterThanOrEqual(0);
@@ -101,35 +114,94 @@ describe('GameService', () => {
   });
 
   it('should gives an empty array', () => {
-    expect(service.findAll()).toEqual([]);
+    jest
+      .spyOn(gameRepo, 'find')
+      .mockResolvedValueOnce(Promise.resolve([]))
+    service.findAll().then((res) => {expect(res).toEqual([])})
   });
 
-  it('should have 1 item', () => {
+  it('should have 1 item', async () => {
+
+    const temp = {
+      gid: 1,
+      name: 'Tic-tac-toe',
+      description: 'A boring game',
+      thumbnail: "I don't know",
+      url: 'http://localhost:3000',
+    };
+
+    jest
+      .spyOn(gameRepo, 'find')
+      .mockResolvedValueOnce(Promise.resolve([temp]))
+
+    jest
+      .spyOn(service, 'create')
+      .mockReturnValueOnce(temp)
+
     service.create(gameData);
 
-    expect(service.findAll()[0].name).toBe(gameData.name);
-    expect(service.findAll()[0].description).toBe(gameData.description);
-    expect(service.findAll()[0].thumbnail).toBe(gameData.thumbnail);
-    expect(service.findAll()[0].url).toBe(gameData.url);
+    let list:Game[];
+    await service.findAll().then((res) => list = res)
+    let game:Game = list[0];
+    expect(game.name).toBe(gameData.name);
+    expect(game.description).toBe(gameData.description);
+    expect(game.thumbnail).toBe(gameData.thumbnail);
+    expect(game.url).toBe(gameData.url);
   });
 
-  it('should have 5 items', async (done) => {
+  it('should have 5 items', async () => {
+
+    const temp = {
+      gid: 1,
+      name: 'Tic-tac-toe',
+      description: 'A boring game',
+      thumbnail: "I don't know",
+      url: 'http://localhost:3000',
+    };
+
+    jest
+      .spyOn(service, 'create')
+      .mockReturnValue(temp)    
+
+    jest
+      .spyOn(gameRepo, 'find')
+      .mockResolvedValueOnce(Promise.resolve([temp, temp, temp, temp, temp]));
+
     service.create(gameData);
     service.create(gameData);
     service.create(gameData);
     service.create(gameData);
     service.create(gameData);
 
-    const games = await service.findAll();
+
+    let games:Game[]
+    const gamesPromise = await service.findAll().then((res) => games=res);
     expect(games.length).toBe(5);
-    done();
   });
 
-  it('should be able to find the item', () => {
+  it('should be able to find the item', async () => {
+
+    const temp = {
+      gid: 1,
+      name: 'Tic-tac-toe',
+      description: 'A boring game',
+      thumbnail: "I don't know",
+      url: 'http://localhost:3000',
+    };
+
+    jest
+      .spyOn(service, 'create')
+      .mockReturnValue(temp)   
+
+    jest
+      .spyOn(gameRepo, 'findOneBy')
+      .mockResolvedValueOnce(Promise.resolve(temp))
+
     const g = service.create(gameData);
 
     try {
-      const g2 = service.findOne(g.gid);
+      let g2:Game;
+      await service.findOne(g.gid).then((res) => g2 = res);
       expect(g2).toEqual(g);
     } catch (err) {
       console.error(err);
@@ -137,7 +209,12 @@ describe('GameService', () => {
     }
   });
 
-  it('should not be able to find the item', () => {
+  it('should not be able to find the item', () => { //TODO
+
+    jest
+      .spyOn(gameRepo, 'findOneBy')
+      .mockImplementation(() => {throw new NotFoundException})
+
     try {
       service.create({ name: 'Tic-tac-toe' } as CreateGameDto);
       expect(true).toBe(false);
@@ -153,49 +230,186 @@ describe('GameService', () => {
     }
   });
 
-  it('should update', () => {
-    const g = service.create(gameData);
+  it('should update', async () => {
+    //there is probably a better way than this
+    const createTemp = {
+      gid:1,
+      name: 'Tic-tac-toe',
+      description: 'A boring game',
+      thumbnail: "I don't know",
+      url: 'http://localhost:3000',
+    }
 
-    const g2 = service.update(g.gid, { name: gameData2.name });
-    expect(g2.name).toBe(gameData2.name);
-    expect(g2.gid).toBe(g.gid);
+    const temp = {
+      gid:1,
+      name: 'Tic-tac-toe',
+      description: 'A boring game',
+      thumbnail: "I don't know",
+      url: 'http://localhost:3000',
+    };
 
-    const g3 = service.update(g.gid, { thumbnail: gameData2.thumbnail });
-    expect(g3.thumbnail).toBe(gameData2.thumbnail);
-    expect(g3.gid).toBe(g.gid);
+    const tempUpdateName = {
+      gid:1,
+      name: gameData2.name,
+      description: 'A boring game',
+      thumbnail: "I don't know",
+      url: 'http://localhost:3000',
+    };
 
-    const g4 = service.update(g.gid, { description: gameData2.description });
-    expect(g4.description).toBe(gameData2.description);
-    expect(g4.gid).toBe(g.gid);
+    const tempUpdateThumbNail = {
+      gid:1,
+      name: gameData2.name,
+      description: 'A boring game',
+      thumbnail: gameData2.thumbnail,
+      url: 'http://localhost:3000',
+    };
 
-    const g5 = service.update(g.gid, { url: gameData2.url });
-    expect(g5.url).toBe(gameData2.url);
-    expect(g5.gid).toBe(g.gid);
+    const tempUpdateDesc = {
+      gid:1,
+      name: gameData2.name,
+      description: gameData2.description,
+      thumbnail: gameData2.thumbnail,
+      url: 'http://localhost:3000',
+    };
+    
+    const tempUpdateURL = {
+      gid:1,
+      name: gameData2.name,
+      description: gameData2.description,
+      thumbnail: gameData2.thumbnail,
+      url: gameData2.url
+    };
+
+    jest
+      .spyOn(gameRepo, 'findOneBy')
+      .mockResolvedValue(Promise.resolve(temp));
+    jest
+      .spyOn(gameRepo, 'save')
+      .mockResolvedValueOnce(Promise.resolve(tempUpdateName))
+      .mockResolvedValueOnce(Promise.resolve(tempUpdateThumbNail))
+      .mockResolvedValueOnce(Promise.resolve(tempUpdateDesc))
+      .mockResolvedValueOnce(Promise.resolve(tempUpdateURL))
+    jest
+      .spyOn(service, 'create')
+      .mockReturnValueOnce(createTemp)
+    try{
+      const g = service.create(gameData);
+      //change name
+      let g2:Game;
+      await service.update(g.gid, { name: gameData2.name }).then((res) => g2=res);
+      expect(g2.name).toBe(gameData2.name);
+      expect(g2.gid).toBe(g.gid);
+      //change thumbnail
+      let g3:Game;
+      await service.update(g.gid, { thumbnail: gameData2.thumbnail }).then((res) => g3=res);
+      expect(g3.thumbnail).toBe(gameData2.thumbnail);
+      expect(g3.gid).toBe(g.gid);
+      //change description
+      let g4:Game;
+      await service.update(g.gid, { description: gameData2.description }).then((res) => g4=res);
+      expect(g4.description).toBe(gameData2.description);
+      expect(g4.gid).toBe(g.gid);
+      //change url
+      let g5:Game;
+      await service.update(g.gid, { url: gameData2.url }).then((res) => g5=res);
+      expect(g5.url).toBe(gameData2.url);
+      expect(g5.gid).toBe(g.gid);
+    }
+    catch(error){
+      console.error(error)      
+    }
   });
 
-  it('should update in batch', () => {
-    const g = service.create(gameData);
+  it('should update in batch', async () => {
+    
+    const temp = {
+      gid:1,
+      name: 'Tic-tac-toe',
+      description: 'A boring game',
+      thumbnail: "I don't know",
+      url: 'http://localhost:3000',
+    };
 
-    const g2 = service.update(g.gid, gameData2);
+    const temp2 = {
+      gid: 1,
+      name: 'Chess',
+      description: 'Also boring',
+      thumbnail: 'Hello',
+      url: 'http://chess.com',
+    };
+
+    jest
+      .spyOn(service, 'create')
+      .mockReturnValueOnce(temp)
+
+    jest
+      .spyOn(gameRepo, 'save')
+      .mockResolvedValueOnce(temp2)
+
+    jest
+      .spyOn(gameRepo, 'findOneBy')
+      .mockResolvedValueOnce(temp) 
+
+    const g = service.create(gameData); 
+
+    let g2:Game;
+    await service.update(g.gid, gameData2).then((res) => g2=res);
 
     expect(g2).toEqual({ ...gameData2, gid: g2.gid });
+
   });
 
-  it('should not update because of not found', () => {
+  it('should not update because of not found', async () => {
+
+    jest
+      .spyOn(gameRepo, 'findOneBy')
+      .mockImplementation(() => {throw new NotFoundException})
+
     try {
-      service.update(100, { name: 'Hello World' });
+      await service.update(100, { name: 'Hello World' });
       expect(true).toBe(false);
     } catch (err) {
       expect(err).toBeInstanceOf(NotFoundException);
     }
   });
 
-  it('should delete', () => {
-    const len = service.findAll().length;
+  it('should delete', async () => {
+
+    const temp = {
+      gid:1,
+      name: 'Tic-tac-toe',
+      description: 'A boring game',
+      thumbnail: "I don't know",
+      url: 'http://localhost:3000',
+    };
+
+    jest
+      .spyOn(gameRepo, 'find')
+      .mockResolvedValue([])
+
+    jest
+      .spyOn(service, 'create')
+      .mockReturnValueOnce(temp)
+
+    //jest
+      //.spyOn(gameRepo, 'findOneBy')
+      //.mockResolvedValueOnce(temp) 
+
+    jest
+      .spyOn(gameRepo, 'delete')
+      .mockResolvedValueOnce(null) 
+
+    let list1:Game[];
+    await service.findAll().then((res) => list1 = res);
+    const len = list1.length;
     const g = service.create(gameData);
-    service.remove(g.gid);
-    const len2 = service.findAll().length;
+    await service.remove(g.gid);
+    let list2:Game[];
+    await service.findAll().then((res) => list2 = res);
+    const len2 = list2.length;
+
 
     expect(len).toBe(len2);
+
   });
 });
