@@ -6,7 +6,7 @@ import TicTacToe from './components/game';
 import { TttLandingPage } from './pages/ttt-landing-page';
 import { ErrorPage } from './pages/error-page';
 import SignIn from '../../../gamehub/src/app/pages/SignIn';
-import SignUp from '../../../gamehub/src/app/pages/SignIn';
+import SignUp from '../../../gamehub/src/app/pages/SignUp';
 import { AccountProvider } from '@bb/auth-hook-lib';
 import { WebsocketProvider } from './contexts/websocket-context';
 
