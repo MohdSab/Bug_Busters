@@ -5,6 +5,8 @@ import { createBrowserRouter, RouterProvider } from 'react-router-dom';
 import TicTacToe from './components/game';
 import { TttLandingPage } from './pages/ttt-landing-page';
 import { ErrorPage } from './pages/error-page';
+import SignIn from '../../../gamehub/src/app/pages/SignIn';
+import SignUp from '../../../gamehub/src/app/pages/SignIn';
 import { AccountProvider } from '@bb/auth-hook-lib';
 import { WebsocketProvider } from './contexts/websocket-context';
 
@@ -12,6 +14,8 @@ const router = createBrowserRouter([
   { path: '/', Component: TttLandingPage  },
   { path: '/game/:id', element: <TicTacToe /> },
   { path: '/error', element: <ErrorPage /> },
+  { path: '/signin', element: <SignIn />},
+  { path: '/signup', element: <SignUp />},
 ]);
 
 export function App() {

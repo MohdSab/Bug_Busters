@@ -73,11 +73,16 @@ export class TicTacToeGateway
     const room: Room = await this.tttService.onDisconnect(
       client.handshake.auth.uid
     );
-    console.log('Disconnecting from room', room.id);
-    this.server.to(String(room.id)).emit('player-disconnected', {
-      error: null,
-      data: room,
-    });
+    // Since this gets called if someone leaves the landing page,
+    // who might not necessarily be in a room yet,
+    // this check should be optional.
+    if (room != null) {
+      console.log('Disconnecting from room', room.id);
+      this.server.to(String(room.id)).emit('player-disconnected', {
+        error: null,
+        data: room,
+      });
+    }
     console.log('client disconencted: ', client.id);
   }
 
@@ -135,6 +140,7 @@ export class TicTacToeGateway
     // } catch (error) {
     //   console.error('Error creating a room: oops :(((', error);
     // }
+    console.log(client.handshake.auth.uid);
     const room = await this.tttService.createRoom(client.handshake.auth.uid);
     client.join('' + room.id);
     return room;

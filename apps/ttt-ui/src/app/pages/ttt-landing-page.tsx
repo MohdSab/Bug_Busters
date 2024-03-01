@@ -13,11 +13,11 @@ function useQuery() {
 }
 
 export function TttLandingPage() {
-  const { useAccessToken: abcAccessToken } = useAccount();
+  const { useAccessToken: abcAccessToken, account: acc, signout: sout } = useAccount();
   const query = useQuery();
   const { socket, loading } = useContext(WebsocketContext);
   const [join, setJoin] = useState(false);
-  // const navigate = useNavigate();
+  const navigate = useNavigate();
   const [message, setMessage] = useState('');
 
   useEffect(() => {
@@ -52,19 +52,41 @@ export function TttLandingPage() {
   const CreateRoom = () => {
     // socket
     socket?.emit('create-room', (res: { id: number, p1?: number, p2?: number, game: any }) => {
-      console.log('create-room res: ', res);
+      if (res != null) {
+        navigate('/game/' + res.id.toString());
+        console.log('create-room res: ', res);
+      } else {
+        navigate('/error');
+      }
     });
   };
 
   const modal = (
     <div>
       <input type="number" onChange={(e) => setMessage(e.target.value)} />
-      <button>Submit</button>
+      <button onClick={() => socket?.emit('join-room', parseInt(message), (res: { data: any }) => {
+        if (res.data !== null) {
+          navigate('/game/' + res.data.id.toString());
+        } else {
+          navigate('/error');
+        }
+      })}>Submit</button>
     </div>
   );
 
   return (
     <div>
+      {acc ? (
+        <div>
+          <p>Signed in as {acc.username}</p>
+          <button onClick={sout}>Signout</button>
+          </div>
+      ) : (
+        <div>
+          <button onClick={() => navigate('/signin')}>Sign in</button>
+          <button onClick={() => navigate('/signup')}>Sign up</button>
+        </div>
+      )}
       <div className={styles.center}>
         <button onClick={CreateRoom} className={styles.button}>
           Create Room
