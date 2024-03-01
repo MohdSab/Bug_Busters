@@ -1,6 +1,11 @@
 import { Link } from 'react-router-dom';
 import styles from './navbar.module.css';
 import { useAccount } from '../hooks/account';
+import { signinGuest } from '../api/account';
+function guestLogin() {
+  //send post request to auth-service to sign in as guest
+  signinGuest()
+}
 
 export function Navbar() {
   const { loading, account, signout } = useAccount();
@@ -48,6 +53,9 @@ export function Navbar() {
             <div className={styles['nav-link']}>
               <Link to="/signup">Sign up</Link>
             </div>
+            <button onClick={guestLogin}>
+              Continue as Guest
+            </button>
           </div>
         )}
       </div>

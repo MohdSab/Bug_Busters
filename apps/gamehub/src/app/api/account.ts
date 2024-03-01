@@ -68,6 +68,28 @@ export function signin(
     });
 }
 
+export function signinGuest(): Promise<Account | null>{
+  return fetch(`${hostAPIUrl}/signinGuest`, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    }
+  })
+  .then((res) => res.json())
+  .then((res) => {
+    if (res.access_token) {
+      // Save token to localstorage
+      localStorage.setItem('access_token', res.access_token);
+
+      // Use getAccount with the token to get account data
+      return getAccount();
+    } else {
+      return null;
+    }
+  })
+  
+}
+
 export function signup(data: SignUpPayload): Promise<Account | null> {
   return fetch(`${hostAPIUrl}/signup`, {
     method: 'POST',
