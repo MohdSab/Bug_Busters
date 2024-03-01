@@ -5,10 +5,7 @@ import React, { useEffect } from 'react';
 import { useState } from 'react';
 import { useParams } from 'react-router';
 import { useSocket } from '../contexts/websocket-context';
-// import { calculateWinner } from './logic';
-function calculateWinner(board: number[][]) {
-  return null;
-}
+import { calculateWinner } from '../logic';
 
 function Square({
   value,
