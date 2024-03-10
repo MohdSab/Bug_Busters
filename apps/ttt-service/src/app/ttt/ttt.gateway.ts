@@ -107,7 +107,7 @@ export class TicTacToeGateway
       data.move,
       data.roomCode
     );
-    this.server.to(String(data.roomCode)).emit('player-moved');
+    this.server.to(String(data.roomCode)).emit('player-moved', ttt);
     return ttt;
   }
 

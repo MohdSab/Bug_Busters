@@ -37,12 +37,20 @@ export class TTTService {
 
     const room = await this.roomRepo.findOneBy({ id: roomId });
     if (!room) throw new BadRequestException('Room does not exist');
+    const game = await this.tttRepo.findOneBy({ gid: room.currentGame.gid });
 
-    if (!room.p1) room.p1 = uid;
-    else if (!room.p2) room.p2 = uid;
-    // else {
-    //   throw new BadRequestException('Room is fulllllll');
-    // }
+    if (!room.p1) {
+      room.p1 = uid;
+      game.xPlayer = uid;
+    }
+    else if (!room.p2) {
+      room.p2 = uid;
+      game.oPlayer = uid;
+    }
+    else {
+      throw new BadRequestException('Room is fulllllll');
+    }
+    this.tttRepo.save(game);
 
     return this.roomRepo.save(room);
   }
@@ -76,57 +84,20 @@ export class TTTService {
     if (ttt.xIsPlaying && currentPlayer == ttt.xPlayer) {
       ttt.board[ind] = 'x';
       ttt.xIsPlaying = false;
-      ttt.CheckWin();
-      if (ttt.wonBy != null) {
+      const wonBy = ttt.CheckWin();
+      if (wonBy != null) {
         ttt.winner = 'x';
       }
     } else if (!ttt.xIsPlaying && currentPlayer == ttt.oPlayer) {
       ttt.board[ind] = 'o';
       ttt.xIsPlaying = true;
-      ttt.CheckWin();
-      if (ttt.wonBy != null) {
+      const wonBy = ttt.CheckWin();
+      if (wonBy != null) {
         ttt.winner = 'o';
       }
     }
     await this.tttRepo.save(ttt);
     return ttt;
-  }
-
-  /*
-   * update wonBy to the winning tuple if someone wins, null otherwise
-   */
-  CheckWin(ttt: TicTacToe) {
-    for (let i = 0; i < 3; i++) {
-      if (
-        ttt.board[i] !== '' && // check row
-        ttt.board[i] === ttt.board[i + 1] &&
-        ttt.board[i] === ttt.board[i + 2]
-      ) {
-        ttt.wonBy = [i, i + 1, i + 2];
-      }
-      if (
-        ttt.board[i] !== '' && // check column
-        ttt.board[i] === ttt.board[i + 3] &&
-        ttt.board[i] === ttt.board[i + 6]
-      ) {
-        ttt.wonBy = [i, i + 3, i + 6];
-      }
-    }
-    if (
-      ttt.board[0] !== '' && // check diag \
-      ttt.board[0] === ttt.board[4] &&
-      ttt.board[0] === ttt.board[8]
-    ) {
-      ttt.wonBy = [0, 4, 8];
-    }
-    if (
-      ttt.board[2] !== '' && // check diag /
-      ttt.board[2] === ttt.board[4] &&
-      ttt.board[2] === ttt.board[6]
-    ) {
-      ttt.wonBy = [2, 4, 6];
-    }
-    ttt.wonBy = null;
   }
 
   async checkInRoom(uid: number) {

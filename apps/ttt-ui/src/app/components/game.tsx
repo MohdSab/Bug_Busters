@@ -5,16 +5,15 @@ import React, { useEffect } from 'react';
 import { useState } from 'react';
 import { useParams } from 'react-router';
 import { useSocket } from '../contexts/websocket-context';
-import { calculateWinner } from '../logic';
 
 function Square({
   value,
   onSquareClick,
 }: {
-  value: any;
+  value: string;
   onSquareClick: () => void;
 }) {
-  const textColor = value === 'X' ? styles.blue : styles.red;
+  const textColor = value === 'x' ? styles.blue : styles.red;
   return (
     <button className={`${styles.square} ${textColor}`} onClick={onSquareClick}>
       {value}
@@ -23,43 +22,32 @@ function Square({
 }
 
 function Board({
-  xIsNext,
   squares,
   onPlay,
 }: {
-  xIsNext: boolean;
-  squares: any;
-  onPlay: (squares: any) => void;
+  squares: string[];
+  onPlay: (squares: string[]) => void;
 }) {
-  function handleClick(i: any) {
-    if (calculateWinner(squares) || squares[i]) {
-      return;
+  const { id } = useParams();
+  const { socket, loading } = useSocket();
+  socket?.on("player-moved", (game) => {
+    console.log(game);
+    onPlay(game.board);
+    if (game.winner) {
+      setWinner(game.winner);
     }
-    const nextSquares = squares.slice();
-    if (xIsNext) {
-      nextSquares[i] = 'X';
-    } else {
-      nextSquares[i] = 'O';
-    }
-    onPlay(nextSquares);
-  }
+    setXIsNext(game.xIsPlaying);
+  })
+  const [ winner, setWinner ] = useState('');
+  const [ xIsNext, setXIsNext ] = useState(true);
 
-  const winner = calculateWinner(squares);
-  let status;
-  let gif;
-  if (winner) {
-    status = 'Winner: ' + winner;
-    gif = (
-      <img
-        src="https://media1.tenor.com/m/67LIumILNRsAAAAd/ltg-low-tier-god.gif"
-        alt="Winner"
-        style={{ width: '100px', height: '100px' }}
-      />
-    );
-  } else {
-    status = 'Next player: ' + (xIsNext ? 'X' : 'O');
-    gif = null;
+  function handleClick(i: number) {
+    if (winner !== '') return;
+    socket?.emit("move", { roomCode: id, move: i });
   }
+  const status = (winner !== '') ? 
+    'Winner: ' + winner
+  : 'Next player: ' + (xIsNext ? 'X' : 'O');
 
   return (
     <>
@@ -80,35 +68,21 @@ function Board({
         <Square value={squares[8]} onSquareClick={() => handleClick(8)} />
       </div>
       <div className={styles.status}>{status}</div>
-      {/* gif */}
     </>
   );
 }
 
 export default function TicTacToe() {
-  const { id } = useParams();
-  const { socket, loading } = useSocket();
-  const [history, setHistory] = useState([Array(9).fill(null)]);
-  const [currentMove, setCurrentMove] = useState(0);
-  const xIsNext = currentMove % 2 === 0;
-  const currentSquares = history[currentMove];
+  const [squares, setSquares] = useState(Array(9).fill(null));
 
-  function handlePlay(nextSquares: any) {
-    const nextHistory = [...history.slice(0, currentMove + 1), nextSquares];
-    setHistory(nextHistory);
-    setCurrentMove(nextHistory.length - 1);
+  function handlePlay(nextSquares: string[]) {
+    setSquares(nextSquares);
   }
-
-  useEffect(() => {
-    if (loading || !socket) return;
-
-    socket?.emit("join-room", id, console.log);
-  }, [id, loading, socket]);
 
   return (
     <div className={styles.game}>
       <div className={styles.gameBoard}>
-        <Board xIsNext={xIsNext} squares={currentSquares} onPlay={handlePlay} />
+        <Board squares={squares} onPlay={handlePlay} />
       </div>
     </div>
   );

@@ -67,14 +67,18 @@ export class TicTacToe {
   CheckWin() {
     for (let i = 0; i < 3; i++) {
       if (
-        this.board[i] !== '' && // check row
-        this.board[i] === this.board[i + 1] &&
-        this.board[i] === this.board[i + 2]
+        this.board[3*i] !== ' ' && // check row
+        this.board[3*i] === this.board[3*i + 1] &&
+        this.board[3*i] === this.board[3*i + 2]
       ) {
+        console.log(this.board[3*i] != ' ');
+        console.log(this.board[3*i]);
+        console.log(this.board[3*i + 1]);
+        console.log(this.board[3*i + 2]);
         return [i, i + 1, i + 2];
       }
       if (
-        this.board[i] !== '' && // check column
+        this.board[i] !== ' ' && // check column
         this.board[i] === this.board[i + 3] &&
         this.board[i] === this.board[i + 6]
       ) {
@@ -82,14 +86,14 @@ export class TicTacToe {
       }
     }
     if (
-      this.board[0] !== '' && // check diag \
+      this.board[0] !== ' ' && // check diag \
       this.board[0] === this.board[4] &&
       this.board[0] === this.board[8]
     ) {
       return [0, 4, 8];
     }
     if (
-      this.board[2] !== '' && // check diag /
+      this.board[2] !== ' ' && // check diag /
       this.board[2] === this.board[4] &&
       this.board[2] === this.board[6]
     ) {
