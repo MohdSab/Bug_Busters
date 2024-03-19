@@ -11,11 +11,11 @@ import { Profile } from './profile.entity';
   imports: [
     TypeOrmModule.forRoot({
       type: 'postgres',
-      host: 'localhost',
-      port: 5432,
-      username: 'root',
-      password: 'root',
-      database: 'test',
+      host: process.env.PG_HOST,
+      port: Number(process.env.PG_PORT),
+      username: process.env.PG_USER,
+      password: process.env.PG_PW,
+      database: process.env.PG_DB,
       entities: [Account, Profile],
       synchronize: true,
       logging: true,

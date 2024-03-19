@@ -1,7 +1,7 @@
 {
-  "name": "auth-service",
+  "name": "game-service",
   "$schema": "../../node_modules/nx/schemas/project-schema.json",
-  "sourceRoot": "apps/auth-service/src",
+  "sourceRoot": "apps/game-service/src",
   "projectType": "application",
   "targets": {
     "build": {
@@ -11,14 +11,11 @@
       "options": {
         "target": "node",
         "compiler": "tsc",
-        "outputPath": "dist/apps/auth-service",
-        "main": "apps/auth-service/src/main.ts",
-        "tsConfig": "apps/auth-service/tsconfig.app.json",
-        "assets": [
-          "apps/auth-service/src/assets",
-          "apps/auth-service/src/public"
-        ],
-        "webpackConfig": "apps/auth-service/webpack.config.js"
+        "outputPath": "dist/apps/game-service",
+        "main": "apps/game-service/src/main.ts",
+        "tsConfig": "apps/game-service/tsconfig.app.json",
+        "assets": ["apps/game-service/src/assets"],
+        "webpackConfig": "apps/game-service/webpack.config.js"
       },
       "configurations": {
         "development": {},
@@ -29,14 +26,14 @@
       "executor": "@nx/js:node",
       "defaultConfiguration": "development",
       "options": {
-        "buildTarget": "auth-service:build"
+        "buildTarget": "game-service:build"
       },
       "configurations": {
         "development": {
-          "buildTarget": "auth-service:build:development"
+          "buildTarget": "game-service:build:development"
         },
         "production": {
-          "buildTarget": "auth-service:build:production"
+          "buildTarget": "game-service:build:production"
         }
       }
     },
@@ -48,13 +45,9 @@
       "executor": "@nx/jest:jest",
       "outputs": ["{workspaceRoot}/coverage/{projectRoot}"],
       "options": {
-        "codeCoverage": true,
-        "jestConfig": "apps/auth-service/jest.config.ts"
+        "jestConfig": "apps/game-service/jest.config.ts",
+        "codeCoverage": true
       }
-    },
-    "docker-build": {
-      "dependsOn": ["build"],
-      "command": "docker build -f apps/auth-service/Dockerfile . -t auth-service"
     }
   },
   "tags": []

@@ -14,8 +14,8 @@ WORKDIR /app
 RUN addgroup --system api-gateway && \
   adduser --system -G api-gateway api-gateway
 
-COPY dist/apps/api-gateway api-gateway
-RUN chown -R api-gateway:api-gateway .
+# COPY dist/apps/api-gateway api-gateway
+# RUN chown -R api-gateway:api-gateway .
 COPY package.json .
 COPY package-lock.json .
 
@@ -23,5 +23,8 @@ COPY package-lock.json .
 # The bundled output will include external dependencies.
 # RUN npm --prefix api-gateway --omit=dev -f install
 RUN npm --omit=dev install
+
+COPY dist/apps/api-gateway api-gateway
+RUN chown -R api-gateway:api-gateway .
 
 CMD [ "node", "api-gateway/main.js" ]
