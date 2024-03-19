@@ -71,6 +71,9 @@
         "jestConfig": "apps/ttt-ui/jest.config.ts",
         "codeCoverage": true
       }
+    },
+    "docker-build": {
+      "command": "docker build -f apps/ttt-ui/Dockerfile . -t ttt-ui"
     }
   },
   "tags": []

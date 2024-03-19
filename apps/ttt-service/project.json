@@ -48,6 +48,10 @@
         "jestConfig": "apps/ttt-service/jest.config.ts",
         "codeCoverage": true
       }
+    },
+    "docker-build": {
+      "dependsOn": ["build"],
+      "command": "docker build -f apps/ttt-service/Dockerfile . -t ttt-service"
     }
   },
   "tags": []
