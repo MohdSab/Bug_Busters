@@ -12,13 +12,13 @@ ENV PORT=3020
 WORKDIR /app
 
 RUN addgroup --system gamehub && \
-          adduser --system -G gamehub gamehub
+  adduser --system -G gamehub gamehub
 
 
 COPY package.json .
 # You can remove this install step if you build with `--bundle` option.
 # The bundled output will include external dependencies.
-RUN npm gamehub --omit=dev -f install
+RUN npm --omit=dev install
 
 COPY dist/apps/gamehub gamehub
 RUN chown -R gamehub:gamehub .
