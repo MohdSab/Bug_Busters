@@ -1,5 +1,5 @@
 export type Profile = {
-  imgUrl: string;
+  avatarUrl: string;
 };
 
 export type Account = {

@@ -9,6 +9,8 @@ import { Account } from '../types/account';
 import {
   SignUpPayload,
   getAccount,
+  hostAPIUrl,
+  hostUrl,
   signin,
   signout,
   signup,
@@ -20,6 +22,7 @@ interface AccountContextPaylaod {
   signin: (username: string, password: string) => Promise<Account | null>;
   signup: (data: SignUpPayload) => Promise<Account | null>;
   signout: () => Promise<void>;
+  getAvatars: () => Promise<string[]>;
 }
 
 export const AccountContext = createContext<AccountContextPaylaod>({
@@ -28,6 +31,7 @@ export const AccountContext = createContext<AccountContextPaylaod>({
   signin: (_, __) => Promise.resolve(null),
   signup: (_) => Promise.resolve(null),
   signout: () => Promise.resolve(),
+  getAvatars: () => Promise.resolve([]),
 });
 
 export function useAccount() {
@@ -62,6 +66,16 @@ export function AccountProvider({ children }: PropsWithChildren<{}>) {
     });
   };
 
+  const getAvatars = () => {
+    return fetch(hostAPIUrl + '/avatars')
+      .then((res) => res.json() as Promise<string[]>)
+      .then((avatars) => avatars.map((a) => hostUrl + a))
+      .catch((err) => {
+        console.error(err);
+        return [];
+      });
+  };
+
   const signupp = (data: SignUpPayload) => {
     if (loading) {
       console.log('Some account action is in progress, cannot perform signup');
@@ -90,6 +104,7 @@ export function AccountProvider({ children }: PropsWithChildren<{}>) {
         signin: signinn,
         signout: signoutt,
         signup: signupp,
+        getAvatars,
       }}
     >
       {children}
