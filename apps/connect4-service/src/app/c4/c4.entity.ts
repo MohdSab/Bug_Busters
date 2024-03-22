@@ -3,7 +3,7 @@ import { Entity, Column, PrimaryGeneratedColumn } from 'typeorm';
 @Entity()
 export class Connect4 {
   @PrimaryGeneratedColumn()
-  roomCode: number;
+  gid: number;
 
   @Column('char', { array: true })
   board: string[][];
