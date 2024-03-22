@@ -45,7 +45,7 @@ export class Connect4 {
 
   MakeMove(currentPlayer: number, ind: number) {
     if (this.player1IsPlaying && currentPlayer == this.player1) {
-      for (let i = 0; i < 5; i++) {
+      for (let i = 5; i >= 0; i--) {
         if (this.board[i][ind] == '') {
           this.board[i][ind] = 'x';
           this.player1IsPlaying = false;
@@ -55,9 +55,9 @@ export class Connect4 {
           }
           return result;
         }
-      } 
+      }
     } else if (!this.player1IsPlaying && currentPlayer == this.player2) {
-      for (let i = 0; i < 5; i++) {
+      for (let i = 5; i >= 0; i--) {
         if (this.board[i][ind] == '') {
           this.board[i][ind] = 'o';
           this.player1IsPlaying = true;
@@ -77,7 +77,7 @@ export class Connect4 {
 
     // vertical
     for (let x = 0; x < 6; x++) {
-      for (let y = 0; y < 4; y++) {
+      for (let y = 0; y < 3; y++) {
         if (this.board[y][x] !== '' &&
             this.board[y][x] === this.board[y+1][x] &&
             this.board[y][x] === this.board[y+2][x] &&
@@ -101,7 +101,7 @@ export class Connect4 {
 
     // diagonal (up left to down right)
     for (let x = 0; x < 3; x++) {
-      for (let y = 0; y < 4; y++) {
+      for (let y = 0; y < 3; y++) {
         if (this.board[y][x] !== '' &&
         this.board[y][x] === this.board[y+1][x+1] &&
         this.board[y][x] === this.board[y+2][x+2] &&
@@ -113,7 +113,7 @@ export class Connect4 {
 
     // diagonal (up right to down left)
     for (let x = 3; x < 6; x++) {
-      for (let y = 0; y < 4; y++) {
+      for (let y = 0; y < 3; y++) {
         if (this.board[y][x] !== '' &&
         this.board[y][x] === this.board[y+1][x-1] &&
         this.board[y][x] === this.board[y+2][x-2] &&
