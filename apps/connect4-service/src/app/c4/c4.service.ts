@@ -24,13 +24,12 @@ export class Connect4Service {
         }
         let newGame = new Connect4();
         newGame = await this.c4Repo.save(newGame);
-        newGame.SetPlayer1(uid);
 
         let newRoom = new Room();
         newRoom.currentGame = newGame;
         newRoom = await this.roomRepo.save(newRoom);        
 
-        return newRoom;
+        return this.JoinRoom(uid, newRoom.id);
     }
 
     async CheckInRoom(uid:number){
@@ -51,7 +50,7 @@ export class Connect4Service {
         if(!room){
             throw new BadRequestException("no room exists with that id");
         }
-        const game:Connect4 = room.currentGame;
+        const game:Connect4 = await this.c4Repo.findOneBy({ gid: room.currentGame.gid });
         if(!game.player1){
             room.p1 = uid;
             game.SetPlayer1(uid);
