@@ -35,4 +35,4 @@ jobs:
         # Run the targets on all projects
         all: true
         # Enable support for Nx Cloud
-        nxCloud: false
+        nxCloud: true
