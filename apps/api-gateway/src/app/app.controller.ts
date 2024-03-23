@@ -18,7 +18,7 @@ import { CreateRouteDto } from '@bb/gateway-lib';
 
 @Controller('/api')
 export class AppController {
-  constructor(private readonly appService: AppService) {}
+  constructor(private appService: AppService) {}
 
   @Get()
   getData() {
@@ -38,7 +38,6 @@ export class AppController {
 
   @Post('/routes')
   createRoute(@Body() body: CreateRouteDto, @Ip() ip: string) {
-    console.log('Body: ', body);
     return this.appService.createRoute(body, ip);
   }
 
