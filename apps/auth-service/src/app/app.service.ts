@@ -96,7 +96,11 @@ export class AppService {
   getAvatars(): Promise<string[]> {
     return fsPromises
       .readdir(__dirname + '/public/profiles')
-      .then((res) => res.map(GetPicPath));
+      .then((res) => res.map(GetPicPath))
+      .catch((err) => {
+        console.error(err);
+        return [];
+      });
   }
 
   async getRandomAvatar(): Promise<string> {
