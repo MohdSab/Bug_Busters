@@ -12,22 +12,18 @@ RUN addgroup --system ttt-ui && \
   adduser --system -G ttt-ui ttt-ui
 
 COPY package.json .
-COPY package-lock.json .
+# COPY package-lock.json .
 RUN npm install
 RUN npm install -g nx@latest
 
-COPY apps/ttt-ui .
+# Depends on the app
+COPY apps/ttt-ui/ apps/ttt-ui/
+
+# Just copy for all projects
 COPY nx.json .
+COPY tsconfig.base.json .
+COPY libs/ libs/
 
 EXPOSE 4200
 
-CMD [ "nx", "serve ttt-ui" ]
-
-# COPY dist/apps/ttt-ui ttt-ui
-# RUN chown -R ttt-ui:ttt-ui .
-
-# You can remove this install step if you build with `--bundle` option.
-# The bundled output will include external dependencies.
-# RUN npm --prefix ttt-ui --omit=dev -f install
-
-# CMD [ "node", "ttt-ui" ]
+CMD [ "nx", "serve", "ttt-ui", "--verbose"]
