@@ -22,8 +22,10 @@ export class ChatController{
         Create a chat room for the service whom made this request
 
         Params:
-        response - response code to the requesting service
+        response - response object to dynamically determine response code 
         data - JSON containing 
+             -  1. game name (used to generate unique chat room code along with the room code)
+             -  2. the room code for the game
 
         Returns:
         return the room code of the chat room
@@ -31,10 +33,10 @@ export class ChatController{
         */
 
         if(this.chatService.createRoom(data.game + data.gameRoomID.toString())){
-            //TODO a: set response to something good :steamhappy:
+            response.status(200).send('Room created successfully');
             return data.game + data.gameRoomID.toString();
         }
-        //TODO b: set response code to something bad :sob:
+        response.status(500).send('Room creation failed, prob my fault');
         return '';
     }
 }
