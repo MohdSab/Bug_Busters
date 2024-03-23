@@ -31,7 +31,6 @@ export class AppService {
   }
 
   createRoute(data: CreateRouteDto, ip: string): Promise<RouteResp> {
-    console.log('Creating: ', data);
     const newRoute: Route = {
       key: data.key,
       ip: ip,

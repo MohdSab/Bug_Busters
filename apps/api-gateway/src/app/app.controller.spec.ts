@@ -20,6 +20,8 @@ describe('AppController', () => {
       providers: [AppService],
     }).compile();
     con = app.get<AppController>(AppController);
+    // console.log(con);
+    // console.log(app);
   });
 
   describe('getData', () => {
@@ -31,14 +33,14 @@ describe('AppController', () => {
   describe('create route', () => {
     it('should successfully create a route', () => {
       return con.createRoute(data, data.ip).then((res) => {
-        expect(res.key).toBe('test');
+        expect(res.key).toBe(data.key);
       });
     });
 
     it('should successfully get a route', () => {
       return con
         .createRoute(data, data.ip)
-        .then(con.getAllRoutes)
+        .then(() => con.getAllRoutes())
         .then((res) => {
           expect(res.length).toBe(1);
         });

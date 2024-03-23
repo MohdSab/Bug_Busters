@@ -51,6 +51,10 @@
         "codeCoverage": true,
         "jestConfig": "apps/auth-service/jest.config.ts"
       }
+    },
+    "docker-build": {
+      "dependsOn": ["build"],
+      "command": "docker build -f apps/auth-service/Dockerfile . -t auth-service"
     }
   },
   "tags": []
