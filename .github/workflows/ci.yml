@@ -2,14 +2,6 @@ name: CI
 on:
 
   # This workflow is triggered on pushes to the repository. Uncomment to run on push requests.
-
-  # push:
-  #   branches:
-  #     # Change this if your primary branch is not main
-  #     - dev/*
-  #     - bug/*
-  #     - main
-
   pull_request:
     types: [opened, reopened, review_requested, review_request_removed, edited]
 
@@ -35,5 +27,12 @@ jobs:
         cache: 'npm'
     - name: Install dependencies
       run: npm i
-    - name: Run tests
-      run: npx nx run-many --all --target=test
+    - name: use nx
+      uses: MansaGroup/nrwl-nx-action@v3.2.2
+      with:
+        # Comma-separated list of targets to execute
+        targets: test
+        # Run the targets on all projects
+        all: true
+        # Enable support for Nx Cloud
+        nxCloud: false
