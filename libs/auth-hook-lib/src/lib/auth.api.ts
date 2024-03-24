@@ -6,19 +6,22 @@ export interface SignUpPayload {
 }
 
 export class AuthApi {
-  constructor(private host: string) {}
+  hostApiUrl: string;
+  constructor(private host: string) {
+    this.hostApiUrlApiUrl = host + '/api';
+  }
 
   setAccessToken(accessToken: string) {
     localStorage.setItem('access_token', accessToken);
   }
 
   getHost() {
-    return this.host;
+    return this.hostApiUrl;
   }
 
   signin(username: string, password: string): Promise<Account | null> {
     // Call signin API to get token
-    return fetch(`http://${this.host}/signin`, {
+    return fetch(`http://${this.hostApiUrl}/signin`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -51,7 +54,7 @@ export class AuthApi {
       return Promise.resolve(null);
     }
 
-    return fetch(`http://${this.host}/account`, {
+    return fetch(`http://${this.hostApiUrl}/account`, {
       headers: {
         Authorization: `Bearer ${access_token}`,
       },
@@ -67,7 +70,7 @@ export class AuthApi {
   }
 
   signup(data: SignUpPayload): Promise<Account | null> {
-    return fetch(`http://${this.host}/signup`, {
+    return fetch(`http://${this.hostApiUrl}/signup`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -93,5 +96,15 @@ export class AuthApi {
     localStorage.removeItem('access_token');
 
     return Promise.resolve();
+  }
+
+  getAvatars(): Promise<string[]> {
+    return fetch(this.hostApiUrl + '/avatars')
+      .then((res) => res.json() as Promise<string[]>)
+      .then((avatars) => avatars.map((a) => this.host + a))
+      .catch((err) => {
+        console.error(err);
+        return [];
+      });
   }
 }

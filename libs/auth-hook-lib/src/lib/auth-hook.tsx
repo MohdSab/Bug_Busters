@@ -69,13 +69,7 @@ export function AccountProvider({ host, children }: Props) {
   };
 
   const getAvatars = () => {
-    return fetch(hostAPIUrl + '/avatars')
-      .then((res) => res.json() as Promise<string[]>)
-      .then((avatars) => avatars.map((a) => hostUrl + a))
-      .catch((err) => {
-        console.error(err);
-        return [];
-      });
+    return authApi.getAvatars();
   };
 
   const signupp = (data: SignUpPayload) => {
