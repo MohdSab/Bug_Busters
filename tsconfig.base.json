@@ -17,7 +17,8 @@
     "paths": {
       "@bb/auth-hook-lib": ["libs/auth-hook-lib/src/index.ts"],
       "@bb/gateway-hook-lib": ["libs/gateway-hook-lib/src/index.ts"],
-      "@bb/gateway-lib": ["libs/gateway-lib/src/index.ts"]
+      "@bb/gateway-lib": ["libs/gateway-lib/src/index.ts"],
+      "@bb/socket-hook-lib": ["libs/socket-hook-lib/src/index.ts"]
     }
   },
   "exclude": ["node_modules", "tmp"]

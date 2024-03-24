@@ -18,7 +18,7 @@ export class AuthApi {
 
   signin(username: string, password: string): Promise<Account | null> {
     // Call signin API to get token
-    return fetch(`${this.host}/signin`, {
+    return fetch(`http://${this.host}/signin`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -51,7 +51,7 @@ export class AuthApi {
       return Promise.resolve(null);
     }
 
-    return fetch(`${this.host}/account`, {
+    return fetch(`http://${this.host}/account`, {
       headers: {
         Authorization: `Bearer ${access_token}`,
       },
@@ -67,7 +67,7 @@ export class AuthApi {
   }
 
   signup(data: SignUpPayload): Promise<Account | null> {
-    return fetch(`${this.host}/signup`, {
+    return fetch(`http://${this.host}/signup`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',

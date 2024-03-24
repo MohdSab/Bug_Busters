@@ -6,21 +6,8 @@ import {
   useMemo,
   useState,
 } from 'react';
-<<<<<<< HEAD:libs/auth-hook-lib/src/lib/auth-hook.tsx
 import { Account } from './account.type';
 import { AuthApi, SignUpPayload } from './auth.api';
-=======
-import { Account } from '../types/account';
-import {
-  SignUpPayload,
-  getAccount,
-  hostAPIUrl,
-  hostUrl,
-  signin,
-  signout,
-  signup,
-} from '../api/account';
->>>>>>> staging:apps/gamehub/src/app/hooks/account.tsx
 
 interface AccountContextPaylaod {
   loading: boolean;
@@ -29,11 +16,8 @@ interface AccountContextPaylaod {
   signin: (username: string, password: string) => Promise<Account | null>;
   signup: (data: SignUpPayload) => Promise<Account | null>;
   signout: () => Promise<void>;
-<<<<<<< HEAD:libs/auth-hook-lib/src/lib/auth-hook.tsx
   useAccessToken: (token: string) => Promise<Account | null>;
-=======
   getAvatars: () => Promise<string[]>;
->>>>>>> staging:apps/gamehub/src/app/hooks/account.tsx
 }
 
 export const AccountContext = createContext<AccountContextPaylaod>({
@@ -43,11 +27,8 @@ export const AccountContext = createContext<AccountContextPaylaod>({
   signin: (_, __) => Promise.resolve(null),
   signup: (_) => Promise.resolve(null),
   signout: () => Promise.resolve(),
-<<<<<<< HEAD:libs/auth-hook-lib/src/lib/auth-hook.tsx
   useAccessToken: (_) => Promise.resolve(null),
-=======
   getAvatars: () => Promise.resolve([]),
->>>>>>> staging:apps/gamehub/src/app/hooks/account.tsx
 });
 
 export function useAccount() {
@@ -137,11 +118,8 @@ export function AccountProvider({ host, children }: Props) {
         signin: signinn,
         signout: signoutt,
         signup: signupp,
-<<<<<<< HEAD:libs/auth-hook-lib/src/lib/auth-hook.tsx
         useAccessToken,
-=======
         getAvatars,
->>>>>>> staging:apps/gamehub/src/app/hooks/account.tsx
       }}
     >
       {children}
