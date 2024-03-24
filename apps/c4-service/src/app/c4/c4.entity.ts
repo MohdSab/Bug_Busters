@@ -22,12 +22,12 @@ export class Connect4 {
 
   constructor() {
     this.board = [
-        ['', '', '', '', '', '', ''],
-        ['', '', '', '', '', '', ''],
-        ['', '', '', '', '', '', ''],
-        ['', '', '', '', '', '', ''],
-        ['', '', '', '', '', '', ''],
-        ['', '', '', '', '', '', '']
+      ['', '', '', '', '', '', ''],
+      ['', '', '', '', '', '', ''],
+      ['', '', '', '', '', '', ''],
+      ['', '', '', '', '', '', ''],
+      ['', '', '', '', '', '', ''],
+      ['', '', '', '', '', '', ''],
     ];
     this.player1 = null;
     this.player2 = null;
@@ -74,15 +74,21 @@ export class Connect4 {
 
   // returns winning tuple if someone wins, null otherwise
   CheckWin() {
-
     // vertical
     for (let x = 0; x < 6; x++) {
       for (let y = 0; y < 3; y++) {
-        if (this.board[y][x] !== '' &&
-            this.board[y][x] === this.board[y+1][x] &&
-            this.board[y][x] === this.board[y+2][x] &&
-            this.board[y][x] === this.board[y+3][x]) {
-          return [[y, x], [y+1, x], [y+2, x], [y+3, x]];
+        if (
+          this.board[y][x] !== '' &&
+          this.board[y][x] === this.board[y + 1][x] &&
+          this.board[y][x] === this.board[y + 2][x] &&
+          this.board[y][x] === this.board[y + 3][x]
+        ) {
+          return [
+            [y, x],
+            [y + 1, x],
+            [y + 2, x],
+            [y + 3, x],
+          ];
         }
       }
     }
@@ -90,11 +96,18 @@ export class Connect4 {
     // horizontal
     for (let x = 0; x < 3; x++) {
       for (let y = 0; y < 6; y++) {
-        if (this.board[y][x] !== '' &&
-            this.board[y][x] === this.board[y][x+1] &&
-            this.board[y][x] === this.board[y][x+2] &&
-            this.board[y][x] === this.board[y][x+3]) {
-          return [[y, x], [y, x+1], [y, x+2], [y, x+3]];
+        if (
+          this.board[y][x] !== '' &&
+          this.board[y][x] === this.board[y][x + 1] &&
+          this.board[y][x] === this.board[y][x + 2] &&
+          this.board[y][x] === this.board[y][x + 3]
+        ) {
+          return [
+            [y, x],
+            [y, x + 1],
+            [y, x + 2],
+            [y, x + 3],
+          ];
         }
       }
     }
@@ -102,11 +115,18 @@ export class Connect4 {
     // diagonal (up left to down right)
     for (let x = 0; x < 3; x++) {
       for (let y = 0; y < 3; y++) {
-        if (this.board[y][x] !== '' &&
-        this.board[y][x] === this.board[y+1][x+1] &&
-        this.board[y][x] === this.board[y+2][x+2] &&
-        this.board[y][x] === this.board[y+3][x+3]) {
-          return [[y, x], [y+1, x+1], [y+2, x+2], [y+3, x+3]];
+        if (
+          this.board[y][x] !== '' &&
+          this.board[y][x] === this.board[y + 1][x + 1] &&
+          this.board[y][x] === this.board[y + 2][x + 2] &&
+          this.board[y][x] === this.board[y + 3][x + 3]
+        ) {
+          return [
+            [y, x],
+            [y + 1, x + 1],
+            [y + 2, x + 2],
+            [y + 3, x + 3],
+          ];
         }
       }
     }
@@ -114,11 +134,18 @@ export class Connect4 {
     // diagonal (up right to down left)
     for (let x = 3; x < 6; x++) {
       for (let y = 0; y < 3; y++) {
-        if (this.board[y][x] !== '' &&
-        this.board[y][x] === this.board[y+1][x-1] &&
-        this.board[y][x] === this.board[y+2][x-2] &&
-        this.board[y][x] === this.board[y+3][x-3]) {
-          return [[y, x], [y+1, x-1], [y+2, x-2], [y+3, x-3]];
+        if (
+          this.board[y][x] !== '' &&
+          this.board[y][x] === this.board[y + 1][x - 1] &&
+          this.board[y][x] === this.board[y + 2][x - 2] &&
+          this.board[y][x] === this.board[y + 3][x - 3]
+        ) {
+          return [
+            [y, x],
+            [y + 1, x - 1],
+            [y + 2, x - 2],
+            [y + 3, x - 3],
+          ];
         }
       }
     }
@@ -132,7 +159,7 @@ export class Connect4 {
       ['', '', '', '', '', '', ''],
       ['', '', '', '', '', '', ''],
       ['', '', '', '', '', '', ''],
-      ['', '', '', '', '', '', '']
+      ['', '', '', '', '', '', ''],
     ];
     this.player1IsPlaying = true;
     this.winner = null;

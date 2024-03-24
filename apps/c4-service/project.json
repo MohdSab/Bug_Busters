@@ -1,7 +1,7 @@
 {
-  "name": "connect4-service",
+  "name": "c4-service",
   "$schema": "../../node_modules/nx/schemas/project-schema.json",
-  "sourceRoot": "apps/connect4-service/src",
+  "sourceRoot": "apps/c4-service/src",
   "projectType": "application",
   "targets": {
     "build": {
@@ -11,11 +11,11 @@
       "options": {
         "target": "node",
         "compiler": "tsc",
-        "outputPath": "dist/apps/connect4-service",
-        "main": "apps/connect4-service/src/main.ts",
-        "tsConfig": "apps/connect4-service/tsconfig.app.json",
-        "assets": ["apps/connect4-service/src/assets"],
-        "webpackConfig": "apps/connect4-service/webpack.config.js"
+        "outputPath": "dist/apps/c4-service",
+        "main": "apps/c4-service/src/main.ts",
+        "tsConfig": "apps/c4-service/tsconfig.app.json",
+        "assets": ["apps/c4-service/src/assets"],
+        "webpackConfig": "apps/c4-service/webpack.config.js"
       },
       "configurations": {
         "development": {},
@@ -26,14 +26,14 @@
       "executor": "@nx/js:node",
       "defaultConfiguration": "development",
       "options": {
-        "buildTarget": "connect4-service:build"
+        "buildTarget": "c4-service:build"
       },
       "configurations": {
         "development": {
-          "buildTarget": "connect4-service:build:development"
+          "buildTarget": "c4-service:build:development"
         },
         "production": {
-          "buildTarget": "connect4-service:build:production"
+          "buildTarget": "c4-service:build:production"
         }
       }
     },
@@ -45,8 +45,12 @@
       "executor": "@nx/jest:jest",
       "outputs": ["{workspaceRoot}/coverage/{projectRoot}"],
       "options": {
-        "jestConfig": "apps/connect4-service/jest.config.ts"
+        "jestConfig": "apps/c4-service/jest.config.ts"
       }
+    },
+    "docker-build": {
+      "dependsOn": ["build"],
+      "command": "docker build -f apps/c4-service/Dockerfile . -t c4-service"
     }
   },
   "tags": []

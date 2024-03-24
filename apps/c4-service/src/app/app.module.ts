@@ -9,16 +9,16 @@ import { Connect4Module } from './c4/c4.module';
   imports: [
     TypeOrmModule.forRoot({
       type: 'postgres',
-      host: 'localhost',
-      port: 5432,
-      username: 'root',
-      password: 'root',
-      database: 'c4',
+      host: process.env.DB_HOST || 'localhost',
+      port: +process.env.DB_PORT || 5432,
+      username: process.env.DB_USER || 'c4',
+      password: process.env.DB_PW || 'c4',
+      database: process.env.DB_DB || 'c4',
       autoLoadEntities: true,
       synchronize: true,
-      logging: true
+      logging: true,
     }),
-    Connect4Module
+    Connect4Module,
   ],
   controllers: [AppController],
   providers: [AppService],
