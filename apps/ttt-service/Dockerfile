@@ -11,9 +11,6 @@ ENV PORT=3000
 
 WORKDIR /app
 
-RUN addgroup --system ttt-service && \
-  adduser --system -G ttt-service ttt-service
-
 COPY package.json .
 COPY package-lock.json .
 RUN npm --omit=dev install

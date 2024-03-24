@@ -21,42 +21,42 @@ describe('AppController', () => {
   acc1.username = 'pupupupu';
   acc1.password = 'acc1';
   acc1.profile = new Profile();
-  acc1.profile.index = 1;
+  acc1.profile.avatar = '1';
 
   const acc2: Account = new Account();
   acc2.uid = 1;
   acc2.username = 'seb';
   acc2.password = 'acc2';
   acc2.profile = new Profile();
-  acc2.profile.index = 2;
+  acc2.profile.avatar = '2';
 
   const acc3: Account = new Account();
   acc3.uid = 2;
   acc3.username = 'steph';
   acc3.password = 'acc3';
   acc3.profile = new Profile();
-  acc3.profile.index = 3;
+  acc3.profile.avatar = '3';
 
   const acc4: Account = new Account();
   acc4.uid = 3;
   acc4.username = 'rise';
   acc4.password = 'acc4';
   acc4.profile = new Profile();
-  acc4.profile.index = 4;
+  acc4.profile.avatar = '4';
 
   const acc5: Account = new Account();
   acc5.uid = 4;
   acc5.username = 'zef';
   acc5.password = 'acc5';
   acc5.profile = new Profile();
-  acc5.profile.index = 5;
+  acc5.profile.avatar = '5';
 
   const acc6: Account = new Account();
   acc6.uid = 5;
   acc6.username = 'duck';
   acc6.password = 'acc6';
   acc6.profile = new Profile();
-  acc6.profile.index = 6;
+  acc6.profile.avatar = '6';
   const accountRepoToken = getRepositoryToken(Account);
   const profileRepoToken = getRepositoryToken(Profile);
 
@@ -94,10 +94,11 @@ describe('AppController', () => {
   });
 
   describe('signUp', () => {
-    it('should return "Hello API"', () => {
+    it('should return access_token', () => {
       const signUpData: SignUpDTO = {
         username: acc1.username,
         password: acc1.password,
+        avatar: 'abcd',
       };
 
       jest

@@ -6,16 +6,8 @@
 # Run the container with `docker run -p 3000:3000 -t api-gateway`.
 FROM docker.io/node:lts-alpine
 
-ENV HOST=0.0.0.0
-ENV PORT=3000
-
 WORKDIR /app
 
-RUN addgroup --system api-gateway && \
-  adduser --system -G api-gateway api-gateway
-
-# COPY dist/apps/api-gateway api-gateway
-# RUN chown -R api-gateway:api-gateway .
 COPY package.json .
 COPY package-lock.json .
 
@@ -25,6 +17,5 @@ COPY package-lock.json .
 RUN npm --omit=dev install
 
 COPY dist/apps/api-gateway api-gateway
-RUN chown -R api-gateway:api-gateway .
 
 CMD [ "node", "api-gateway/main.js" ]

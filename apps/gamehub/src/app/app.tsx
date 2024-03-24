@@ -7,6 +7,8 @@ import SignUp from './pages/SignUp';
 import SignIn from './pages/SignIn';
 import NxWelcome from './nx-welcome';
 import { AccountProvider } from '@bb/auth-hook-lib';
+import GameHubPage from './pages/GameListPage';
+import TicTacToeArrival from './pages/temptttpage';
 
 const router = createBrowserRouter([
   {
@@ -25,11 +27,19 @@ const router = createBrowserRouter([
     path: '/nx',
     element: <NxWelcome title="bug-buster" />,
   },
+  {
+    path: '/gamehub',
+    element: <GameHubPage />,
+  },
+  {
+    path: '/tictactoe',
+    element: <TicTacToeArrival />,
+  },
 ]);
 
 export function App() {
   return (
-    <AccountProvider>
+    <AccountProvider host={'localhost:3000/api/service/auth'}>
       <RouterProvider router={router} />
     </AccountProvider>
   );
