@@ -39,7 +39,7 @@ const router = createBrowserRouter([
 
 export function App() {
   return (
-    <AccountProvider>
+    <AccountProvider host={'localhost:3000/api/service/auth'}>
       <RouterProvider router={router} />
     </AccountProvider>
   );

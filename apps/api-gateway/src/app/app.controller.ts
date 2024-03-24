@@ -36,9 +36,16 @@ export class AppController {
     return this.appService.getAllRoutes();
   }
 
+  getIPv4(ip) {
+    if (ip.substr(0, 7) === '::ffff:') {
+      ip = ip.substr(7);
+    }
+    return ip;
+  }
+
   @Post('/routes')
   createRoute(@Body() body: CreateRouteDto, @Ip() ip: string) {
-    return this.appService.createRoute(body, ip);
+    return this.appService.createRoute(body, this.getIPv4(ip));
   }
 
   @Delete('/routes/:key')
@@ -51,6 +58,23 @@ export class AppController {
   }
 
   @Get('/service/:key/*')
+  async fuk(
+    @Param('key') key: string,
+    @Req() req: Request,
+    @Res() response: Response
+  ) {
+    const endpoint = req.params[0];
+
+    const { res, status } = await this.appService.proxyRequest(
+      key,
+      endpoint,
+      req
+    );
+    response.status(status);
+    response.json(await res);
+    return null;
+  }
+
   @Post('/service/:key/*')
   @Put('/service/:key/*')
   @Patch('/service/:key/*')
@@ -60,13 +84,15 @@ export class AppController {
     @Req() req: Request,
     @Res() response: Response
   ) {
-    const endpoint = req.params[0];
+    const endpoint = '/' + req.params[0];
+
     const { res, status } = await this.appService.proxyRequest(
       key,
       endpoint,
       req
     );
     response.status(status);
-    return res;
+    response.json(await res);
+    return null;
   }
 }

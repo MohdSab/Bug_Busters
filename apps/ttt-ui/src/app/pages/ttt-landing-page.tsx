@@ -1,9 +1,9 @@
 import React, { useEffect } from 'react';
 import styles from './landing-page.module.css';
 import { useContext, useState } from 'react';
-import { Link, useLocation, useNavigate } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
 import { checkIfExists } from '../api/join-room';
-import { WebsocketContext } from '../contexts/websocket-context';
+import { WebsocketContext } from '@bb/socket-hook-lib';
 import { useAccount } from '@bb/auth-hook-lib';
 
 function useQuery() {

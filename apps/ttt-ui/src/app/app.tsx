@@ -8,8 +8,8 @@ import { ErrorPage } from './pages/error-page';
 // import SignIn from '../../../gamehub/src/app/pages/SignIn';
 // import SignUp from '../../../gamehub/src/app/pages/SignUp';
 import { AccountProvider } from '@bb/auth-hook-lib';
-import { WebsocketProvider } from './contexts/websocket-context';
 import { GatewayProvider, useGateway } from '@bb/gateway-hook-lib';
+import { WebsocketProvider } from '@bb/socket-hook-lib';
 
 function SignUp() {
   return <div>Sign up</div>;

@@ -1,6 +1,26 @@
 import { Link } from 'react-router-dom';
 import styles from './navbar.module.css';
-import { useAccount } from '@bb/auth-hook-lib';
+import { Account, useAccount } from '@bb/auth-hook-lib';
+
+function Badge({ account }: { account: Account }) {
+  return (
+    <div className={styles.badge}>
+      <div style={{ width: '48px' }}>
+        <div
+          className={styles.avatar}
+          style={{
+            backgroundImage: `url(${account.profile?.avatarUrl || ''})`,
+          }}
+        />
+      </div>
+
+      <div className={styles.tag}>
+        <h4>{account.username}</h4>
+        <p>#{account.uid}</p>
+      </div>
+    </div>
+  );
+}
 
 export function Navbar() {
   const { loading, account, signout } = useAccount();
@@ -22,7 +42,7 @@ export function Navbar() {
           justifyContent: 'space-between',
           alignContent: 'center',
           alignItems: 'center',
-          padding: '0 24px',
+          padding: '0 40px',
         }}
       >
         <div>
@@ -32,8 +52,20 @@ export function Navbar() {
         {loading ? (
           <span>Loading...</span>
         ) : account ? (
-          <div>
-            <button onClick={signout}>Signout</button>
+          <div
+            style={{
+              display: 'flex',
+              padding: '16px',
+              alignItems: 'center',
+              gap: '32px',
+              justifyContent: 'flex-end',
+              width: '30%',
+            }}
+          >
+            <Badge account={account} />
+            <button className={styles.butt} onClick={signout}>
+              Signout
+            </button>
           </div>
         ) : (
           <div

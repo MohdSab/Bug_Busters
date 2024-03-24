@@ -1,8 +1,10 @@
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import styles from './app.module.css';
 
-import { Route, Routes, Link } from 'react-router-dom';
+import { WebsocketProvider } from '@bb/socket-hook-lib';
+import { GatewayProvider, useGateway } from '@bb/gateway-hook-lib';
+import { AccountProvider } from '@bb/auth-hook-lib';
 
 function EmptyCell() {
   return <div className={styles.emptyCell} />;
@@ -22,15 +24,16 @@ function Butt({ onClick }: { onClick: () => void }) {
 
 const initalState: number[][] = Array(6).fill(Array(7).fill(0));
 
-export function App() {
+const c4Host = 'localhost:4032';
+const c4WsPath = '/c4';
+
+function C4() {
   const [board, setBoard] = useState(initalState);
   const [isP1, setIsP1] = useState(true);
 
-  const [something, fkoff] = useState<number | null>(null);
-
   // Read about useEffect
 
-  // Read ttt for how to use Auth service and websocket context
+  // Read c4 for how to use Auth service and websocket context
 
   // Design the action flow
 
@@ -57,7 +60,7 @@ export function App() {
 
   return (
     <div>
-      <h1 style={{ textAlign: 'center' }}>Connect 4</h1>
+      <h1 style={{ textAlign: 'center' }}>Connect 5</h1>
 
       <div id={styles.board}>
         <div id={styles.buttons}>
@@ -84,6 +87,63 @@ export function App() {
         ))}
       </div>
     </div>
+  );
+}
+
+function GetHostForProviders() {
+  const { getService, getHost, loading: gatewayLoading } = useGateway();
+  const [host, setHost] = useState('localhost:3000');
+  const [hostWs, setHostWs] = useState('localhost:3000');
+  const [wsPath, setWsPath] = useState('/c4');
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    console.log(gatewayLoading);
+    if (gatewayLoading) return;
+
+    setLoading(true);
+    const ps = [
+      getService(process.env.NX_C4_SERVICE_KEY || 'c4-service'),
+      getService(process.env.NX_C4_WS_KEY || 'c4-ws-service'),
+    ];
+
+    Promise.all(ps)
+      .then(([route, routeWs]) => {
+        setHost(`${getHost()}${route.endpoint || ''}`);
+        setHostWs(`${getHost()}${routeWs.endpoint}`);
+        setWsPath(routeWs.endpoint);
+        setLoading(false);
+      })
+      .catch((err) => {
+        setLoading(false);
+        console.error(err);
+      });
+  }, [getService, getHost, gatewayLoading]);
+
+  if (loading) {
+    return <div>Loading....</div>;
+  }
+
+  console.log('host', getHost());
+  return (
+    <AccountProvider host={host}>
+      <WebsocketProvider host={hostWs} path={wsPath}>
+        {/* <RouterProvider router={router} /> */}
+        <C4 />
+      </WebsocketProvider>
+    </AccountProvider>
+  );
+}
+
+function App() {
+  return (
+    <GatewayProvider
+      host={`${process.env.NX_GATEWAY_HOST || 'localhost'}:${
+        process.env.NX_GATEWAY_PORT || 3000
+      }`}
+    >
+      <GetHostForProviders />
+    </GatewayProvider>
   );
 }
 

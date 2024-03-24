@@ -1,9 +1,11 @@
 import { Injectable, UnauthorizedException } from '@nestjs/common';
-import { Account } from './account.entity';
 import { InjectRepository } from '@nestjs/typeorm';
+import fsPromises from 'node:fs/promises';
+import { Account } from './account.entity';
 import { Repository } from 'typeorm';
 import { JwtService } from '@nestjs/jwt';
-import { Profile } from './profile.entity';
+import { GetPicPath, Profile } from './profile.entity';
+import { SignUpDTO } from './app.controller';
 
 type TokenPayload = {
   sub: number;
@@ -42,7 +44,7 @@ export class AppService {
     }
   }
 
-  async signup(username: string, password: string) {
+  async signup({ username, password, avatar }: SignUpDTO) {
     let user: Account = await this.accountRepo.findOne({
       where: { username: username },
     });
@@ -51,7 +53,11 @@ export class AppService {
     }
 
     const p: Profile = new Profile();
-    p.index = 3;
+    if (!avatar) {
+      p.avatar = await this.getRandomAvatar();
+    } else {
+      p.avatar = avatar;
+    }
 
     await this.profileRepo.save(p);
 
@@ -60,6 +66,7 @@ export class AppService {
     user.SetPassword(password);
     user.profile = p;
     await this.accountRepo.save(user);
+
     const payload = { sub: user.uid, username: user.username };
     return {
       access_token: await this.jwtService.signAsync(payload),
@@ -80,11 +87,24 @@ export class AppService {
         await this.accountRepo.findOneBy({ uid: decoded.sub });
       if (user == null) return null;
 
-      user.profile.avatarUrl = user.profile.GetPicturePath();
-      user.password = "nopasswordallowedintheresponsePatricia";
+      user.profile.avatarUrl = user.profile.avatar;
       return user;
     } catch (error) {
       return null;
     }
+  }
+
+  getAvatars(): Promise<string[]> {
+    return fsPromises
+      .readdir(__dirname + '/public/profiles')
+      .then((res) => res.map(GetPicPath))
+      .catch((err) => {
+        console.error(err);
+        return [];
+      });
+  }
+
+  async getRandomAvatar(): Promise<string> {
+    return this.getAvatars().then((res) => res[3]);
   }
 }

@@ -1,14 +1,18 @@
 import { Entity, Column, PrimaryGeneratedColumn } from 'typeorm';
 
+export function GetPicPath(pic: string): string {
+  return `/profiles/${pic}`;
+}
+
 @Entity()
 export class Profile {
   @PrimaryGeneratedColumn()
   id: number;
 
   @Column()
-  index: number;
+  avatar: string;
 
   public GetPicturePath(): string {
-    return `/profiles/Avatar_${this.index}.png`;
+    return GetPicPath(this.avatar);
   }
 }

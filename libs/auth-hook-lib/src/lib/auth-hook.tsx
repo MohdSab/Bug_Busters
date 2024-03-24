@@ -17,6 +17,7 @@ interface AccountContextPaylaod {
   signup: (data: SignUpPayload) => Promise<Account | null>;
   signout: () => Promise<void>;
   useAccessToken: (token: string) => Promise<Account | null>;
+  getAvatars: () => Promise<string[]>;
 }
 
 export const AccountContext = createContext<AccountContextPaylaod>({
@@ -27,6 +28,7 @@ export const AccountContext = createContext<AccountContextPaylaod>({
   signup: (_) => Promise.resolve(null),
   signout: () => Promise.resolve(),
   useAccessToken: (_) => Promise.resolve(null),
+  getAvatars: () => Promise.resolve([]),
 });
 
 export function useAccount() {
@@ -64,6 +66,16 @@ export function AccountProvider({ host, children }: Props) {
       setLoading(false);
       setAccount(null);
     });
+  };
+
+  const getAvatars = () => {
+    return fetch(hostAPIUrl + '/avatars')
+      .then((res) => res.json() as Promise<string[]>)
+      .then((avatars) => avatars.map((a) => hostUrl + a))
+      .catch((err) => {
+        console.error(err);
+        return [];
+      });
   };
 
   const signupp = (data: SignUpPayload) => {
@@ -107,6 +119,7 @@ export function AccountProvider({ host, children }: Props) {
         signout: signoutt,
         signup: signupp,
         useAccessToken,
+        getAvatars,
       }}
     >
       {children}
