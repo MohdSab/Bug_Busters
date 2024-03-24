@@ -60,7 +60,10 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayInit, OnGatewa
         otherwise do nothing
         */
        console.log("Client ", client.id, " has disconnected");
-       this.chatService.leaveAllRooms(client.handshake.auth.id);
+       const uid = client.handshake.auth.id;
+       const leftRooms: string[] = this.chatService.leaveAllRooms(uid);
+       //notify every room user was in that they have left
+        leftRooms.forEach((room) => this.server.to(room).emit('user-left', uid));
     }
 
     @SubscribeMessage('join')

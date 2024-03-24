@@ -3,7 +3,7 @@ import { BadRequestException, Injectable } from "@nestjs/common";
 @Injectable()
 export class ChatService{
 
-    static roomCodes:Map<String, Map<Number, Boolean>> = new Map<String, Map<Number, Boolean>>// = new Map<string, string[]>; //map of reserved roomCodes (only operations related to this should be lookups, set, delete)
+    static roomCodes:Map<string, Map<Number, Boolean>> = new Map<string, Map<Number, Boolean>>// = new Map<string, string[]>; //map of reserved roomCodes (only operations related to this should be lookups, set, delete)
 
     createRoom(code:string): boolean{
         /*
@@ -28,10 +28,13 @@ export class ChatService{
         return true;
     }
     
-    leaveAllRooms(uid: number){
-        ChatService.roomCodes.forEach((room) => {
+    leaveAllRooms(uid: number): string[]{
+        let roomids: string[] = []
+        ChatService.roomCodes.forEach((room, roomid) => {
             room.delete(uid);
+            roomids.push(roomid);
         })
+        return roomids;
     }
 
     leaveRoom(uid: number, roomCode: string){
