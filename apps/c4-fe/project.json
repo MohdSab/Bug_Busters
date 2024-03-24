@@ -48,7 +48,8 @@
       "defaultConfiguration": "development",
       "options": {
         "buildTarget": "c4-fe:build",
-        "hmr": true
+        "hmr": true,
+        "host": "0.0.0.0"
       },
       "configurations": {
         "development": {
@@ -70,6 +71,9 @@
       "options": {
         "jestConfig": "apps/c4-fe/jest.config.ts"
       }
+    },
+    "docker-build": {
+      "command": "docker build -f apps/c4-fe/Dockerfile . -t c4-fe"
     }
   },
   "tags": []
