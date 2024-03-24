@@ -3,12 +3,13 @@ import { Account } from '../types/account';
 export interface SignUpPayload {
   username: string;
   password: string;
+  avatar?: string;
 }
 
 // TODO will have to use the API Gateway, for now, directly call
 // the auth-service
-const hostUrl = 'http://localhost:3000';
-const hostAPIUrl = `${hostUrl}/api`;
+export const hostUrl = 'http://localhost:3010';
+export const hostAPIUrl = `${hostUrl}/api`;
 
 export function getImageUrl(uri: string): string {
   return `${hostUrl}${uri}`;

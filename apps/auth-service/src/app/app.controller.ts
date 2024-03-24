@@ -15,6 +15,7 @@ import { Request } from 'express';
 export type SignUpDTO = {
   username: string;
   password: string;
+  avatar?: string;
 };
 
 export type SignInDTO = {
@@ -33,7 +34,7 @@ export class AppController {
 
   @Post('/signup')
   signup(@Body() body: SignUpDTO) {
-    return this.appService.signup(body.username, body.password);
+    return this.appService.signup(body);
   }
 
   @Post('/signin')
@@ -59,4 +60,9 @@ export class AppController {
 
   @Put('/profile')
   updateProfile() {}
+
+  @Get('/avatars')
+  getAvatars() {
+    return this.appService.getAvatars();
+  }
 }
