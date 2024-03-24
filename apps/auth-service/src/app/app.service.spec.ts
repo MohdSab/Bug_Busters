@@ -107,6 +107,8 @@ describe('AppService', () => {
         .spyOn(profileRepo, 'save')
         .mockResolvedValueOnce(Promise.resolve(acc1.profile));
 
+      console.log(service);
+
       return service.signup(acc1.username, acc1.password).then((res) => {
         expect(res).toHaveProperty('access_token');
         // Not this sprint

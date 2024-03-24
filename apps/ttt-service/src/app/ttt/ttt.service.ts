@@ -76,20 +76,19 @@ export class TTTService {
     if (ttt.xIsPlaying && currentPlayer == ttt.xPlayer) {
       ttt.board[ind] = 'x';
       ttt.xIsPlaying = false;
-      ttt.CheckWin();
+      this.CheckWin(ttt);
       if (ttt.wonBy != null) {
         ttt.winner = 'x';
       }
     } else if (!ttt.xIsPlaying && currentPlayer == ttt.oPlayer) {
       ttt.board[ind] = 'o';
       ttt.xIsPlaying = true;
-      ttt.CheckWin();
+      this.CheckWin(ttt);
       if (ttt.wonBy != null) {
         ttt.winner = 'o';
       }
     }
-    await this.tttRepo.save(ttt);
-    return ttt;
+    return this.tttRepo.save(ttt);
   }
 
   /*
@@ -103,6 +102,7 @@ export class TTTService {
         ttt.board[i] === ttt.board[i + 2]
       ) {
         ttt.wonBy = [i, i + 1, i + 2];
+        return;
       }
       if (
         ttt.board[i] !== '' && // check column
@@ -110,6 +110,7 @@ export class TTTService {
         ttt.board[i] === ttt.board[i + 6]
       ) {
         ttt.wonBy = [i, i + 3, i + 6];
+        return;
       }
     }
     if (
@@ -118,6 +119,7 @@ export class TTTService {
       ttt.board[0] === ttt.board[8]
     ) {
       ttt.wonBy = [0, 4, 8];
+      return;
     }
     if (
       ttt.board[2] !== '' && // check diag /
@@ -125,6 +127,7 @@ export class TTTService {
       ttt.board[2] === ttt.board[6]
     ) {
       ttt.wonBy = [2, 4, 6];
+      return;
     }
     ttt.wonBy = null;
   }
@@ -148,5 +151,6 @@ export class TTTService {
     ttt.xIsPlaying = true;
     ttt.winner = null;
     await this.tttRepo.save(ttt);
+    console.log(ttt);
   }
 }
