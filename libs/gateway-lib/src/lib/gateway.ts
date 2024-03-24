@@ -14,6 +14,14 @@ export class Gateway {
   constructor(private gatewayHost: string) {}
 
   /**
+   *
+   * @returns the host of the gateway
+   */
+  GetHost() {
+    return this.gatewayHost;
+  }
+
+  /**
    * @description Register the service to API-Gateway
    *
    * @param data CreateRouteDto

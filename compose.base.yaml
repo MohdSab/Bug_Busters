@@ -1,0 +1,36 @@
+services:
+  gateway:
+    build:
+      context: .
+      dockerfile: ./apps/api-gateway/Dockerfile
+    depends_on:
+      - pg
+    ports:
+      - 3000:3000
+    environment:
+      PORT: 3000
+
+  auth-service:
+    image: auth-service
+    depends_on:
+      - pg
+      - gateway
+    environment:
+      PG_HOST: pg
+      PG_PORT: 5432
+      PG_USER: test
+      PG_PW: test
+      PG_DB: auth
+      GATEWAY_HOST: gateway
+      GATEWAY_PORT: 3000
+      PORT: 3010
+
+  pg:
+    image: postgres:alpine
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: test
+      POSTGRES_PASSWORD: test
+      POSTGRES_DB: auth
+
+# TODO setup volume for db

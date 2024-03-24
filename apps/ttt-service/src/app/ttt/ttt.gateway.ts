@@ -37,9 +37,8 @@ type ResponseDTO<T> = {
 
 const port = +process.env.WS_PORT || 8000;
 
-// TODO: change to whatever port we end up using
 @WebSocketGateway(port, {
-  path: '/ttt',
+  path: process.env.WS_PATH || '/ttt',
   cors: {
     origin: '*',
     credentials: true,
