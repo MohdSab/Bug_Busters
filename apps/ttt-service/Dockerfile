@@ -19,7 +19,7 @@ COPY package-lock.json .
 RUN npm --omit=dev install
 
 COPY dist/apps/ttt-service ttt-service
-RUN chown -R ttt-service:ttt-service .
+# RUN chown -R ttt-service:ttt-service .
 
 # You can remove this install step if you build with `--bundle` option.
 # The bundled output will include external dependencies.

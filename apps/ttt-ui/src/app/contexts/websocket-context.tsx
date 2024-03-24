@@ -26,7 +26,18 @@ export function useSocket() {
   return useContext(WebsocketContext);
 }
 
-export function WebsocketProvider({ children }: PropsWithChildren<{}>) {
+interface Props extends PropsWithChildren<{}> {
+  host: string;
+  path?: string;
+}
+
+/**
+ *
+ * @param host - the host of the socket.io server
+ * @param path - the path of the socket gateway on the host
+ * @returns Context Provider that provide the socket connected to the host and a loading state
+ */
+export function WebsocketProvider({ host, path, children }: Props) {
   const { account, loading: accLoading } = useAccount();
   const [socket, setSocket] = useState<Socket | null>(null);
   const [loading, setLoading] = useState(false);
@@ -41,14 +52,14 @@ export function WebsocketProvider({ children }: PropsWithChildren<{}>) {
 
   useEffect(() => {
     if (accLoading) return;
-    // TODO change to configurable host
-    const socket = io('http://localhost:8000', {
-      autoConnect: false,
-      path: '/ttt',
+    const socket = io({
+      host,
+      path,
       auth: {
-        uid: account?.uid
-      }
-    }); // TODO: maybe change URL/port?
+        uid: account?.uid,
+      },
+      autoConnect: false,
+    });
 
     socket.connect();
 
@@ -59,7 +70,7 @@ export function WebsocketProvider({ children }: PropsWithChildren<{}>) {
     });
 
     socket.on('disconnect', () => {
-      console.log('disconnect');
+      console.log('disconnected');
       setSocket(null);
       setLoading(false);
     });
@@ -69,7 +80,7 @@ export function WebsocketProvider({ children }: PropsWithChildren<{}>) {
       socket.off('connect');
       socket.off('disconnect');
     };
-  }, [accLoading]);
+  }, [accLoading, host, path]);
 
   return (
     <WebsocketContext.Provider

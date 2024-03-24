@@ -13,7 +13,11 @@ function useQuery() {
 }
 
 export function TttLandingPage() {
-  const { useAccessToken: abcAccessToken, account: acc, signout: sout } = useAccount();
+  const {
+    useAccessToken: abcAccessToken,
+    account: acc,
+    signout: sout,
+  } = useAccount();
   const query = useQuery();
   const { socket, loading } = useContext(WebsocketContext);
   const [join, setJoin] = useState(false);
@@ -51,26 +55,35 @@ export function TttLandingPage() {
 
   const CreateRoom = () => {
     // socket
-    socket?.emit('create-room', (res: { id: number, p1?: number, p2?: number, game: any }) => {
-      if (res != null) {
-        navigate('/game/' + res.id.toString());
-        console.log('create-room res: ', res);
-      } else {
-        navigate('/error');
+    socket?.emit(
+      'create-room',
+      (res: { id: number; p1?: number; p2?: number; game: any }) => {
+        if (res != null) {
+          navigate('/game/' + res.id.toString());
+          console.log('create-room res: ', res);
+        } else {
+          navigate('/error');
+        }
       }
-    });
+    );
   };
 
   const modal = (
     <div>
       <input type="number" onChange={(e) => setMessage(e.target.value)} />
-      <button onClick={() => socket?.emit('join-room', parseInt(message), (res: { data: any }) => {
-        if (res.data !== null) {
-          navigate('/game/' + res.data.id.toString());
-        } else {
-          navigate('/error');
+      <button
+        onClick={() =>
+          socket?.emit('join-room', parseInt(message), (res: { data: any }) => {
+            if (res.data !== null) {
+              navigate('/game/' + res.data.id.toString());
+            } else {
+              navigate('/error');
+            }
+          })
         }
-      })}>Submit</button>
+      >
+        Submit
+      </button>
     </div>
   );
 
@@ -80,7 +93,7 @@ export function TttLandingPage() {
         <div>
           <p>Signed in as {acc.username}</p>
           <button onClick={sout}>Signout</button>
-          </div>
+        </div>
       ) : (
         <div>
           <button onClick={() => navigate('/signin')}>Sign in</button>
@@ -88,6 +101,7 @@ export function TttLandingPage() {
         </div>
       )}
       <div className={styles.center}>
+        <h1>Tic tac toe</h1>
         <button onClick={CreateRoom} className={styles.button}>
           Create Room
         </button>
