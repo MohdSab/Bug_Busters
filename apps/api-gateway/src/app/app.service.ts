@@ -58,15 +58,22 @@ export class AppService {
   proxyRequest(key: string, endpoint: string, req: Request) {
     if (!Object.keys(this.routes).includes(key)) throw new NotFoundException();
 
+    console.log('req method', req.method.toLowerCase());
+
     const route = this.routes[key];
     const url = `http://${route.ip}:${route.port}/${route.prefix}${endpoint}`;
+    console.log('Sending req to ', url);
+    console.log(req.body);
     return fetch(url, {
       method: req.method,
       headers: {
         Authorization: req.headers.authorization,
-        'Content-Type': req.headers['content-type'],
+        'Content-Type': 'application/json',
       },
-      body: req.body,
+      body:
+        req.method.toLowerCase() !== 'get'
+          ? JSON.stringify(req.body)
+          : undefined,
     }).then((res) => ({ res: res.json(), status: res.status }));
   }
 }

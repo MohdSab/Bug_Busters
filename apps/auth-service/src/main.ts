@@ -18,7 +18,7 @@ async function bootstrap() {
   app.enableCors();
   const port = process.env.PORT || 3010;
   const key = process.env.AUTH_KEY || 'auth';
-  const gatewayHost = process.env.GATEWAY_HOST || 'localhost:3000';
+  const gatewayHost = process.env.GATEWAY_HOST || 'localhost';
   const gatewayPort = Number(process.env.GATEWAY_KEY) || 3000;
   await app.listen(port);
   Logger.log('Port: ', port);
