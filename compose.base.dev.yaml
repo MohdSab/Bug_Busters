@@ -4,7 +4,7 @@ services:
       context: .
       dockerfile: ./apps/api-gateway/Dockerfile.dev
     depends_on:
-      - pg
+      - gateway-db
     develop:
       watch:
         - action: sync
@@ -17,7 +17,20 @@ services:
     ports:
       - 3000:3000
     environment:
+      DB_HOST: gateway-db
+      DB_PORT: 5432
+      DB_USER: gateway
+      DB_PW: gateway
+      DB_DB: gateway
       PORT: 3000
+
+  gateway-db:
+    image: postgres:alpine
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: gateway
+      POSTGRES_PASSWORD: gateway
+      POSTGRES_DB: gateway
 
   auth-service:
     build:
