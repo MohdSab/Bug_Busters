@@ -1,11 +1,8 @@
 import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 
-// import { AppController } from './app.controller';
-import { AppService } from './app.service';
 import { RouterModule } from './router/router.module';
 import { ProxyController } from './proxy/proxy.controller';
-import { ProxyWsController } from './proxy-ws/proxy-ws.controller';
 
 @Module({
   imports: [
@@ -21,11 +18,7 @@ import { ProxyWsController } from './proxy-ws/proxy-ws.controller';
       synchronize: true,
     }),
   ],
-  controllers: [
-    // AppController,
-    ProxyController,
-    ProxyWsController,
-  ],
-  providers: [AppService],
+  controllers: [ProxyController],
+  providers: [],
 })
 export class AppModule {}

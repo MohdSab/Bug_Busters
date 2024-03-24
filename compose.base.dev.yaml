@@ -16,6 +16,8 @@ services:
           path: package.json
     ports:
       - 3000:3000
+      - 3001:3001
+      - 3002:3002
     environment:
       DB_HOST: gateway-db
       DB_PORT: 5432
@@ -23,6 +25,8 @@ services:
       DB_PW: gateway
       DB_DB: gateway
       PORT: 3000
+      WS_PORT: 3001
+      WS_PROXY_PORT: 3002
 
   gateway-db:
     image: postgres:alpine

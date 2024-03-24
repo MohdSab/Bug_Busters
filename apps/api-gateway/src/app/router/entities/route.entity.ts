@@ -11,6 +11,6 @@ export class Route {
   @Column()
   port: number;
 
-  @Column({ default: '' })
-  prefix: string;
+  @Column({ nullable: true })
+  prefix?: string;
 }
