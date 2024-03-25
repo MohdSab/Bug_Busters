@@ -1,0 +1,22 @@
+body {
+  padding: 0;
+  margin: 0;
+  font-family: Roboto, sans-serif;
+}
+
+.layout {
+  height: 100vh;
+  width: 100vw;
+  display: flex;
+  flex-direction: column;
+  justify-content: stretch;
+}
+
+.navbar-padding {
+  flex-basis: 80px;
+}
+
+.page-content {
+  height: 100%;
+  padding: 32px 64px;
+}
