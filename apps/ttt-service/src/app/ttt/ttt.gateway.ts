@@ -14,6 +14,7 @@ import { Repository } from 'typeorm';
 import { TicTacToe } from './ttt.entity';
 import { TTTService } from './ttt.service';
 import { Room } from './room.entity';
+import { Gateway } from '@bb/gateway-lib';
 
 export type NewGameState = {
   roomNumber: number;
@@ -38,7 +39,6 @@ type ResponseDTO<T> = {
 const port = +process.env.WS_PORT || 8000;
 
 @WebSocketGateway(port, {
-  path: process.env.WS_PATH || '/ttt',
   cors: {
     origin: '*',
     credentials: true,
@@ -54,7 +54,21 @@ export class TicTacToeGateway
   // @InjectRepository(TicTacToe)
   // private tttRepo: Repository<TicTacToe>;
 
-  constructor(private tttService: TTTService) {}
+  constructor(private tttService: TTTService) {
+    new Gateway(`${process.env.GATEWAY_HOST}:${process.env.GATEWAY_PORT}`)
+      .RegisterService({
+        key: process.env.WS_SERVICE_KEY,
+        port: port,
+      })
+      .then((route) => {
+        console.log(
+          'WS Service register with key ' +
+            route.key +
+            ' with endpoint: ' +
+            route.endpoint
+        );
+      });
+  }
 
   /**
    * Special function of OnGatewayConnection
