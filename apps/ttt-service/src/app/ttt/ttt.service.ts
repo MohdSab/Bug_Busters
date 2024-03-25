@@ -92,6 +92,7 @@ export class TTTService {
    */
   async MakeMove(currentPlayer: number, ind: number, roomId: number) {
     const ttt = await this.findGame(roomId);
+    if (ttt.winner != null) return ttt;
     if (ttt.oPlayer != -1) {
       if (ttt.xIsPlaying && currentPlayer === ttt.xPlayer) {
         ttt.board[ind] = 'x';
@@ -133,15 +134,15 @@ export class TTTService {
   CheckWin(ttt: TicTacToe) {
     for (let i = 0; i < 3; i++) {
       if (
-        ttt.board[i] !== '' && // check row
-        ttt.board[i] === ttt.board[i + 1] &&
-        ttt.board[i] === ttt.board[i + 2]
+        ttt.board[3*i] !== ' ' && // check row
+        ttt.board[3*i] === ttt.board[3*i + 1] &&
+        ttt.board[3*i] === ttt.board[3*i + 2]
       ) {
-        ttt.wonBy = [i, i + 1, i + 2];
+        ttt.wonBy = [3*i, 3*i + 1, 3*i + 2];
         return;
       }
       if (
-        ttt.board[i] !== '' && // check column
+        ttt.board[i] !== ' ' && // check column
         ttt.board[i] === ttt.board[i + 3] &&
         ttt.board[i] === ttt.board[i + 6]
       ) {
@@ -150,7 +151,7 @@ export class TTTService {
       }
     }
     if (
-      ttt.board[0] !== '' && // check diag \
+      ttt.board[0] !== ' ' && // check diag \
       ttt.board[0] === ttt.board[4] &&
       ttt.board[0] === ttt.board[8]
     ) {
@@ -158,7 +159,7 @@ export class TTTService {
       return;
     }
     if (
-      ttt.board[2] !== '' && // check diag /
+      ttt.board[2] !== ' ' && // check diag /
       ttt.board[2] === ttt.board[4] &&
       ttt.board[2] === ttt.board[6]
     ) {
@@ -175,7 +176,7 @@ export class TTTService {
 
   async ResetBoard(roomId: number) {
     const ttt = await this.findGame(roomId);
-    ttt.board = ['', '', '', '', '', '', '', '', ''];
+    ttt.board = [' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '];
     ttt.xIsPlaying = true;
     ttt.winner = null;
     await this.tttRepo.save(ttt);

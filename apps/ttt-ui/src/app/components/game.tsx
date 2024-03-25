@@ -58,6 +58,8 @@ export default function TicTacToe() {
   const { id } = useParams();
   const { socket, loading } = useSocket();
   const [squares, setSquares] = useState(Array(9).fill(null));
+  const [winner, setWinner] = useState('');
+  const [xIsNext, setXIsNext] = useState(true);
 
   function handlePlay(nextSquares: string[]) {
     setSquares(nextSquares);
@@ -65,6 +67,7 @@ export default function TicTacToe() {
 
   const handleClick = React.useMemo(() => {
     if (loading) return (i: number) => {};
+    else if (winner != '') return (i: number) => {};
     else
       return (i: number) => {
         console.log('clicking on ' + i);
@@ -77,8 +80,12 @@ export default function TicTacToe() {
               return;
             }
 
-            console.log(res.data);
+            // console.log(res.data);
             if (res?.data?.board) setSquares(res.data.board);
+            if (res?.data?.winner) {
+              setWinner(res?.data?.winner);
+            }
+            if (res?.data?.xIsPlaying !== null) setXIsNext(res.data.xIsPlaying);
           }
         );
       };
@@ -93,6 +100,7 @@ export default function TicTacToe() {
       if (game.winner) {
         setWinner(game.winner);
       }
+      console.log(game.xIsPlaying);
       setXIsNext(game.xIsPlaying);
     });
 
@@ -115,8 +123,6 @@ export default function TicTacToe() {
     };
   }, [socket, loading]);
 
-  const [winner, setWinner] = useState('');
-  const [xIsNext, setXIsNext] = useState(true);
 
   const status =
     winner !== ''
