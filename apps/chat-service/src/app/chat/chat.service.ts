@@ -20,12 +20,7 @@ export class ChatService{
 
     joinRoom(uid: number, roomCode: string): boolean{
         //check if room exists
-        console.log("in chatservice");
-        const res = this.checkRoomExists(roomCode);
-        console.log("res is", res);
-        console.log("map of rooms is", ChatService.roomCodes);
         if(!this.checkRoomExists(roomCode)){
-            console.log();
             throw new BadRequestException('trying to join a room that doesnt exist!!');
         }
         //add user to room
@@ -34,9 +29,13 @@ export class ChatService{
     }
     
     leaveAllRooms(uid: number): string[]{
+        //list of all rooms that were left
         let roomids: string[] = []
         ChatService.roomCodes.forEach((room, roomid) => {
             room.delete(uid);
+            if(room.size === 0){
+                this.deleteRoom(roomid);
+            }
             roomids.push(roomid);
         })
         return roomids;
@@ -44,7 +43,13 @@ export class ChatService{
 
     leaveRoom(uid: number, roomCode: string){
         if (this.checkRoomExists(roomCode)){
-            return ChatService.roomCodes.get(roomCode).delete(uid);
+            const room = ChatService.roomCodes.get(roomCode)
+            room.delete(uid);
+            if(room.size === 0){
+                this.deleteRoom(roomCode);
+            }
+
+            return true;
         }
         return false;
     }
@@ -56,16 +61,12 @@ export class ChatService{
     checkUserInRoom(uid: number, code: string): boolean{
         const res = ChatService.roomCodes.get(code).has(uid);
         if(!res){
-            console.log("user not in room")
             throw new BadRequestException("user is NOT in the specified room!!");
         }
-        console.log("just before return statement");
         return true;
     }
 
     checkRoomExists(code:string): boolean{
-        console.log('in function');
-        console.log('code is', code);
         return ChatService.roomCodes.has(code);
     }
 
