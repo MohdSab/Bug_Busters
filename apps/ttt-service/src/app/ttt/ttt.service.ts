@@ -31,9 +31,14 @@ export class TTTService {
     return this.roomRepo.save(newRoom);
   }
 
-  async makeRoomAI(roomId: number): Promise<Room> {
-    const room = await this.roomRepo.findOneBy({ id: roomId });
+  async makeRoomAI(uid: number): Promise<Room> {
+    const room = await this.createRoom(uid);
+    // const room = await this.roomRepo.findOneBy({ id: roomId });
     room.p2 = -1;
+
+    room.currentGame.oPlayer = -1;
+    await this.tttRepo.save(room.currentGame);
+
     return this.roomRepo.save(room);
   }
 
@@ -93,6 +98,7 @@ export class TTTService {
   async MakeMove(currentPlayer: number, ind: number, roomId: number) {
     const ttt = await this.findGame(roomId);
     if (ttt.winner != null) return ttt;
+    if (ttt.board[ind] !== ' ') return ttt;
     if (ttt.oPlayer != -1) {
       if (ttt.xIsPlaying && currentPlayer === ttt.xPlayer) {
         ttt.board[ind] = 'x';

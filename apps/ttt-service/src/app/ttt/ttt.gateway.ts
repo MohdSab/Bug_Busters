@@ -158,16 +158,30 @@ export class TicTacToeGateway
   }
 
   @SubscribeMessage('create-single')
-  async createSingle(@ConnectedSocket() client: Socket): Promise<Room> {
+  async createSingle(@ConnectedSocket() client: Socket): Promise<ResponseDTO<Room>> {
     /*
      * Create a room where the player who created it
      * is the xPlayer
      *
      * required data: currentPlayer
      */
-    const room = await this.tttService.makeRoomAI(client.handshake.auth.uid);
-    client.join('' + room.id);
-    return room;
+    try {
+      if (!client.handshake.auth.uid) throw new UnauthorizedException();
+
+      const room = await this.tttService.makeRoomAI(client.handshake.auth.uid);
+
+      return {
+        data: room,
+      };
+    } catch (err) {
+      return {
+        error: err,
+        data: null
+      };
+    }
+    // const room = await this.tttService.makeRoomAI(client.handshake.auth.uid);
+    // client.join('' + room.id);
+    // return room;
   }
 
   @SubscribeMessage('join-room')

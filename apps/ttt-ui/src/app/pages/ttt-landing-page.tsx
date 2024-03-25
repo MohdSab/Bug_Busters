@@ -72,6 +72,25 @@ export function TttLandingPage() {
     [socket]
   );
 
+  const CreateRoomAI = useMemo(
+    () => () => {
+      // socket
+      socket?.emit('create-single', (res: { data: any; error: any }) => {
+        console.log(res);
+        if (res.error) {
+          console.error(res.error);
+          return;
+        }
+        if (res != null) {
+          navigate('/game/' + res.data.id.toString());
+        } else {
+          navigate('/error');
+        }
+      });
+    },
+    [socket]
+  );
+
   if (loading) return <h1>Loading...</h1>;
 
   const modal = (
@@ -103,7 +122,10 @@ export function TttLandingPage() {
             Create Room
           </button>
 
-          <button className={styles.button} onClick={() => {}}>
+          {/*<button className={styles.button} onClick={() => {}}>
+            Play against AI
+          </button>*/}
+          <button className={styles.button} onClick={CreateRoomAI}>
             Play against AI
           </button>
         </div>
