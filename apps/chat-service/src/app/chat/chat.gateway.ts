@@ -22,7 +22,7 @@ type ResponseDTO<T> = {
     data: T
 }
 
-const port = 8000;
+const port = 9000;
 @WebSocketGateway(
     port,
     {
@@ -74,9 +74,9 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayInit, OnGatewa
         Returns false on invalid roomcode
         */
 
-        //TODO: implement
         try{
-            this.chatService.joinRoom(client.handshake.auth.uid ,data.roomCode)
+            const res = this.chatService.joinRoom(client.handshake.auth.uid ,data.roomCode);
+            client.join(data.roomCode);
         }
         catch (err){
             return {
@@ -96,7 +96,8 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayInit, OnGatewa
         */ 
         try{
             this.chatService.ExceptRoomExists(messageData.roomCode); //check room exists
-            this.server.to(messageData.roomCode).emit('messageReceived', messageData)
+            this.chatService.checkUserInRoom(client.handshake.auth.uid, messageData.roomCode) //check user in room
+            this.server.to(messageData.roomCode).emit('message-received', messageData);
             return {
                 data: messageData
             }

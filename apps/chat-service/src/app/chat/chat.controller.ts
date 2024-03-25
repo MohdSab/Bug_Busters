@@ -11,7 +11,7 @@ type CreateRoomDTO = {
     gameRoomID: number
 }
 
-@Controller("chat")
+@Controller('chat')
 export class ChatController{
     
     constructor(private chatService: ChatService) {}

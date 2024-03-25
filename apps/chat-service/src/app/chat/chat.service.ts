@@ -20,7 +20,12 @@ export class ChatService{
 
     joinRoom(uid: number, roomCode: string): boolean{
         //check if room exists
-        if(this.checkRoomExists(roomCode)){
+        console.log("in chatservice");
+        const res = this.checkRoomExists(roomCode);
+        console.log("res is", res);
+        console.log("map of rooms is", ChatService.roomCodes);
+        if(!this.checkRoomExists(roomCode)){
+            console.log();
             throw new BadRequestException('trying to join a room that doesnt exist!!');
         }
         //add user to room
@@ -48,7 +53,19 @@ export class ChatService{
         return ChatService.roomCodes.delete(code);
     }
 
+    checkUserInRoom(uid: number, code: string): boolean{
+        const res = ChatService.roomCodes.get(code).has(uid);
+        if(!res){
+            console.log("user not in room")
+            throw new BadRequestException("user is NOT in the specified room!!");
+        }
+        console.log("just before return statement");
+        return true;
+    }
+
     checkRoomExists(code:string): boolean{
+        console.log('in function');
+        console.log('code is', code);
         return ChatService.roomCodes.has(code);
     }
 
