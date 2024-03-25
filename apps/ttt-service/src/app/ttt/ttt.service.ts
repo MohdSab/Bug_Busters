@@ -19,15 +19,22 @@ export class TTTService {
       throw new BadRequestException('ur already in a room smh');
     }
 
-    let newGame = new TicTacToe();
-    newGame = await this.tttRepo.save(newGame);
+    const newRoom = new Room();
+    await this.roomRepo.save(newRoom);
 
-    let newRoom = new Room();
+    const newGame = new TicTacToe();
+    newGame.rid = newRoom.id;
+    await this.tttRepo.save(newGame);
+
     newRoom.currentGame = newGame;
 
-    newRoom = await this.roomRepo.save(newRoom);
+    return this.roomRepo.save(newRoom);
+  }
 
-    return this.joinRoom(uid, newRoom.id);
+  async makeRoomAI(roomId: number): Promise<Room> {
+    const room = await this.roomRepo.findOneBy({ id: roomId });
+    room.p2 = -1;
+    return this.roomRepo.save(room);
   }
 
   async joinRoom(uid: number, roomId: number): Promise<Room> {
@@ -38,13 +45,25 @@ export class TTTService {
     const room = await this.roomRepo.findOneBy({ id: roomId });
     if (!room) throw new BadRequestException('Room does not exist');
 
-    if (!room.p1) room.p1 = uid;
-    else if (!room.p2) room.p2 = uid;
-    // else {
-    //   throw new BadRequestException('Room is fulllllll');
-    // }
+    if (!room.p1) {
+      room.p1 = uid;
+      room.currentGame.xPlayer = uid;
+    } else if (!room.p2) {
+      room.p2 = uid;
+      room.currentGame.oPlayer = uid;
+    }
+
+    await this.tttRepo.save(room.currentGame);
 
     return this.roomRepo.save(room);
+  }
+
+  async checkInRoom(uid: number) {
+    const room = await this.roomRepo.findOneBy({ p1: uid });
+    if (room !== null) {
+      return true;
+    }
+    return false;
   }
 
   async onDisconnect(uid: number): Promise<Room> {
@@ -73,15 +92,32 @@ export class TTTService {
    */
   async MakeMove(currentPlayer: number, ind: number, roomId: number) {
     const ttt = await this.findGame(roomId);
-    if (ttt.xIsPlaying && currentPlayer == ttt.xPlayer) {
+    if (ttt.oPlayer != -1) {
+      if (ttt.xIsPlaying && currentPlayer === ttt.xPlayer) {
+        ttt.board[ind] = 'x';
+        ttt.xIsPlaying = false;
+        this.CheckWin(ttt);
+        if (ttt.wonBy != null) {
+          ttt.winner = 'x';
+        }
+      } else if (!ttt.xIsPlaying && currentPlayer === ttt.oPlayer) {
+        ttt.board[ind] = 'o';
+        ttt.xIsPlaying = true;
+        this.CheckWin(ttt);
+        if (ttt.wonBy != null) {
+          ttt.winner = 'o';
+        }
+      }
+    } else {
       ttt.board[ind] = 'x';
       ttt.xIsPlaying = false;
       this.CheckWin(ttt);
       if (ttt.wonBy != null) {
         ttt.winner = 'x';
+        return this.tttRepo.save(ttt);
       }
-    } else if (!ttt.xIsPlaying && currentPlayer == ttt.oPlayer) {
-      ttt.board[ind] = 'o';
+      const ai_ind: number = Math.floor(Math.random() * 9);
+      ttt.board[ai_ind] = 'o';
       ttt.xIsPlaying = true;
       this.CheckWin(ttt);
       if (ttt.wonBy != null) {
@@ -132,14 +168,6 @@ export class TTTService {
     ttt.wonBy = null;
   }
 
-  async checkInRoom(uid: number) {
-    const room = await this.roomRepo.findOneBy({ p1: uid });
-    if (room != null) {
-      return true;
-    }
-    return false;
-  }
-
   async findGame(roomId: number) {
     const room = await this.roomRepo.findOneBy({ id: roomId });
     return room.currentGame;
@@ -151,6 +179,5 @@ export class TTTService {
     ttt.xIsPlaying = true;
     ttt.winner = null;
     await this.tttRepo.save(ttt);
-    console.log(ttt);
   }
 }

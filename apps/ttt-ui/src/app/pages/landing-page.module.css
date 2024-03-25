@@ -1,8 +1,17 @@
+body {
+    padding: 0;
+    margin: 0;
+}
+
 .center {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    height: 100vh; /* Adjust as needed */
+    /* display: flex; */
+    /* align-items: center; */
+    /* justify-content: center; */
+    /* height: 100%; Adjust as needed */
+}
+
+.title {
+    text-align: center;
 }
 
 .button {
