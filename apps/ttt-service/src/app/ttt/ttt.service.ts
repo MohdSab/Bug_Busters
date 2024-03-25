@@ -15,9 +15,7 @@ export class TTTService {
   ) {}
 
   async createRoom(uid: number): Promise<Room> {
-    console.log('uid ' + uid + ' create room');
     if (await this.checkInRoom(uid)) {
-      console.log('create prob');
       throw new BadRequestException('ur already in a room smh');
     }
 
@@ -40,9 +38,7 @@ export class TTTService {
   }
 
   async joinRoom(uid: number, roomId: number): Promise<Room> {
-    console.log('uid ' + uid + ' join room ' + roomId);
     if (await this.checkInRoom(uid)) {
-      console.log('join prob');
       throw new BadRequestException('ur already in a room smh');
     }
 
@@ -64,7 +60,6 @@ export class TTTService {
 
   async checkInRoom(uid: number) {
     const room = await this.roomRepo.findOneBy({ p1: uid });
-    console.log('roommmmmmmmmmm: ', room);
     if (room !== null) {
       return true;
     }
@@ -184,6 +179,5 @@ export class TTTService {
     ttt.xIsPlaying = true;
     ttt.winner = null;
     await this.tttRepo.save(ttt);
-    console.log(ttt);
   }
 }

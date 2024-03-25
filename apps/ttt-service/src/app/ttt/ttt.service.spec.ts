@@ -54,14 +54,14 @@ describe('TttService', () => {
         .mockResolvedValueOnce(Promise.resolve(null));
       jest
         .spyOn(tttRepo, 'save')
-        .mockResolvedValueOnce(Promise.resolve(newGame));
+        .mockImplementation((game: TicTacToe) => Promise.resolve(game));
       jest
         .spyOn(roomRepo, 'save')
-        .mockResolvedValueOnce(Promise.resolve(newRoom));
+        .mockImplementation((x: Room) => Promise.resolve(newRoom));
 
-      jest
-        .spyOn(service, 'joinRoom')
-        .mockResolvedValueOnce(Promise.resolve(newRoom));
+      // jest
+      //   .spyOn(service, 'joinRoom')
+      //   .mockResolvedValueOnce(Promise.resolve(newRoom));
 
       return service.createRoom(1).then((room) => expect(room).toBe(newRoom));
     });
@@ -255,7 +255,7 @@ describe('TttService', () => {
   });
 
   describe('checkInRoom', () => {
-    it('should return false', () => {
+    it('should not be in a room', () => {
       jest
         .spyOn(roomRepo, 'findOneBy')
         .mockResolvedValueOnce(Promise.resolve(null));
@@ -263,13 +263,12 @@ describe('TttService', () => {
       return service.checkInRoom(1).then((res) => expect(res).toBe(false));
     });
 
-    it('should return true', () => {
+    it('should be in a room', () => {
       jest
         .spyOn(roomRepo, 'findOneBy')
         .mockResolvedValueOnce(Promise.resolve(newRoom));
 
       return service.checkInRoom(1).then((res) => expect(res).toBe(true));
-      // expect(service.checkInRoom(1)).toBe(true);
     });
   });
 
