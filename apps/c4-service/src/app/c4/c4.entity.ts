@@ -49,7 +49,7 @@ export class Connect4 {
         if (this.board[i][ind] == '') {
           this.board[i][ind] = 'x';
           this.player1IsPlaying = false;
-          let result = this.CheckWin();
+          const result = this.CheckWin();
           if (result != null) {
             this.winner = 'x';
           }
@@ -61,7 +61,7 @@ export class Connect4 {
         if (this.board[i][ind] == '') {
           this.board[i][ind] = 'o';
           this.player1IsPlaying = true;
-          let result = this.CheckWin();
+          const result = this.CheckWin();
           if (result != null) {
             this.winner = 'o';
           }

@@ -12,6 +12,7 @@ import { Server, Socket } from 'socket.io';
 import { Connect4Service } from './c4.service';
 import { Connect4 } from './c4.entity';
 import { Room } from './room.entity';
+import { Gateway } from '@bb/gateway-lib';
 
 //TODO: declare dto's
 type MessageDTO = {
@@ -27,7 +28,6 @@ type ResponseDTO<T> = {
 const port = +process.env.WS_PORT || 8001;
 
 @WebSocketGateway(port, {
-  path: '/c4',
   cors: {
     origin: '*',
     credentials: true,
@@ -49,6 +49,28 @@ export class Connect4Gateway
 
   afterInit(server: Server) {
     console.log('WS server is running on port:', port);
+
+    // Register to Gateway
+
+    const gatewayHost = `${process.env.GATEWAY_HOST}:${
+      process.env.GATEWAY_PORT || 3000
+    }`;
+    new Gateway(gatewayHost)
+      .RegisterService({
+        key: process.env.WS_SERVICE_KEY,
+        port: port,
+      })
+      .then((res) => {
+        console.log(
+          'Regsited to gate way with key %s and endpoint %s',
+          res.key,
+          res.endpoint
+        );
+      })
+      .catch((err) => {
+        console.error(err);
+        console.log('Failed to register to gateway on %s', gatewayHost);
+      });
   }
 
   handleDisconnect(client: Socket) {
@@ -75,7 +97,6 @@ export class Connect4Gateway
     const room: Room = await this.C4service.CreateRoom(
       client.handshake.auth.uid
     );
-    client.join(String(room.id));
     return room;
   }
 

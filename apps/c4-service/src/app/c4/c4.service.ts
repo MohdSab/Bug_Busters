@@ -1,4 +1,8 @@
-import { BadRequestException, Inject, Injectable, Sse } from '@nestjs/common';
+import {
+  BadRequestException,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Room } from './room.entity';
 import { Repository } from 'typeorm';
@@ -15,7 +19,7 @@ export class Connect4Service {
   ) {}
 
   async CreateRoom(uid: number): Promise<Room> {
-    //TODO: if user already in room
+    //if user already in room
     //      return exception
     //      create new game and room objects
     //      return the new room object
@@ -25,11 +29,11 @@ export class Connect4Service {
     let newGame = new Connect4();
     newGame = await this.c4Repo.save(newGame);
 
-    let newRoom = new Room();
+    const newRoom = new Room();
     newRoom.currentGame = newGame;
-    newRoom = await this.roomRepo.save(newRoom);
+    return this.roomRepo.save(newRoom);
 
-    return this.JoinRoom(uid, newRoom.id);
+    // return this.JoinRoom(uid, newRoom.id);
   }
 
   async CheckInRoom(uid: number) {
@@ -43,18 +47,21 @@ export class Connect4Service {
   }
 
   async JoinRoom(uid: number, roomID: number): Promise<Room> {
-    //TODO: check if user is already in a room
+    //check if user is already in a room
     //      check if room exists
     if (this.CheckInRoom(uid)) {
       throw new BadRequestException('already in a room');
     }
+
     const room: Room = await this.roomRepo.findOneBy({ id: roomID });
     if (!room) {
-      throw new BadRequestException('no room exists with that id');
+      throw new NotFoundException('Room not found');
     }
+
     const game: Connect4 = await this.c4Repo.findOneBy({
       gid: room.currentGame.gid,
     });
+
     if (!game.player1) {
       room.p1 = uid;
       game.SetPlayer1(uid);
@@ -64,27 +71,28 @@ export class Connect4Service {
     } else {
       throw new BadRequestException('full room');
     }
-    this.c4Repo.save(game);
+
+    await this.c4Repo.save(game);
     return this.roomRepo.save(room);
   }
 
   async MakeMove(uid: number, move: number, roomID: number): Promise<Connect4> {
-    //TODO: get the game for this specific room
+    //get the game for this specific room
     //      call the object's makemove method with uid, move arguments
     //      return the new game board
     const room: Room = await this.roomRepo.findOneBy({ id: roomID });
     if (!room) {
-      throw new BadRequestException('no room exists with that id');
+      throw new BadRequestException('Room not found');
     }
     const game: Connect4 = room.currentGame;
     game.MakeMove(uid, move);
-    return this.c4Repo.save(game); //temp return just to satisfy compiler
+    return this.c4Repo.save(game);
   }
 
   async Replay(roomID: number) {
     const room: Room = await this.roomRepo.findOneBy({ id: roomID });
     if (!room) {
-      throw new BadRequestException('no room exists with that id');
+      throw new NotFoundException('Room not found');
     }
     const game: Connect4 = room.currentGame;
     game.ResetBoard();
