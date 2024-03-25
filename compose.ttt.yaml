@@ -1,13 +1,13 @@
 version: "3.8"
 
 include:
-  - path: ./compose.base.yaml
+  - path: ./compose.base.dev.yaml
 
 services:
   ttt-service:
     build:
       context: .
-      dockerfile: ./apps/ttt-service/Dockerfile
+      dockerfile: ./apps/ttt-service/Dockerfile.dev
     develop:
       watch:
         - action: sync
@@ -28,13 +28,14 @@ services:
       DB_DB: ttt
       GATEWAY_HOST: gateway
       GATEWAY_PORT: 3000
-      SERVICE_KEY: ttt-service
       PORT: 4031
+      SERVICE_KEY: ttt-service
       WS_SERVICE_KEY: ttt-ws-service
       WS_PORT: 8031
       WS_PATH: /ttt
     ports:
       - 4031:4031
+      - 8031:8031
   
   ttt-db:
     image: postgres:alpine
@@ -47,7 +48,7 @@ services:
   ttt-web:
     build:
       context: .
-      dockerfile: ./apps/ttt-ui/Dockerfile
+      dockerfile: ./apps/ttt-ui/Dockerfile.dev
     develop:
       watch:
         - action: sync
@@ -64,6 +65,7 @@ services:
       - 4200:4200
     environment:
       NX_TTT_SERVICE_KEY: ttt-service
+      NX_TTT_WS_SERVICE_KEY: ttt-ws-service
       NX_GATEWAY_HOST: localhost
       NX_GATEWAY_PORT: 3000
 

@@ -6,9 +6,6 @@
 # Run the container with `docker run -p 3000:3000 -t ttt-service`.
 FROM docker.io/node:lts-alpine
 
-ENV HOST=0.0.0.0
-ENV PORT=3000
-
 WORKDIR /app
 
 COPY package.json .
@@ -16,7 +13,6 @@ COPY package-lock.json .
 RUN npm --omit=dev install
 
 COPY dist/apps/ttt-service ttt-service
-# RUN chown -R ttt-service:ttt-service .
 
 # You can remove this install step if you build with `--bundle` option.
 # The bundled output will include external dependencies.

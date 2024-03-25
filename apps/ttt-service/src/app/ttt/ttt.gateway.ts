@@ -15,6 +15,7 @@ import { TicTacToe } from './ttt.entity';
 import { TTTService } from './ttt.service';
 import { Room } from './room.entity';
 import { Gateway } from '@bb/gateway-lib';
+import { UnauthorizedException } from '@nestjs/common';
 
 export type NewGameState = {
   roomNumber: number;
@@ -36,7 +37,7 @@ type ResponseDTO<T> = {
   data: T;
 };
 
-const port = +process.env.WS_PORT || 8000;
+const port = +process.env.WS_PORT || 8031;
 
 @WebSocketGateway(port, {
   cors: {
@@ -51,10 +52,18 @@ export class TicTacToeGateway
   @WebSocketServer()
   server: Server;
 
-  // @InjectRepository(TicTacToe)
-  // private tttRepo: Repository<TicTacToe>;
+  constructor(private tttService: TTTService) {}
 
-  constructor(private tttService: TTTService) {
+  /**
+   * Special function of OnGatewayConnection
+   * @param client
+   */
+  handleConnection(client: Socket) {
+    console.log('client connected: ', client.id);
+  }
+
+  afterInit(server: Server) {
+    console.log('WS server is running on port: ', port);
     new Gateway(`${process.env.GATEWAY_HOST}:${process.env.GATEWAY_PORT}`)
       .RegisterService({
         key: process.env.WS_SERVICE_KEY,
@@ -67,29 +76,17 @@ export class TicTacToeGateway
             ' with endpoint: ' +
             route.endpoint
         );
-      });
-  }
-
-  /**
-   * Special function of OnGatewayConnection
-   * @param client
-   */
-  handleConnection(client: Socket) {
-    console.log('client connected: ', client.id);
-  }
-
-  afterInit(server: Server) {
-    console.log('WS server is running on port: ', port);
+      })
+      .catch(console.error);
   }
 
   async handleDisconnect(client: Socket) {
-    const room: Room = await this.tttService.onDisconnect(
-      client.handshake.auth.uid
-    );
+    console.log('client disconnecting', client.id);
+    const room = await this.tttService.onDisconnect(client.handshake.auth.uid);
     // Since this gets called if someone leaves the landing page,
     // who might not necessarily be in a room yet,
     // this check should be optional.
-    if (room != null) {
+    if (room) {
       console.log('Disconnecting from room', room.id);
       this.server.to(String(room.id)).emit('player-disconnected', {
         error: null,
@@ -103,7 +100,7 @@ export class TicTacToeGateway
   async handleMove(
     @ConnectedSocket() client: Socket,
     @MessageBody() data: MessageDTO
-  ) {
+  ): Promise<ResponseDTO<TicTacToe>> {
     /*
      * Receives move from some player (stored in data), move may be valid/invalid
      * If valid,
@@ -115,46 +112,60 @@ export class TicTacToeGateway
      *
      * required data: roomCode, move
      */
-    const ttt = await this.tttService.MakeMove(
-      client.handshake.auth.uid,
-      data.move,
-      data.roomCode
-    );
-    this.server.to(String(data.roomCode)).emit('player-moved', ttt);
-    return ttt;
+    try {
+      const ttt = await this.tttService.MakeMove(
+        client.handshake.auth.uid,
+        data.move,
+        data.roomCode
+      );
+      client.to(String(data.roomCode)).emit('player-moved', ttt);
+      return {
+        data: ttt,
+      };
+    } catch (err) {
+      return {
+        data: null,
+        error: err,
+      };
+    }
   }
 
   @SubscribeMessage('create-room')
-  async createRoom(@ConnectedSocket() client: Socket): Promise<Room> {
+  async createRoom(
+    @ConnectedSocket() client: Socket
+  ): Promise<ResponseDTO<Room>> {
     /*
      * Create a room where the player who created it
      * is the xPlayer
      *
      * required data: currentPlayer
      */
-    // try {
-    //   // create a new TTT object and update attributes
-    //   const ttt = new TicTacToe();
-    //   ttt.SetXPlayer(data.currentPlayer);
-    //   await this.tttRepo.save(ttt);
 
-    //   // connect client to the room
-    //   client.join(String(ttt.roomCode));
+    try {
+      if (!client.handshake.auth.uid) throw new UnauthorizedException();
 
-    //   // return results
-    //   const payload: NewGameState = {
-    //     board: ttt.board,
-    //     roomNumber: ttt.roomCode,
-    //     winner: ttt.winner,
-    //     wonBy: null,
-    //     validResponse: true,
-    //   };
-    //   return JSON.stringify(payload);
-    // } catch (error) {
-    //   console.error('Error creating a room: oops :(((', error);
-    // }
-    console.log(client.handshake.auth.uid);
-    const room = await this.tttService.createRoom(client.handshake.auth.uid);
+      const room = await this.tttService.createRoom(client.handshake.auth.uid);
+      // client.join('' + room.id);
+      return {
+        data: room,
+      };
+    } catch (err) {
+      return {
+        error: err,
+        data: null,
+      };
+    }
+  }
+
+  @SubscribeMessage('create-single')
+  async createSingle(@ConnectedSocket() client: Socket): Promise<Room> {
+    /*
+     * Create a room where the player who created it
+     * is the xPlayer
+     *
+     * required data: currentPlayer
+     */
+    const room = await this.tttService.makeRoomAI(client.handshake.auth.uid);
     client.join('' + room.id);
     return room;
   }
@@ -174,6 +185,7 @@ export class TicTacToeGateway
     const uid = client.handshake.auth.uid;
 
     try {
+      if (!uid) throw new UnauthorizedException();
       const room = await this.tttService.joinRoom(uid, roomId);
 
       client.join(String(room.id));

@@ -28,16 +28,18 @@ export function useSocket() {
 
 interface Props extends PropsWithChildren<object> {
   host: string;
+  serviceKey: string;
   path?: string;
 }
 
 /**
  *
  * @param host - the host of the socket.io server
- * @param path - the path of the socket gateway on the host
+ * @param serviceKey - the key of the service
+ * @param path - the path of the resource
  * @returns Context Provider that provide the socket connected to the host and a loading state
  */
-export function WebsocketProvider({ host, path, children }: Props) {
+export function WebsocketProvider({ host, path, serviceKey, children }: Props) {
   const { account, loading: accLoading } = useAccount();
   const [socket, setSocket] = useState<Socket | null>(null);
   const [loading, setLoading] = useState(false);
@@ -52,16 +54,21 @@ export function WebsocketProvider({ host, path, children }: Props) {
 
   useEffect(() => {
     if (accLoading) return;
-    const socket = io({
-      host,
-      path,
+    const socket = io(`localhost:3002`, {
+      extraHeaders: {
+        key: serviceKey,
+      },
+      query: {
+        key: serviceKey,
+      },
       auth: {
         uid: account?.uid,
       },
+      transports: ['websocket'],
       autoConnect: false,
     });
 
-    socket.connect();
+    socket.on('connect_error', console.log);
 
     socket.on('connect', () => {
       console.log('Connecting as: ', socket.id);
@@ -74,6 +81,8 @@ export function WebsocketProvider({ host, path, children }: Props) {
       setSocket(null);
       setLoading(false);
     });
+
+    socket.connect();
 
     return () => {
       socket.disconnect();

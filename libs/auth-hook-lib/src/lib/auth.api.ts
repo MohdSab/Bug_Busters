@@ -3,12 +3,13 @@ import { Account } from './account.type';
 export interface SignUpPayload {
   username: string;
   password: string;
+  avatar?: string;
 }
 
 export class AuthApi {
   hostApiUrl: string;
   constructor(private host: string) {
-    this.hostApiUrlApiUrl = host + '/api';
+    this.hostApiUrl = host;
   }
 
   setAccessToken(accessToken: string) {
@@ -61,11 +62,19 @@ export class AuthApi {
     })
       .then((res) => res.json())
       .then((res) => {
+        if (res.error) {
+          console.log('Error while fetching account:', res.message);
+          return null;
+        }
         return {
           uid: res.uid,
           username: res.username,
           profile: res.profile,
         };
+      })
+      .catch((err) => {
+        console.log('Error while fetcing account:', err);
+        return null;
       });
   }
 
@@ -99,9 +108,9 @@ export class AuthApi {
   }
 
   getAvatars(): Promise<string[]> {
-    return fetch(this.hostApiUrl + '/avatars')
+    return fetch('http://' + this.hostApiUrl + '/avatars')
       .then((res) => res.json() as Promise<string[]>)
-      .then((avatars) => avatars.map((a) => this.host + a))
+      .then((avatars) => avatars.map((a) => 'http://' + this.host + a))
       .catch((err) => {
         console.error(err);
         return [];

@@ -1,8 +1,6 @@
 import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 
-import { AppController } from './app.controller';
-import { AppService } from './app.service';
 import { TttModule } from './ttt/ttt.module';
 
 @Module({
@@ -16,11 +14,11 @@ import { TttModule } from './ttt/ttt.module';
       database: process.env.DB_DB || 'ttt',
       autoLoadEntities: true,
       synchronize: true,
-      logging: true,
+      // logging: true,
     }),
     TttModule,
   ],
-  controllers: [AppController],
-  providers: [AppService],
+  controllers: [],
+  providers: [],
 })
 export class AppModule {}

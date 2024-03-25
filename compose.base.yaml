@@ -4,17 +4,36 @@ services:
       context: .
       dockerfile: ./apps/api-gateway/Dockerfile
     depends_on:
-      - pg
+      - gateway-db
     ports:
       - 3000:3000
+      - 3002:3002
     environment:
       PORT: 3000
+      DB_HOST: gateway-db
+      DB_PORT: 5432
+      DB_USER: gateway
+      DB_PW: gateway
+      DB_DB: gateway
+      WS_PORT: 3001
+      WS_PROXY_PORT: 3002
+  gateway-db:
+    image: postgres:alpine
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: gateway
+      POSTGRES_PASSWORD: gateway
+      POSTGRES_DB: gateway
 
   auth-service:
-    image: auth-service
+    build:
+      context: .
+      dockerfile: ./apps/auth-service/Dockerfile
     depends_on:
       - pg
       - gateway
+    ports:
+      - 3010:3010
     environment:
       PG_HOST: pg
       PG_PORT: 5432

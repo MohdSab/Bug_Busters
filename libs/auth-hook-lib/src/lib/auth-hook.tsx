@@ -89,6 +89,7 @@ export function AccountProvider({ host, children }: Props) {
     authApi.setAccessToken(accessToken);
     setLoading(true);
     setAccount(null);
+
     return authApi.getAccount().then((acc) => {
       setLoading(false);
       setAccount(acc);

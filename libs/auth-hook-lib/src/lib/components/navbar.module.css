@@ -1,0 +1,40 @@
+.nav-link {
+  padding: 24px;
+}
+
+.badge {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: center;
+  gap: 16px;
+}
+
+.avatar {
+  padding-right: 100%;
+  padding-top: 100%;
+  border-radius: 100%;
+  background-position: center;
+  background-repeat: no-repeat;
+  background-size: cover;
+}
+
+.tag h4, .tag p {
+  margin: 0;
+}
+
+.butt {
+  border: none;
+  border-radius: 8px;
+  text-transform: uppercase;
+  background-image: radial-gradient(closest-side, yellow, green, purple, orange);
+  padding: 16px 32px;
+
+  transition: padding 1s;
+}
+
+.butt:hover {
+  background: radial-gradient(ellipse at top, #e66465, transparent),
+            radial-gradient(ellipse at bottom, #4d9f0c, transparent);
+  padding: 16px 48px;
+}

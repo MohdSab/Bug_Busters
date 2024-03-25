@@ -15,7 +15,10 @@ async function bootstrap() {
   const app = await NestFactory.create<NestExpressApplication>(AppModule);
   const globalPrefix = 'api';
   app.setGlobalPrefix(globalPrefix);
-  app.useStaticAssets(join(__dirname, 'public'));
+  app.useStaticAssets(join(__dirname, 'public'), {
+    // prefix: 'fuk',
+    prefix: '/api',
+  });
   app.enableCors();
   const port = +process.env.PORT || 3010;
   const key = process.env.AUTH_KEY || 'auth';
