@@ -1,4 +1,5 @@
 import { Test, TestingModule } from '@nestjs/testing';
+import fsPromises from 'node:fs/promises';
 import { JwtModule } from '@nestjs/jwt';
 import { getRepositoryToken } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
@@ -7,6 +8,15 @@ import { AppController, SignUpDTO } from './app.controller';
 import { AppService } from './app.service';
 import { Account } from './account.entity';
 import { Profile } from './profile.entity';
+import { ExceptionsHandler } from '@nestjs/core/exceptions/exceptions-handler';
+import exp from 'node:constants';import {
+  Get,
+  Post,
+  Put,
+  Body,
+  Req,
+  UnauthorizedException,
+} from '@nestjs/common';
 class AccountRepo extends Repository<Account> {}
 class ProfileRepo extends Repository<Profile> {}
 
@@ -15,6 +25,7 @@ describe('AppController', () => {
   let controller: AppController;
   let accountRepo: AccountRepo;
   let profileRepo: ProfileRepo;
+  let service: AppService;
 
   const acc1: Account = new Account();
   acc1.uid = 0;
@@ -82,6 +93,7 @@ describe('AppController', () => {
       ],
     }).compile();
 
+    service = app.get<AppService>(AppService);
     controller = app.get<AppController>(AppController);
     accountRepo = app.get<AccountRepo>(accountRepoToken);
     profileRepo = app.get<ProfileRepo>(profileRepoToken);
@@ -90,6 +102,81 @@ describe('AppController', () => {
   describe('getData', () => {
     it('should return "Hello API"', () => {
       expect(controller.getData()).toEqual({ message: 'Hello API' });
+    });
+  });
+
+  describe('signout', () => {
+    it('should do nothing?', () => {
+      controller.signout();
+      expect(true).toBe(true);
+    });
+  });
+
+  describe('getAccount', () => {
+    it('should return an account', () => {
+      jest.spyOn(service, "verify").mockReturnValueOnce(Promise.resolve(acc1));
+      return controller.getAccount({
+        headers: {
+          authorization: "Bearer abcdef"
+        }
+      } as any).then((res) => expect(res).toEqual(acc1));
+    });
+
+    it('should throw exception because no token', () => {
+      return controller.getAccount({
+        headers: {
+          authorization: "idk bro abcdef"
+        }
+      } as any)
+        .then(() => expect(true).toBe(false))
+        .catch((err) => {
+          expect(err).toBeInstanceOf(UnauthorizedException);
+        });
+    });
+
+    it('should throw exception because no account', () => {
+      jest.spyOn(service, "verify").mockReturnValueOnce(Promise.resolve(null));
+      return controller.getAccount({
+        headers: {
+          authorization: "Bearer abcdef"
+        }
+      } as any)
+        .then(() => expect(true).toBe(false))
+        .catch((err) => {
+          expect(err).toBeInstanceOf(UnauthorizedException);
+        });
+    });
+  });
+
+  describe('updateProfile', () => {
+    it('should do nothing?', () => {
+      controller.updateProfile();
+      expect(true).toBe(true);
+    });
+  });
+
+  describe('getAvatars', () => {
+    it('should do nothing?', () => {
+      jest.spyOn(service, 'getAvatars').mockReturnValueOnce(Promise.resolve(["asd","asd","asd","asd","asdqwdqwdad "]));
+      controller.getAvatars().then((res) => expect(res).toStrictEqual(["asd","asd","asd","asd","asdqwdqwdad "]));
+    });
+  });
+
+  describe('signIn', () => {
+    it('should return access_token', () => {
+      const signUpData: SignUpDTO = {
+        username: acc1.username,
+        password: acc1.password,
+        avatar: 'abcd',
+      };
+
+      jest
+        .spyOn(accountRepo, 'findOne')
+        .mockResolvedValueOnce(Promise.resolve(acc1));
+
+      return controller.signin(signUpData).then((res) => {
+        expect(res).toHaveProperty('access_token');
+      });
     });
   });
 

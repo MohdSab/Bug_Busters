@@ -1,7 +1,8 @@
 import { Test } from '@nestjs/testing';
-import { JwtModule } from '@nestjs/jwt';
+import { JwtModule, JwtService } from '@nestjs/jwt';
 import { getRepositoryToken } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
+import fsPromises from 'node:fs/promises';
 
 import { AppService } from './app.service';
 import { Account } from './account.entity';
@@ -13,6 +14,7 @@ class ProfileRepo extends Repository<Profile> {}
 
 describe('AppService', () => {
   let service: AppService;
+  let jwtservice: JwtService;
   let accountRepo: AccountRepo;
   let profileRepo: ProfileRepo;
 
@@ -83,6 +85,7 @@ describe('AppService', () => {
     }).compile();
 
     service = app.get<AppService>(AppService);
+    jwtservice = app.get<JwtService>(JwtService);
     accountRepo = app.get<AccountRepo>(accountRepoToken);
     profileRepo = app.get<ProfileRepo>(profileRepoToken);
   });
@@ -92,6 +95,34 @@ describe('AppService', () => {
       expect(service.getData()).toEqual({ message: 'Hello API' });
     });
   });
+
+  describe('signout', () => {
+    it('should do nothing?', () => {
+      service.signout();
+      expect(true).toBe(true);
+    });
+  });
+
+  describe('verify', () => {
+    it('should return an account', () => {
+      jest.spyOn(jwtservice, 'verify').mockReturnValueOnce({
+        verfied: true
+      });
+      jest.spyOn(accountRepo, "findOneBy").mockReturnValueOnce(Promise.resolve(acc2));
+      return service.verify("abc").then((res) => 
+      expect(res).toEqual(acc2));
+    });
+
+    it('should not return an account', () => {
+      jest.spyOn(jwtservice, 'verify').mockReturnValueOnce({
+        verfied: true
+      });
+      jest.spyOn(accountRepo, "findOneBy").mockReturnValueOnce(Promise.resolve(null));
+      return service.verify("abc").then((res) => 
+      expect(res).toBe(null));
+    });
+  });
+
 
   describe('signup', () => {
     it('Should gives tokens', () => {
@@ -154,4 +185,17 @@ describe('AppService', () => {
       });
     });
   });
+
+  describe('getRandomAvatar', () => {
+    it('Should return a string', () => {
+      jest
+        .spyOn(service, 'getAvatars')
+        .mockResolvedValueOnce(Promise.resolve(['1','2','3','4','5']));
+
+      return service.getRandomAvatar().then((res) => {
+        expect(res).toStrictEqual('4');
+      });
+    });
+  });
+
 });

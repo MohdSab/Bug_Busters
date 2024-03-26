@@ -11,6 +11,9 @@ class GameRepo extends Repository<Game> {}
 describe('GameController', () => {
   let controller: GameController;
   let gameRepo: GameRepo;
+  let service: GameService;
+
+  const newGame = new Game();
 
   beforeEach(async () => {
     const gameRepoToken = getRepositoryToken(Game);
@@ -27,9 +30,27 @@ describe('GameController', () => {
 
     controller = module.get<GameController>(GameController);
     gameRepo = module.get<GameRepo>(gameRepoToken);
+    service = module.get<GameService>(GameService);
   });
 
   it('should be defined', () => {
     expect(controller).toBeDefined();
+  });
+
+  it('should return a game', () => {
+    const temp = {
+      gid: 1,
+      name: 'Tic-tac-toe',
+      description: 'A boring game',
+      thumbnail: "I don't know",
+      url: 'http://localhost:3000',
+    };
+    jest.spyOn(service, 'create').mockReturnValueOnce(newGame);
+    expect(controller.create(temp)).toEqual(newGame);
+  });
+
+  it('should return a game', () => {
+    jest.spyOn(service, 'findOne').mockReturnValueOnce(Promise.resolve(newGame));
+    expect(controller.findOne('1')).toEqual(Promise.resolve(newGame));
   });
 });
