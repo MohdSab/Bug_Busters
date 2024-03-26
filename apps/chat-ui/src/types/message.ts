@@ -1,6 +1,7 @@
 interface Message {
+    roomCode:string | null,
     username:string,
-    message:string
+    message:string | null
 }
 
 
