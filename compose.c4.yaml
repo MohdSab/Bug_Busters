@@ -1,0 +1,71 @@
+version: '3.8'
+
+include:
+  - path: ./compose.base.dev.yaml
+
+services:
+  c4-service:
+    build:
+      context: .
+      dockerfile: ./apps/c4-service/Dockerfile.dev
+    develop:
+      watch:
+        - action: sync
+          path: ./apps/c4-service/src
+          target: /app/apps/c4-service/src
+          ignore:
+            - node_modules/
+        - action: rebuild
+          path: package.json
+    depends_on:
+      - gateway
+      - c4-db
+    environment:
+      DB_HOST: c4-db
+      DB_PORT: 5432
+      DB_USER: c4
+      DB_PW: c4
+      DB_DB: c4
+      GATEWAY_HOST: gateway
+      GATEWAY_PORT: 3000
+      SERVICE_KEY: c4-service
+      PORT: 4032
+      WS_SERVICE_KEY: c4-ws-service
+      WS_PORT: 8032
+      WS_PATH: /c4
+    ports:
+      - 4032:4032
+
+  c4-db:
+    image: postgres:alpine
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: c4
+      POSTGRES_PASSWORD: c4
+      POSTGRES_DB: c4
+
+  c4-web:
+    build:
+      context: .
+      dockerfile: ./apps/c4-fe/Dockerfile
+    develop:
+      watch:
+        - action: sync
+          path: ./apps/c4-fe/src
+          target: /app/apps/c4-fe/src
+        - action: sync
+          path: ./libs
+          target: /app/libs
+        - action: rebuild
+          path: package.json
+    depends_on:
+      - c4-service
+    ports:
+      - 4200:4200
+    environment:
+      NX_C4_SERVICE: c4-service
+      NX_C4_WS_SERVICE: c4-ws-service
+      NX_GATEWAY_HOST: 127.0.0.1
+      NX_GATEWAY_PORT: 3000
+      NX_GATEWAY_WS_PORT: 3002
+# TODO setup volume for db

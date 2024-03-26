@@ -37,8 +37,8 @@ services:
     environment:
       PG_HOST: pg
       PG_PORT: 5432
-      PG_USER: test
-      PG_PW: test
+      PG_USER: auth
+      PG_PW: auth
       PG_DB: auth
       GATEWAY_HOST: gateway
       GATEWAY_PORT: 3000
@@ -48,8 +48,8 @@ services:
     image: postgres:alpine
     restart: unless-stopped
     environment:
-      POSTGRES_USER: test
-      POSTGRES_PASSWORD: test
+      POSTGRES_USER: auth
+      POSTGRES_PASSWORD: auth
       POSTGRES_DB: auth
 
 # TODO setup volume for db
