@@ -47,6 +47,10 @@
       "options": {
         "jestConfig": "apps/chat-service/jest.config.ts"
       }
+    },
+    "docker-build": {
+      "dependsOn": ["build"],
+      "command": "docker build -f apps/chat-service/Dockerfile . -t chat-service"
     }
   },
   "tags": []

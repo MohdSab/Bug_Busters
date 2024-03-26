@@ -10,6 +10,7 @@ import {
 } from '@nestjs/websockets';
 import { Server, Socket } from 'socket.io';
 import { ChatService } from './chat.service';
+import { Gateway } from '@bb/gateway-lib'
 
 type MessageDTO = {
     roomCode: string | null, //roomCode generally follows "<game name> + <gameRoomCode>"
@@ -22,7 +23,13 @@ type ResponseDTO<T> = {
     data: T
 }
 
-const port = 9000;
+//NOTE: MAY NEED TO CHANGE THESE VALUES
+const key = process.env.WS_SERVICE_KEY || 'chat-ws-service';
+const port = Number(process.env.CHAT_WS_PORT) || 9000;
+const gtwyHost = process.env.GATEWAY_HOST || 'localhost';
+const gtwyPort = Number(process.env.GATEWAY_PORT) || 3000;
+
+
 @WebSocketGateway(
     port,
     {
@@ -43,7 +50,19 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayInit, OnGatewa
         /* 
         nestjs default gateway function
         */
-        console.log('WebSocket chat server running on port: ', port);
+        console.log('WebSocket chat server running on port:', port);
+        //register this gateway onto the apigateway
+        
+        /*
+        new Gateway(`${gtwyHost}:${gtwyPort}`)
+        .RegisterService({
+            key: key,
+            port: port
+        }).then((route) => {
+            console.log('CHAT WS registered with key', route.key, 'on endpoint', route.endpoint);
+        }).catch(console.error);
+        */
+
     }
     
     handleConnection(client: Socket) {
