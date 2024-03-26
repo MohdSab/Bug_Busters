@@ -40,9 +40,12 @@ export class ProxyController {
     });
 
     http
-      .createServer((req, res) => ProxyController.proxy.web(req, res))
+      .createServer((req, res) => {
+        ProxyController.proxy.web(req, res);
+      })
       .on('upgrade', (req, socket, head) => {
-        const key = req.headers.key as string;
+        const url = new URL(req.url, `http://${req.headers.host}`);
+        const key = (req.headers.key as string) || url.searchParams.get('key');
 
         if (!key) {
           req.destroy(new BadRequestException('key is missing from header'));
@@ -52,13 +55,13 @@ export class ProxyController {
         fetch('http://localhost:3000/api/routes/' + key)
           .then((res) => res.json())
           .then((route: Route) => {
-            console.log(route);
             if (!route) {
               req.destroy(
                 new BadRequestException('cannot find service with key ' + key)
               );
               return;
             }
+
             ProxyController.proxy.ws(
               req,
               socket,
@@ -67,7 +70,7 @@ export class ProxyController {
                 target: {
                   host: route.ip,
                   port: route.port,
-                  path: route.prefix,
+                  // path: route.prefix,
                 },
               },
               (err) => {
@@ -75,7 +78,8 @@ export class ProxyController {
                 return;
               }
             );
-          });
+          })
+          .catch(console.error);
       })
       .listen(port);
 
@@ -88,25 +92,34 @@ export class ProxyController {
     @Res() res: Response,
     @Param('key') key: string
   ) {
-    return this.routerService.findOne(key).then((route) => {
-      console.log('proxying to ', route);
-      if (route !== null) {
-        req.headers.prefix = route.prefix;
-        ProxyController.proxy.web(
-          req,
-          res,
-          {
-            target: {
-              host: route.ip,
-              port: route.port,
-            },
-          },
-          (err) => console.error(err)
-        );
-      } else {
-        res.json(new BadRequestException('Not found service with key ' + key));
-        res.status(404);
-      }
-    });
+    return this.routerService
+      .findOne(key)
+      .then((route) => {
+        if (route !== null) {
+          req.headers.prefix = route.prefix;
+          try {
+            ProxyController.proxy.web(
+              req,
+              res,
+              {
+                target: {
+                  host: route.ip,
+                  port: route.port,
+                },
+              },
+              console.error
+            );
+          } catch (err) {
+            console.error(err);
+            return;
+          }
+        } else {
+          res.json(
+            new BadRequestException('Not found service with key ' + key)
+          );
+          res.status(404);
+        }
+      })
+      .catch(console.error);
   }
 }

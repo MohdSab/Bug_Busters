@@ -20,7 +20,5 @@ COPY package.json .
 RUN npm --omit=dev install
 
 COPY dist/apps/auth-service auth-service
-RUN chown -R auth-service:auth-service .
-
 
 CMD [ "node", "auth-service/main.js" ]

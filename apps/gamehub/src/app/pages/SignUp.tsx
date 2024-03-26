@@ -1,7 +1,7 @@
 import styles from './SignUp.module.css';
 import React, { useEffect } from 'react';
 import { useNavigate } from 'react-router';
-import { useAccount } from '../hooks/account';
+import { useAccount } from '@bb/auth-hook-lib';
 import { Navbar } from '../components/Navbar';
 
 export default function SignUp() {

@@ -30,6 +30,7 @@ export class AppService {
     const user: Account = await this.accountRepo.findOne({
       where: { username: username },
     });
+
     if (user == null) {
       throw new UnauthorizedException('User does not exist.');
     }

@@ -12,15 +12,23 @@ ENV PORT=3020
 WORKDIR /app
 
 RUN addgroup --system gamehub && \
-          adduser --system -G gamehub gamehub
+  adduser --system -G gamehub gamehub
 
 
 COPY package.json .
 # You can remove this install step if you build with `--bundle` option.
 # The bundled output will include external dependencies.
-RUN npm gamehub --omit=dev -f install
+RUN npm install
+RUN npm install -g nx@latest
 
-COPY dist/apps/gamehub gamehub
-RUN chown -R gamehub:gamehub .
+COPY apps/gamehub apps/gamehub
 
-CMD [ "node", "gamehub/main.js" ]
+COPY nx.json .
+COPY tsconfig.base.json .
+COPY libs/ libs/
+
+# RUN chown -R gamehub:gamehub .
+
+EXPOSE 4200
+
+CMD [ "nx", "serve", "gamehub", "--verbose"]

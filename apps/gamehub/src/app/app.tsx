@@ -6,9 +6,11 @@ import Homepage from './pages/Homepage';
 import SignUp from './pages/SignUp';
 import SignIn from './pages/SignIn';
 import NxWelcome from './nx-welcome';
-import { AccountProvider } from './hooks/account';
+import { AccountProvider } from '@bb/auth-hook-lib';
 import GameHubPage from './pages/GameListPage';
 import TicTacToeArrival from './pages/temptttpage';
+import { GatewayProvider, useGateway } from '@bb/gateway-hook-lib';
+import { useEffect, useState } from 'react';
 
 const router = createBrowserRouter([
   {
@@ -37,11 +39,36 @@ const router = createBrowserRouter([
   },
 ]);
 
-export function App() {
+function Wrapper() {
+  const { getService, getHost } = useGateway();
+  const [loading, setLoading] = useState(true);
+  const [authHost, setAuthHost] = useState('');
+
+  useEffect(() => {
+    getService(process.env.NX_AUTH_SERVICE_KEY || 'auth').then((route) => {
+      if (route) {
+        setAuthHost(getHost() + route.endpoint);
+      }
+      setLoading(false);
+    });
+  }, []);
+
+  if (loading) return <div>Loading...</div>;
+
   return (
-    <AccountProvider>
+    <AccountProvider host={authHost}>
       <RouterProvider router={router} />
     </AccountProvider>
+  );
+}
+
+export function App() {
+  return (
+    <GatewayProvider
+      host={process.env.NX_GATEWAY_HOST + ':' + process.env.NX_GATEWAY_PORT}
+    >
+      <Wrapper />
+    </GatewayProvider>
   );
 }
 

@@ -6,8 +6,6 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { Account } from './account.entity';
 import { JwtModule } from '@nestjs/jwt';
 import { Profile } from './profile.entity';
-// import { ServeStaticModule } from '@nestjs/serve-static';
-// import { join } from 'path';
 
 @Module({
   imports: [
@@ -20,6 +18,7 @@ import { Profile } from './profile.entity';
       database: process.env.PG_DB || "test2",
       entities: [Account, Profile],
       synchronize: true,
+      logging: true,
     }),
     TypeOrmModule.forFeature([Account, Profile]),
     JwtModule.register({

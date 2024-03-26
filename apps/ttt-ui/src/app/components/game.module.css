@@ -1,0 +1,57 @@
+/* App.css */
+
+/* Game container */
+.game {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    height: 100vh; /* Adjust as needed */
+}
+
+/* Game board */
+.gameBoard {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+/* Board status */
+.status {
+    margin-bottom: 20px;
+    font-size: 24px;
+}
+
+/* Individual squares */
+.square {
+    font-size: 36px;
+    width: 100px;
+    height: 100px;
+    margin: 5px;
+    background-color: #f0f0f0; /* Adjust background color */
+    border: 2px solid #ccc; /* Adjust border color */
+    border-radius: 5px;
+    cursor: pointer;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    transition: background-color 0.3s ease; /* Add transition effect */
+}
+
+.square:hover {
+    background-color: #e0e0e0; /* Adjust hover background color */
+}
+
+/* Board rows */
+.boardRow {
+    display: flex;
+}
+
+.red {
+    color: red;
+}
+
+.blue {
+    color: blue;
+}
+
