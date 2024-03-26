@@ -47,7 +47,11 @@ export class Gateway {
   GetAllServices() {
     return fetch(`http://${this.gatewayHost}/api/routes`)
       .then((res) => res.json())
-      .then((res) => res as RouteResp[]);
+      .then((res) => res as RouteResp[])
+      .catch((err) => {
+        console.error(err);
+        return [];
+      });
   }
 
   /**
@@ -58,7 +62,13 @@ export class Gateway {
    */
   GetService(key: string) {
     return fetch(`http://${this.gatewayHost}/api/routes/${key}`)
-      .then((res) => res.json())
+      .then((res) => {
+        if (res.status >= 400) {
+          throw new Error(res.statusText);
+        }
+
+        return res.json();
+      })
       .then((res) => res as RouteResp);
   }
 

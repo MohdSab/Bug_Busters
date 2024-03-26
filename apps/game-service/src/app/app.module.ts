@@ -2,21 +2,20 @@ import { Module } from '@nestjs/common';
 
 import { GameModule } from './game/game.module';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { Game } from './game/entities/game.entity';
 
 @Module({
   imports: [
     TypeOrmModule.forRoot({
       type: 'postgres',
-      host: 'localhost',
-      port: 5433,
-      username: 'root',
-      password: 'root',
-      database: 'testgservice',
-      entities: [Game],
+      host: process.env.DB_HOST || 'localhost',
+      port: +process.env.DB_PORT || 5432,
+      username: process.env.DB_USER || 'game',
+      password: process.env.DB_PW || 'game',
+      database: process.env.DB_DB || 'game',
+      autoLoadEntities: true,
       synchronize: true,
     }),
-    GameModule
+    GameModule,
   ],
 })
 export class AppModule {}

@@ -2,40 +2,40 @@
 import styles from './app.module.css';
 
 import { createBrowserRouter, RouterProvider } from 'react-router-dom';
-import Homepage from './pages/Homepage';
-import SignUp from './pages/SignUp';
-import SignIn from './pages/SignIn';
-import NxWelcome from './nx-welcome';
-import { AccountProvider } from '@bb/auth-hook-lib';
-import GameHubPage from './pages/GameListPage';
-import TicTacToeArrival from './pages/temptttpage';
+import { AccountProvider, SignIn, SignUp } from '@bb/auth-hook-lib';
 import { GatewayProvider, useGateway } from '@bb/gateway-hook-lib';
+import Homepage from './pages/Homepage';
+import NxWelcome from './nx-welcome';
+import GameHubPage from './pages/GameListPage';
 import { useEffect, useState } from 'react';
+import Layout from './components/Layout';
 
 const router = createBrowserRouter([
   {
     path: '/',
-    element: <Homepage />,
-  },
-  {
-    path: '/signin',
-    element: <SignIn />,
-  },
-  {
-    path: '/signup',
-    element: <SignUp />,
-  },
-  {
-    path: '/nx',
-    element: <NxWelcome title="bug-buster" />,
-  },
-  {
-    path: '/gamehub',
-    element: <GameHubPage />,
-  },
-  {
-    path: '/tictactoe',
-    element: <TicTacToeArrival />,
+    element: <Layout />,
+    children: [
+      {
+        index: true,
+        element: <Homepage />,
+      },
+      {
+        path: 'signin',
+        element: <SignIn />,
+      },
+      {
+        path: 'signup',
+        element: <SignUp />,
+      },
+      {
+        path: 'nx',
+        element: <NxWelcome title="bug-buster" />,
+      },
+      {
+        path: 'gamehub',
+        element: <GameHubPage />,
+      },
+    ],
   },
 ]);
 
@@ -65,7 +65,11 @@ function Wrapper() {
 export function App() {
   return (
     <GatewayProvider
-      host={process.env.NX_GATEWAY_HOST + ':' + process.env.NX_GATEWAY_PORT}
+      host={
+        (process.env.NX_GATEWAY_HOST || 'localhost') +
+        ':' +
+        (process.env.NX_GATEWAY_PORT || '3000')
+      }
     >
       <Wrapper />
     </GatewayProvider>

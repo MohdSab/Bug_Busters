@@ -1,0 +1,24 @@
+.game-list {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  justify-content: flex-start;
+  align-items: center;
+  gap: 16px;
+}
+
+.game-list > * {
+  flex-basis: 200px;
+  border: 1px solid red;
+  padding: 24px;
+  background-color: #ddd;
+  color: #000;
+
+  transition: background-color 0.5s;
+}
+
+.game-list > *:hover {
+  display: block;
+  background-color: #aaa;
+  cursor: pointer;
+}

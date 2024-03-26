@@ -1,0 +1,67 @@
+version: "3.8"
+
+include:
+  - path: ./compose.base.dev.yaml
+
+services:
+  game-service:
+    build:
+      context: .
+      dockerfile: ./apps/game-service/Dockerfile.dev
+    develop:
+      watch:
+        - action: sync
+          path: ./apps/game-service/src
+          target: /app/apps/game-service/src
+          ignore:
+            - node_modules/
+        - action: rebuild
+          path: package.json
+    depends_on:
+      - gateway
+      - game-db
+    environment:
+      DB_HOST: game-db
+      DB_PORT: 5432
+      DB_USER: game
+      DB_PW: game
+      DB_DB: game
+      GATEWAY_HOST: gateway
+      GATEWAY_PORT: 3000
+      PORT: 4030
+      SERVICE_KEY: game-service
+    ports:
+      - 4030:4030
+  
+  game-db:
+    image: postgres:alpine
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: game
+      POSTGRES_PASSWORD: game
+      POSTGRES_DB: game
+
+  gamehub-web:
+    build:
+      context: .
+      dockerfile: ./apps/gamehub/Dockerfile
+    develop:
+      watch:
+        - action: sync
+          path: ./apps/gamehub/src
+          target: /app/apps/gamehub/src
+        - action: sync
+          path: ./libs
+          target: /app/libs
+        - action: rebuild
+          path: package.json
+    depends_on:
+      - game-service
+    ports:
+      - 4200:4200
+    environment:
+      NX_AUTH_SERVICE_KEY: auth
+      NX_GAME_SERVICE_KEY: game-service
+      NX_GATEWAY_HOST: localhost
+      NX_GATEWAY_PORT: 3000
+

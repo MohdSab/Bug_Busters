@@ -7,7 +7,7 @@ services:
   ttt-service:
     build:
       context: .
-      dockerfile: ./apps/ttt-service/Dockerfile.dev
+      dockerfile: ./apps/ttt-service/Dockerfile
     develop:
       watch:
         - action: sync
@@ -45,28 +45,29 @@ services:
       POSTGRES_PASSWORD: ttt
       POSTGRES_DB: ttt
 
-  ttt-web:
-    build:
-      context: .
-      dockerfile: ./apps/ttt-ui/Dockerfile.dev
-    develop:
-      watch:
-        - action: sync
-          path: ./apps/ttt-ui/src
-          target: /app/apps/ttt-ui/src
-        - action: sync
-          path: ./libs
-          target: /app/libs
-        - action: rebuild
-          path: package.json
-    depends_on:
-      - ttt-service
-    ports:
-      - 4200:4200
-    environment:
-      NX_TTT_SERVICE_KEY: ttt-service
-      NX_TTT_WS_SERVICE_KEY: ttt-ws-service
-      NX_GATEWAY_HOST: localhost
-      NX_GATEWAY_PORT: 3000
+  # ttt-web:
+  #   build:
+  #     context: .
+  #     dockerfile: ./apps/ttt-ui/Dockerfile.dev
+  #   develop:
+  #     watch:
+  #       - action: sync
+  #         path: ./apps/ttt-ui/src
+  #         target: /app/apps/ttt-ui/src
+  #       - action: sync
+  #         path: ./libs
+  #         target: /app/libs
+  #       - action: rebuild
+  #         path: package.json
+  #   depends_on:
+  #     - ttt-service
+  #   ports:
+  #     - 4201:4200
+  #   environment:
+  #     NX_TTT_SERVICE_KEY: ttt-service
+  #     NX_TTT_WS_SERVICE_KEY: ttt-ws-service
+  #     NX_GATEWAY_HOST: localhost
+  #     NX_GATEWAY_PORT: 3000
+  #     NX_GATEWAY_NX_PORT: 3002
 
 # TODO setup volume for db

@@ -5,6 +5,7 @@ services:
       dockerfile: ./apps/api-gateway/Dockerfile
     depends_on:
       - gateway-db
+    restart: unless-stopped
     ports:
       - 3000:3000
       - 3002:3002
@@ -30,26 +31,27 @@ services:
       context: .
       dockerfile: ./apps/auth-service/Dockerfile
     depends_on:
-      - pg
+      - auth-db
       - gateway
+    restart: unless-stopped
     ports:
       - 3010:3010
     environment:
-      PG_HOST: pg
+      PG_HOST: auth-db
       PG_PORT: 5432
-      PG_USER: test
-      PG_PW: test
+      PG_USER: auth
+      PG_PW: auth
       PG_DB: auth
       GATEWAY_HOST: gateway
       GATEWAY_PORT: 3000
       PORT: 3010
 
-  pg:
+  auth-db:
     image: postgres:alpine
     restart: unless-stopped
     environment:
-      POSTGRES_USER: test
-      POSTGRES_PASSWORD: test
+      POSTGRES_USER: auth
+      POSTGRES_PASSWORD: auth
       POSTGRES_DB: auth
 
 # TODO setup volume for db

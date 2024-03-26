@@ -1,5 +1,38 @@
+a {
+  text-decoration: none;
+  color: inherit;
+}
+
 .nav-link {
-  padding: 24px;
+  box-sizing: border-box;
+  padding: 8px 16px;
+  width: 100px;
+  text-align: center;
+  background-color: #4d9f0c;
+  border-radius: 4px;
+  color: inherit;
+  text-decoration: none;
+  text-transform: uppercase;
+
+  transition: background-color 0.5s;
+}
+
+.nav-link:hover {
+  background-color: green;
+}
+
+.logo {
+  text-decoration: none;
+  color: inherit;
+  font-family: monospace;
+  font-size: 1.3rem;
+
+  transition: color 0.5s;
+  margin: 0;
+}
+
+.logo:hover {
+  color: red;
 }
 
 .badge {

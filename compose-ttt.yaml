@@ -1,0 +1,66 @@
+version: '3.8'
+
+services:
+  gateway:
+    image: api-gateway
+    # depends_on:
+    # - pg
+    ports:
+      - 3000:3000
+    environment:
+      PORT: 3000
+
+  auth-service:
+    image: auth-service
+    depends_on:
+      - pg-auth
+      - gateway
+    environment:
+      PG_HOST: pg-auth
+      PG_PORT: 5432
+      PG_USER: auth
+      PG_PW: auth
+      PG_DB: auth
+      GATEWAY_HOST: gateway
+      GATEWAY_PORT: 3000
+      PORT: 4321
+
+  pg-auth:
+    image: postgres:alpine
+    restart: always
+    environment:
+      POSTGRES_USER: auth
+      POSTGRES_PASSWORD: auth
+      POSTGRES_DB: auth
+
+  ttt-ui:
+    image: ttt-ui
+    volumes:
+      - ./apps/ttt-ui/src:/app/src
+    ports:
+      - 4200:4200
+    depends_on:
+      - ttt-service
+
+  ttt-service:
+    image: ttt-service
+    depends_on:
+      - pg-ttt
+      - auth-service
+    ports:
+      - 12345:12345
+    environment:
+      PG_HOST: pg-ttt
+      PG_PORT: 5432
+      PG_USER: ttt
+      PG_PW: ttt
+      PG_DB: ttt
+      PORT: 12345
+
+  pg-ttt:
+    image: postgres:alpine
+    restart: always
+    environment:
+      POSTGRES_USER: ttt
+      POSTGRES_PASSWORD: ttt
+      POSTGRES_DB: ttt

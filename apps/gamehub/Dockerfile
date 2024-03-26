@@ -6,14 +6,7 @@
 # Run the container with `docker run -p 3000:3000 -t gamehub`.
 FROM docker.io/node:lts-alpine
 
-ENV HOST=0.0.0.0
-ENV PORT=3020
-
 WORKDIR /app
-
-RUN addgroup --system gamehub && \
-  adduser --system -G gamehub gamehub
-
 
 COPY package.json .
 # You can remove this install step if you build with `--bundle` option.
@@ -27,8 +20,6 @@ COPY nx.json .
 COPY tsconfig.base.json .
 COPY libs/ libs/
 
-# RUN chown -R gamehub:gamehub .
-
 EXPOSE 4200
 
-CMD [ "nx", "serve", "gamehub", "--verbose"]
+CMD [ "nx", "serve", "gamehub"]
