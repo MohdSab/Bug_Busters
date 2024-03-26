@@ -22,7 +22,7 @@ export const ChatContainer: React.FC<ChatContainerProps> = (props) => {
     React.useEffect(() => {
         if (loading) return;
 
-        socket?.on('message-recieved', handleNewMessage);
+        socket?.on('message-received', handleNewMessage);
 
         return () => {
           socket?.disconnect();
