@@ -6,7 +6,7 @@ import React, { useEffect } from 'react';
 import { useState } from 'react';
 import { useLocation, useParams } from 'react-router';
 import { Navbar } from '@bb/auth-hook-lib';
-import { ChatContainer } from '@bb/chat-ui-lib/components'
+import { ChatContainer } from '@bb/chat-ui-lib';
 
 function Square({
   value,
@@ -63,7 +63,7 @@ export default function TTTPage() {
     justifyContent: 'center'
   }}>
     <TicTacToe />
-    <ChatContainer />
+    {/* <ChatContainer /> */}
   </div>;
 }
 

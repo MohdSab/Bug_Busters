@@ -1,1 +1,1 @@
-export * from './lib/chat-ui-lib';
+export * from './lib/components/chatContainer';

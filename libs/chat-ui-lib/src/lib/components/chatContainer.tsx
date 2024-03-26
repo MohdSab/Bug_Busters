@@ -11,7 +11,7 @@ interface ChatContainerProps {
   username: string
 }
 
-const ChatContainer: React.FC<ChatContainerProps> = (props) => {
+export const ChatContainer: React.FC<ChatContainerProps> = (props) => {
     const [messages, setMessages] = React.useState<Message[]>([]);
     const { socket, loading} = useChatSocket();
 
@@ -37,4 +37,3 @@ const ChatContainer: React.FC<ChatContainerProps> = (props) => {
   );
 };
 
-export default ChatContainer;
