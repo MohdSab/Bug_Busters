@@ -1,0 +1,56 @@
+.avatarList {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  gap: 16px;
+  justify-content: space-between;
+  align-items: center;
+  margin: 16px auto;
+}
+
+.avatar {
+  width: 160px;
+  height: 160px;
+  background-position: center center;
+  background-size: contain;
+}
+
+.selectedAvatar {
+  border: 4px inset green;
+}
+
+.everything {
+  padding: 16px 32px;
+  margin: 0 auto;
+}
+
+.formText {
+  display: flex;
+  flex-direction: row;
+  justify-content: flex-start;
+  gap: 32px;
+  align-items: center;
+}
+
+.formText > input {
+  padding: 16px;
+  max-width: 200px;
+  width: 40%;
+}
+
+.butt {
+  border: 2px solid white;
+  border-radius: 4px;
+  background-color: greenyellow;
+  padding: 8px 16px;
+
+  transition: background-color .8s ease-in-out;
+}
+
+.butt:hover {
+  background-color: red;
+}
+
+.terms {
+  margin: 8px 0;
+}

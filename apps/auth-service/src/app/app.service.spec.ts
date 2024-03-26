@@ -1,7 +1,8 @@
 import { Test } from '@nestjs/testing';
-import { JwtModule } from '@nestjs/jwt';
+import { JwtModule, JwtService } from '@nestjs/jwt';
 import { getRepositoryToken } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
+import fsPromises from 'node:fs/promises';
 
 import { AppService } from './app.service';
 import { Account } from './account.entity';
@@ -13,6 +14,7 @@ class ProfileRepo extends Repository<Profile> {}
 
 describe('AppService', () => {
   let service: AppService;
+  let jwtservice: JwtService;
   let accountRepo: AccountRepo;
   let profileRepo: ProfileRepo;
 
@@ -21,42 +23,42 @@ describe('AppService', () => {
   acc1.username = 'pupupupu';
   acc1.password = 'acc1';
   acc1.profile = new Profile();
-  acc1.profile.index = 1;
+  acc1.profile.avatar = '1';
 
   const acc2: Account = new Account();
   acc2.uid = 1;
   acc2.username = 'seb';
   acc2.password = 'acc2';
   acc2.profile = new Profile();
-  acc2.profile.index = 2;
+  acc2.profile.avatar = '2';
 
   const acc3: Account = new Account();
   acc3.uid = 2;
   acc3.username = 'steph';
   acc3.password = 'acc3';
   acc3.profile = new Profile();
-  acc3.profile.index = 3;
+  acc3.profile.avatar = '3';
 
   const acc4: Account = new Account();
   acc4.uid = 3;
   acc4.username = 'rise';
   acc4.password = 'acc4';
   acc4.profile = new Profile();
-  acc4.profile.index = 4;
+  acc4.profile.avatar = '4';
 
   const acc5: Account = new Account();
   acc5.uid = 4;
   acc5.username = 'zef';
   acc5.password = 'acc5';
   acc5.profile = new Profile();
-  acc5.profile.index = 5;
+  acc5.profile.avatar = '5';
 
   const acc6: Account = new Account();
   acc6.uid = 5;
   acc6.username = 'duck';
   acc6.password = 'acc6';
   acc6.profile = new Profile();
-  acc6.profile.index = 6;
+  acc6.profile.avatar = '6';
 
   beforeAll(async () => {
     const accountRepoToken = getRepositoryToken(Account);
@@ -83,6 +85,7 @@ describe('AppService', () => {
     }).compile();
 
     service = app.get<AppService>(AppService);
+    jwtservice = app.get<JwtService>(JwtService);
     accountRepo = app.get<AccountRepo>(accountRepoToken);
     profileRepo = app.get<ProfileRepo>(profileRepoToken);
   });
@@ -92,6 +95,34 @@ describe('AppService', () => {
       expect(service.getData()).toEqual({ message: 'Hello API' });
     });
   });
+
+  describe('signout', () => {
+    it('should do nothing?', () => {
+      service.signout();
+      expect(true).toBe(true);
+    });
+  });
+
+  describe('verify', () => {
+    it('should return an account', () => {
+      jest.spyOn(jwtservice, 'verify').mockReturnValueOnce({
+        verfied: true
+      });
+      jest.spyOn(accountRepo, "findOneBy").mockReturnValueOnce(Promise.resolve(acc2));
+      return service.verify("abc").then((res) => 
+      expect(res).toEqual(acc2));
+    });
+
+    it('should not return an account', () => {
+      jest.spyOn(jwtservice, 'verify').mockReturnValueOnce({
+        verfied: true
+      });
+      jest.spyOn(accountRepo, "findOneBy").mockReturnValueOnce(Promise.resolve(null));
+      return service.verify("abc").then((res) => 
+      expect(res).toBe(null));
+    });
+  });
+
 
   describe('signup', () => {
     it('Should gives tokens', () => {
@@ -107,11 +138,17 @@ describe('AppService', () => {
         .spyOn(profileRepo, 'save')
         .mockResolvedValueOnce(Promise.resolve(acc1.profile));
 
-      return service.signup(acc1.username, acc1.password).then((res) => {
-        expect(res).toHaveProperty('access_token');
-        // Not this sprint
-        // expect(res).toHaveProperty('refresh_token');
-      });
+      return service
+        .signup({
+          username: acc1.username,
+          password: acc1.password,
+          avatar: acc1.profile.avatar,
+        })
+        .then((res) => {
+          expect(res).toHaveProperty('access_token');
+          // Not this sprint
+          // expect(res).toHaveProperty('refresh_token');
+        });
     });
 
     it('Should not success', () => {
@@ -121,7 +158,11 @@ describe('AppService', () => {
         .mockResolvedValueOnce(Promise.resolve(acc2));
 
       return service
-        .signup(acc2.username, acc2.password)
+        .signup({
+          username: acc2.username,
+          password: acc2.password,
+          avatar: acc2.profile.avatar,
+        })
         .then(() => {
           expect(true).toBe(false);
         })
@@ -144,4 +185,17 @@ describe('AppService', () => {
       });
     });
   });
+
+  describe('getRandomAvatar', () => {
+    it('Should return a string', () => {
+      jest
+        .spyOn(service, 'getAvatars')
+        .mockResolvedValueOnce(Promise.resolve(['1','2','3','4','5']));
+
+      return service.getRandomAvatar().then((res) => {
+        expect(res).toStrictEqual('4');
+      });
+    });
+  });
+
 });
