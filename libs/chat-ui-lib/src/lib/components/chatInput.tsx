@@ -1,11 +1,11 @@
 import React, { useState} from 'react';
 import sendMessage from '../api/sendMessage';
-import { Socket } from 'socket.io';
+import { Socket } from 'socket.io-client';
 
 interface ChatInputProps {
-  socket: Socket
+  socket: Socket | null,
   roomCode: string,
-  username: string
+  username: string | undefined
 }
 
 const ChatInput: React.FC<ChatInputProps> = (props) => {

@@ -3,12 +3,12 @@ import ChatMessages from './chatMessages';
 import ChatInput from './chatInput';
 import Message from '../types/message'
 import { useChatSocket } from '@bb/socket-hook-lib';
-import { Socket } from 'socket.io';
+import { Socket } from 'socket.io-client';
 
 interface ChatContainerProps {
-    socket: Socket,
+    socket: Socket | null,
   roomCode: string,
-  username: string
+  username: string | undefined
 }
 
 export const ChatContainer: React.FC<ChatContainerProps> = (props) => {

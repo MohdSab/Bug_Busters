@@ -3,6 +3,7 @@ import { Repository } from 'typeorm';
 import { Room } from './room.entity';
 import { InjectRepository } from '@nestjs/typeorm';
 import { TicTacToe } from './ttt.entity';
+import { createRoom } from '@bb/chat-ui-lib'
 
 @Injectable()
 export class TTTService {
@@ -27,6 +28,8 @@ export class TTTService {
     await this.tttRepo.save(newGame);
 
     newRoom.currentGame = newGame;
+
+    await createRoom('ttt', newRoom.id);
 
     return this.roomRepo.save(newRoom);
   }
