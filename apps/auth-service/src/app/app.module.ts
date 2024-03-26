@@ -11,11 +11,11 @@ import { Profile } from './profile.entity';
   imports: [
     TypeOrmModule.forRoot({
       type: 'postgres',
-      host: process.env.PG_HOST || "localhost",
+      host: process.env.PG_HOST || 'localhost',
       port: Number(process.env.PG_PORT || 5432),
-      username: process.env.PG_USER || "root",
-      password: process.env.PG_PW || "root",
-      database: process.env.PG_DB || "test2",
+      username: process.env.PG_USER || 'auth',
+      password: process.env.PG_PW || 'auth',
+      database: process.env.PG_DB || 'auth',
       entities: [Account, Profile],
       synchronize: true,
       logging: true,
@@ -23,7 +23,7 @@ import { Profile } from './profile.entity';
     TypeOrmModule.forFeature([Account, Profile]),
     JwtModule.register({
       secret: 'mysecret',
-      signOptions: { expiresIn: '600s' },
+      signOptions: { expiresIn: '60000s' },
     }),
   ],
   controllers: [AppController],

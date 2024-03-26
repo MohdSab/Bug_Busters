@@ -1,0 +1,89 @@
+
+
+.game {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+.side-bar {
+  flex-grow: 1;
+  flex-basis: 200px;
+}
+
+#board {
+  flex-basis: 300px;
+  background-color: #5772ff;
+  padding: 32px;
+  margin: 0 auto;
+  border-radius: 24px;
+  /* flex-grow: 1; */
+}
+
+#buttons {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  flex-wrap: nowrap;
+  gap: 24px;
+  margin-bottom: 16px;
+}
+
+.butt-container {
+  flex-basis: 1;
+  flex-grow: 1;
+  max-width: 80px;
+  /* width: 10px; */
+}
+
+.drop-button {
+  width: 100%;
+  padding-top: 100%;
+  border-radius: 50%;
+  background-color: teal;
+
+  transition: background-color 0.5s;
+}
+
+.drop-button:hover {
+  background-color: green;
+}
+
+.drop-button:hover {
+  cursor: pointer;
+}
+.row {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  flex-wrap: nowrap;
+  align-items: stretch;
+  gap: 12px;
+  margin: 8px 0;
+}
+
+.emptyCell {
+  width: 80px;
+  height: 80px;
+  border-radius: 50%;
+  background-color: #d9d9d9;
+}
+
+.p1Cell {
+  width: 80px;
+  height: 80px;
+  border-radius: 50%;
+  background-color: blue;
+}
+
+.p2Cell {
+  width: 80px;
+  height: 80px;
+  border-radius: 50%;
+  background-color: #ff5858;
+}
+
+.animation-ball {
+  position: relative;
+}

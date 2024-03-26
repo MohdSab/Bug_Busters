@@ -1,6 +1,7 @@
 import { Link } from 'react-router-dom';
 import styles from './navbar.module.css';
-import { Account, useAccount } from '@bb/auth-hook-lib';
+import { Account } from '../account.type';
+import { useAccount } from '../auth-hook';
 
 function Badge({ account }: { account: Account }) {
   return (
