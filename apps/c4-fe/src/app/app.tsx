@@ -88,8 +88,8 @@ function App() {
               <Route index Component={LandingPage} />
               <Route path="signin" Component={SignIn} />
               <Route path="signup" Component={SignUp} />
-              <Route path="room/:id" Component={Room} />
-              <Route path="*" Component={ErrorPage} />
+              <Route path="game/:id" Component={Room} />
+              <Route path="error" Component={ErrorPage} />
             </Route>
           </Routes>
         </GetHostForProviders>

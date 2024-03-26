@@ -73,8 +73,16 @@ export class Connect4Gateway
       });
   }
 
-  handleDisconnect(client: Socket) {
-    console.log('client disconnected:', client.id);
+  async handleDisconnect(client: Socket) {
+    const room = await this.C4service.onDisconnect(client.handshake.auth.uid);
+    if (room) {
+      console.log('Disconnecting from room', room.id);
+      this.server.to(String(room.id)).emit('player-disconnected', {
+        error: null,
+        data: room,
+      });
+    }
+    console.log('client disconnected: ', client.id);
     //TODO: stuff
   }
 
@@ -93,22 +101,31 @@ export class Connect4Gateway
   }
 
   @SubscribeMessage('create-room')
-  async createRoom(@ConnectedSocket() client: Socket): Promise<Room> {
-    const room: Room = await this.C4service.CreateRoom(
-      client.handshake.auth.uid
-    );
-    return room;
+  async createRoom(@ConnectedSocket() client: Socket): Promise<ResponseDTO<Room>> {
+    try {
+      const room: Room = await this.C4service.CreateRoom(
+        client.handshake.auth.uid
+      );
+      return {
+        data: room,
+      };
+    } catch (err) {
+      return {
+        data: null,
+        error: err,
+      };
+    }
   }
 
   @SubscribeMessage('join-room')
   async joinRoom(
     @ConnectedSocket() client: Socket,
-    @MessageBody() data: MessageDTO
+    @MessageBody() roomId: number
   ): Promise<ResponseDTO<Room>> {
     try {
       const room: Room = await this.C4service.JoinRoom(
         client.handshake.auth.uid,
-        data.roomCode
+        roomId
       );
       client.join(String(room.id));
       client.to(String(room.id)).emit('player-joined', room);

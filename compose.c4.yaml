@@ -65,7 +65,7 @@ services:
     environment:
       NX_C4_SERVICE: c4-service
       NX_C4_WS_SERVICE: c4-ws-service
-      NX_GATEWAY_HOST: 100.112.24.128
+      NX_GATEWAY_HOST: 127.0.0.1
       NX_GATEWAY_PORT: 3000
       NX_GATEWAY_WS_PORT: 3002
 # TODO setup volume for db

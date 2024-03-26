@@ -26,11 +26,15 @@ export class Connect4Service {
     if (await this.CheckInRoom(uid)) {
       throw new BadRequestException('already in a room');
     }
-    let newGame = new Connect4();
-    newGame = await this.c4Repo.save(newGame);
-
     const newRoom = new Room();
+    await this.roomRepo.save(newRoom);
+
+    const newGame = new Connect4();
+    newGame.rid = newRoom.id;
+    await this.c4Repo.save(newGame);
+
     newRoom.currentGame = newGame;
+    console.log("hello");
     return this.roomRepo.save(newRoom);
 
     // return this.JoinRoom(uid, newRoom.id);
@@ -41,38 +45,62 @@ export class Connect4Service {
       where: [{ p1: uid }, { p2: uid }],
     });
     if (!room) {
-      return true;
+      return false;
     }
-    return false;
+    return true;
+  }
+
+  async onDisconnect(uid: number): Promise<Room> {
+    let room: Room = await this.roomRepo.findOneBy({ p1: uid });
+    if (!room) {
+      room = await this.roomRepo.findOneBy({ p2: uid });
+      if (!room) return;
+      room.currentGame.winner = 'x';
+      room.p2 = null;
+      room = await this.roomRepo.save(room);
+      await this.c4Repo.save(room.currentGame);
+    } else {
+      room.currentGame.winner = 'o';
+      room.p1 = null;
+      room = await this.roomRepo.save(room);
+      await this.c4Repo.save(room.currentGame);
+    }
   }
 
   async JoinRoom(uid: number, roomID: number): Promise<Room> {
     //check if user is already in a room
     //      check if room exists
-    if (this.CheckInRoom(uid)) {
+    if (await this.CheckInRoom(uid)) {
       throw new BadRequestException('already in a room');
     }
+
+    console.log("Room ID: " + roomID);
 
     const room: Room = await this.roomRepo.findOneBy({ id: roomID });
     if (!room) {
       throw new NotFoundException('Room not found');
     }
+    console.log("room found");
 
-    const game: Connect4 = await this.c4Repo.findOneBy({
-      gid: room.currentGame.gid,
-    });
+    console.log(room);
 
-    if (!game.player1) {
+    // stupid way of doing this, for some reason querying by gid doesnt work
+
+    console.log("game found");
+
+    if (!room.p1) {
       room.p1 = uid;
-      game.SetPlayer1(uid);
-    } else if (!game.player2) {
+      room.currentGame.player1 = uid;
+    } else if (!room.p2 && room.p1 != uid) {
       room.p2 = uid;
-      game.SetPlayer2(uid);
+      room.currentGame.player2 = uid;
     } else {
       throw new BadRequestException('full room');
     }
 
-    await this.c4Repo.save(game);
+    console.log("What's up");
+
+    await this.c4Repo.save(room.currentGame);
     return this.roomRepo.save(room);
   }
 
@@ -84,6 +112,7 @@ export class Connect4Service {
     if (!room) {
       throw new BadRequestException('Room not found');
     }
+    console.log("Game found");
     const game: Connect4 = room.currentGame;
     game.MakeMove(uid, move);
     return this.c4Repo.save(game);

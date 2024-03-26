@@ -1,9 +1,10 @@
-import React, { useMemo, useState } from 'react';
+import React, { useMemo, useState, useEffect } from 'react';
 import styles from './room.module.css';
 import { useParams } from 'react-router';
-import { useAccount } from '@bb/auth-hook-lib';
+// import { useAccount } from '@bb/auth-hook-lib';
+import { useSocket } from '@bb/socket-hook-lib';
 
-type Props = {};
+// type Props = {};
 
 function EmptyCell() {
   return <div className={styles.emptyCell} />;
@@ -25,24 +26,24 @@ function Butt({ onClick }: { onClick: () => void }) {
   );
 }
 
-const initalState: number[][] = [
-  [0, 0, 0, 0, 0, 0, 0],
-  [0, 0, 0, 0, 0, 0, 0],
-  [0, 0, 0, 0, 0, 0, 0],
-  [0, 0, 0, 0, 0, 0, 0],
-  [0, 0, 0, 0, 0, 0, 0],
-  [0, 0, 0, 0, 0, 0, 0],
+const initalState: string[][] = [
+  ['', '', '', '', '', '', ''],
+  ['', '', '', '', '', '', ''],
+  ['', '', '', '', '', '', ''],
+  ['', '', '', '', '', '', ''],
+  ['', '', '', '', '', '', ''],
+  ['', '', '', '', '', '', ''],
 ];
 
-function Board({ board }: { board: number[][] }) {
+function Board({ board }: { board: string[][] }) {
   return board.map((row, i) => (
     <div className={styles.row} key={`row-${i}`}>
       {row.map((cell, j) => (
         // eslint-disable-next-line react/jsx-no-useless-fragment
         <React.Fragment key={`cell-${i * 6 + j}`}>
-          {cell === 0 ? (
+          {cell === ' ' || cell === '' ? (
             <EmptyCell key={`cell-${i + j}`} />
-          ) : cell === 1 ? (
+          ) : cell === 'x' ? (
             <P1Cell key={`cell-${i + j}`} />
           ) : (
             <P2Cell key={`cell-${i + j}`} />
@@ -53,46 +54,90 @@ function Board({ board }: { board: number[][] }) {
   ));
 }
 
-function fallTo(board: number[][], col: number) {
-  for (let i = 5; i >= 0; i--) {
-    if (board[i][col] === 0) return i;
+
+// export default function Room({}: Props) {
+export default function Room() {
+  const { id } = useParams();
+  const { socket, loading } = useSocket();
+  // const { account, loading } = useAccount();
+  const [board, setBoard] = useState(initalState);
+
+  const [winner, setWinner] = useState('');
+  const [isP1, setIsP1] = useState(true);
+
+
+  function handlePlay(nextBoard: string[][]) {
+    setBoard(nextBoard);
   }
 
-  throw new Error('Invalid move');
-}
 
-export default function Room({}: Props) {
-  const { id } = useParams();
-  const { account, loading } = useAccount();
-  const [board, setBoard] = useState(initalState);
-  const [isP1, setIsP1] = useState(true);
-  // const [room, setRoom] = useState({
-  //   id: Number(id),
-  //   player1:
-  // });
+  const handleClick = React.useMemo(() => {
+    if (loading) return (i: number) => {};
+    else
+      return (i: number) => {
+        console.log('clicking on ' + i);
+        socket?.emit(
+          'move',
+          { roomCode: id, move: i },
+          (res: { data: any; error?: any }) => {
+            if (res.error) {
+              console.error(res.error);
+              return;
+            }
 
-  const handleClick = (col: number) => {
-    try {
-      const row = fallTo(board, col);
-      const player = isP1 ? 1 : 2;
-      setBoard((old) => {
-        old[row][col] = player;
+            console.log(res.data);
+            if(res?.data?.board) setBoard(res.data.board);
+          }
+        )
+      }
+  }, [loading, socket, id]);
 
-        return old;
-      });
+  useEffect(() => {
+    console.log("Loading: " + loading);
+    console.log("Socket: " + socket);
+    if (loading) return;
 
-      setIsP1((old) => !old);
-    } catch (err) {
-      console.error(err);
-    }
-  };
+    socket?.on('player-moved', (game) => {
+      console.log(game);
+      handlePlay(game.board);
+      if (game.winner) {
+        setWinner(game.winner);
+      }
+      setIsP1(game.player1IsPlaying);
+    });
+
+    socket?.on('player-joined', (room) => {
+      console.log('Player joined', room);
+    });
+
+    console.log('joining room');
+    console.log("Room ID:" + Number(id))
+    socket?.emit('join-room', Number(id), (res: { data: any; error: any }) => {
+      if (res?.error) {
+        console.error(res?.error);
+        return;
+      }
+
+      setBoard(res.data.currentGame.board);
+    });
+
+    return () => {
+     socket?.off('player-moved');
+    };
+  }, [socket, loading]);
+
+  const status = (winner === '') ? (
+    <p>Next player: {isP1 ? "Blue" : "Red"}</p>
+  ) : (
+    <p>Winner: {winner === 'x' ? "Blue" : "Red"}</p>
+  );
 
   return (
     <div>
       <h1 style={{ textAlign: 'center' }}>Connect 5</h1>
 
       <div className={styles.game}>
-        <div className={styles['side-bar']}>something</div>
+        {/*<div className={styles['side-bar']}>something</div> */}
         <div id={styles.board}>
           <div id={styles.buttons}>
             {Array(7)
@@ -104,6 +149,8 @@ export default function Room({}: Props) {
           <Board board={board} />
         </div>
       </div>
+
+      <h1 style={{ textAlign: 'center' }}>{status}</h1>
     </div>
   );
 }
