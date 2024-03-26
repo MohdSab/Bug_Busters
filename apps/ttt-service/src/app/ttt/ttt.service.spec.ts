@@ -215,7 +215,7 @@ describe('TttService', () => {
   describe('CheckWin', () => {
     it('wonby row', () => {
       const game = { ...newGame };
-      game.board = ['x', 'x', 'x', '', '', '', '', '', ''];
+      game.board = ['x', 'x', 'x', ' ', ' ', ' ', ' ', ' ', ' '];
       service.CheckWin(game as TicTacToe);
 
       expect(game.wonBy).toEqual([0, 1, 2]);
@@ -223,7 +223,7 @@ describe('TttService', () => {
 
     it('wonby col', () => {
       const game = { ...newGame };
-      game.board = ['', 'x', '', '', 'x', '', '', 'x', ''];
+      game.board = [' ', 'x', ' ', ' ', 'x', ' ', ' ', 'x', ' '];
       service.CheckWin(game as TicTacToe);
 
       expect(game.wonBy).toEqual([1, 4, 7]);
@@ -231,7 +231,7 @@ describe('TttService', () => {
 
     it('wonby diag \\', () => {
       const game = { ...newGame };
-      game.board = ['x', '', '', '', 'x', '', '', '', 'x'];
+      game.board = ['x', ' ', ' ', ' ', 'x', ' ', ' ', ' ', 'x'];
       service.CheckWin(game as TicTacToe);
 
       expect(game.wonBy).toEqual([0, 4, 8]);
@@ -239,7 +239,7 @@ describe('TttService', () => {
 
     it('wonby diag /', () => {
       const game = { ...newGame };
-      game.board = ['', '', 'x', '', 'x', '', 'x', '', ''];
+      game.board = [' ', ' ', 'x', ' ', 'x', ' ', 'x', ' ', ' '];
       service.CheckWin(game as TicTacToe);
 
       expect(game.wonBy).toEqual([2, 4, 6]);
@@ -247,7 +247,7 @@ describe('TttService', () => {
 
     it('wonby none', () => {
       const game = { ...newGame };
-      game.board = ['', 'x', '', '', 'x', '', 'x', '', ''];
+      game.board = [' ', 'x', ' ', ' ', 'x', ' ', 'x', ' ', ' '];
       service.CheckWin(game as TicTacToe);
 
       expect(game.wonBy).toEqual(null);
@@ -285,7 +285,7 @@ describe('TttService', () => {
   describe('ResetBoard', () => {
     it('should clear the board', async () => {
       const game = { ...newGame };
-      game.board = ['', 'x', '', '', 'x', '', '', 'x', ''];
+      game.board = [' ', 'x', ' ', ' ', 'x', ' ', ' ', 'x', ' '];
       game.xIsPlaying = false;
       game.winner = 'x';
       jest
@@ -297,7 +297,7 @@ describe('TttService', () => {
 
       await service.ResetBoard(1);
 
-      expect(game.board).toEqual(['', '', '', '', '', '', '', '', '']);
+      expect(game.board).toEqual([' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ']);
       expect(game.xIsPlaying).toEqual(true);
       expect(game.winner).toEqual(null);
     });
