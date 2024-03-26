@@ -16,16 +16,17 @@ export const ChatContainer: React.FC<ChatContainerProps> = (props) => {
     const { socket, loading} = useChatSocket();
 
     const handleNewMessage = (message: Message) => {
+        console.log("state being updated");
         setMessages((prevMessages) => [...prevMessages, message]);
     };
 
     React.useEffect(() => {
         if (loading) return;
-
+        console.log("not loading");
         socket?.on('message-received', handleNewMessage);
-
+        
         return () => {
-          socket?.disconnect();
+          //socket?.disconnect();
         };
     }, [socket, loading]);
 

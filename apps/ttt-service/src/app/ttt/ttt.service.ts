@@ -28,9 +28,10 @@ export class TTTService {
     await this.tttRepo.save(newGame);
 
     newRoom.currentGame = newGame;
-
-    await createRoom('ttt', newRoom.id);
-
+    
+    console.log("ttt is calling function to create a chat room");
+    await createRoom('ttt', newRoom.id, process.env.CHAT_SERVICE_KEY, process.env.GATEWAY_HOST+':'+process.env.GATEWAY_PORT);
+    console.log("function called by ttt has completed");
     return this.roomRepo.save(newRoom);
   }
 

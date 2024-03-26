@@ -6,6 +6,7 @@ interface ChatMessagesProps {
 }
 
 const ChatMessages: React.FC<ChatMessagesProps> = ({ messages }) => {
+  console.log("in chat history component");
   return (
     <div>
       {messages.map((message, index) => (

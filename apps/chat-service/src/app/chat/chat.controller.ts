@@ -2,6 +2,7 @@ import {
     Body,
     Controller,
     Post,
+    Get,
     Res,
 } from "@nestjs/common";
 import { ChatService } from "./chat.service"; // to store/check for created rooms
@@ -29,12 +30,18 @@ export class ChatController{
         new Gateway(`${process.env.GATEWAY_HOST}:${process.env.GATEWAY_PORT}`)
         .RegisterService({
             key: key,
-            port: port
+            port: port,
+            prefix: 'api'
         }).then((route) => {
             console.log('CHAT SERVICE registered with key', route.key, 'on endpoint', route.endpoint);
         }).catch(console.error);
         
 
+    }
+
+    @Get()
+    returnAllRooms(){
+        return this.chatService.getAllRooms();
     }
 
     @Post()
@@ -52,10 +59,10 @@ export class ChatController{
         return the room code of the chat room
         returns empty string if room was not able to be created successfully
         */
-
-        if(this.chatService.createRoom(data.game + data.gameRoomID.toString())){
+        console.log("received request to make room with id", data.gameRoomID, "and game", data.game);
+        if(this.chatService.createRoom(data.game + data.gameRoomID)){
             response.status(200).send('Room created successfully');
-            return data.game + data.gameRoomID.toString();
+            return data.game + data.gameRoomID;
         }
         response.status(500).send('Room creation failed, prob my fault');
         return '';

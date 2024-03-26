@@ -33,6 +33,10 @@ services:
       WS_SERVICE_KEY: ttt-ws-service
       WS_PORT: 8031
       WS_PATH: /ttt
+      CHAT_SERVICE_KEY: chat-service
+      CHAT_SERVICE_PORT: 4000
+      CHAT_WS_SERVICE_KEY: chat-ws-service
+      CHAT_WS_SERVICE_PORT: 9000
     ports:
       - 4031:4031
       - 8031:8031

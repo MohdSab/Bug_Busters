@@ -3,7 +3,16 @@ import { BadRequestException, Injectable } from "@nestjs/common";
 @Injectable()
 export class ChatService{
 
-    static roomCodes:Map<string, Map<Number, Boolean>> = new Map<string, Map<Number, Boolean>>// = new Map<string, string[]>; //map of reserved roomCodes (only operations related to this should be lookups, set, delete)
+    roomCodes:Map<string, Map<Number, Boolean>> = new Map<string, Map<Number, Boolean>>// = new Map<string, string[]>; //map of reserved roomCodes (only operations related to this should be lookups, set, delete)
+
+    getAllRooms(){
+        let arr = [];
+        this.roomCodes.forEach((val, key) => {
+            arr.push(key);
+        });
+        console.log(arr)
+        return arr;
+    }
 
     createRoom(code:string): boolean{
         /*
@@ -14,7 +23,7 @@ export class ChatService{
         if (this.checkRoomExists(code)){
             return false;
         }
-        ChatService.roomCodes.set(code, new Map<Number, Boolean>);
+        this.roomCodes.set(code, new Map<Number, Boolean>);
         return true;
     }
 
@@ -24,14 +33,14 @@ export class ChatService{
             throw new BadRequestException('trying to join a room that doesnt exist!!');
         }
         //add user to room
-        ChatService.roomCodes.get(roomCode).set(uid, true);
+        this.roomCodes.get(roomCode).set(uid, true);
         return roomCode;
     }
     
     leaveAllRooms(uid: number): string[]{
         //list of all rooms that were left
         let roomids: string[] = []
-        ChatService.roomCodes.forEach((room, roomid) => {
+        this.roomCodes.forEach((room, roomid) => {
             room.delete(uid);
             if(room.size === 0){
                 this.deleteRoom(roomid);
@@ -43,7 +52,7 @@ export class ChatService{
 
     leaveRoom(uid: number, roomCode: string){
         if (this.checkRoomExists(roomCode)){
-            const room = ChatService.roomCodes.get(roomCode)
+            const room = this.roomCodes.get(roomCode)
             room.delete(uid);
             if(room.size === 0){
                 this.deleteRoom(roomCode);
@@ -55,11 +64,11 @@ export class ChatService{
     }
 
     deleteRoom(code:string): boolean{
-        return ChatService.roomCodes.delete(code);
+        return this.roomCodes.delete(code);
     }
 
     checkUserInRoom(uid: number, code: string): boolean{
-        const res = ChatService.roomCodes.get(code).has(uid);
+        const res = this.roomCodes.get(code).has(uid);
         if(!res){
             throw new BadRequestException("user is NOT in the specified room!!");
         }
@@ -67,13 +76,13 @@ export class ChatService{
     }
 
     checkRoomExists(code:string): boolean{
-        return ChatService.roomCodes.has(code);
+        return this.roomCodes.has(code);
     }
 
     ExceptRoomExists(code: string): boolean{
-        const exists = ChatService.roomCodes.has(code);
+        const exists = this.roomCodes.has(code);
         if(!exists){
-            throw new BadRequestException('room exists!!');
+            throw new BadRequestException('room doesnt exist!!');
         }   
         return true;
     }

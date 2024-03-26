@@ -78,7 +78,7 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayInit, OnGatewa
        const uid = client.handshake.auth.id;
        const leftRooms: string[] = this.chatService.leaveAllRooms(uid);
        //notify every room user was in that they have left
-        leftRooms.forEach((room) => this.server.to(room).emit('user-left', uid));
+       leftRooms.forEach((room) => this.server.to(room).emit('user-left', uid));
     }
 
     @SubscribeMessage('join')
@@ -107,10 +107,16 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayInit, OnGatewa
     onMessage(@ConnectedSocket() client:Socket, @MessageBody() messageData: MessageDTO): ResponseDTO<MessageDTO>{
         /* 
         Sends the message in <data> to the room found in <data> if the room exists
-        */ 
+        */
+        console.log("received message from", client.id);
+        
         try{
+            console.log("testing if room", messageData.roomCode,  "exists");
             this.chatService.ExceptRoomExists(messageData.roomCode); //check room exists
+            console.log("room exists by this point");
             this.chatService.checkUserInRoom(client.handshake.auth.uid, messageData.roomCode) //check user in room
+            console.log("user sending event is in the correct room by this point");
+            console.log("emitting message event");
             this.server.to(messageData.roomCode).emit('message-received', messageData);
             return {
                 data: messageData
