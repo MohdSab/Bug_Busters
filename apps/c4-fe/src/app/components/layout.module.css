@@ -14,9 +14,10 @@ body {
 
 .navbar-padding {
   flex-basis: 80px;
+  min-height: 80px;
 }
 
 .page-content {
   height: 100%;
-  padding: 32px 64px;
+  padding: 0px 5%;
 }
