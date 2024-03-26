@@ -27,6 +27,7 @@ export const ChatContainer: React.FC<ChatContainerProps> = (props) => {
         
         return () => {
           //socket?.disconnect();
+          socket?.off('message-received');
         };
     }, [socket, loading]);
 

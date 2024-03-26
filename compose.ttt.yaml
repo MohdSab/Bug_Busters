@@ -17,6 +17,9 @@ services:
             - node_modules/
         - action: rebuild
           path: package.json
+        - action: sync
+          path: ./libs
+          target: /app/libs
     depends_on:
       - gateway
       - ttt-db

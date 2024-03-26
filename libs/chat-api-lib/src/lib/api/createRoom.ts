@@ -8,8 +8,8 @@ export async function createRoom(game: string, gameRoomID: number, service_key: 
     console.log("in create room function from ttt, sending request");
     return gateway.SendRequest(
         service_key, 
-        'api/chat',
-        {method: 'POST', body: JSON.stringify({game:game, gameRoomID:gameRoomID})}
+        '/chat',
+        {method: 'POST', headers:{'content-type': 'application/json'}, body: JSON.stringify({game:game, gameRoomID:gameRoomID})}
     ).then((res) => {
         console.log("request finished sending, return code of request is", res.status);
         if(!res.body){
@@ -19,10 +19,16 @@ export async function createRoom(game: string, gameRoomID: number, service_key: 
         return res.body;
     })
 
-    //const response = await fetch('http://localhost:3000',
-    //    {method: 'POST',
-    //    body: JSON.stringify({game:game, gameRoomID:gameRoomID})}
-    //);
+    /*try{
+        return await fetch('http://172.18.0.5:4000/api/chat',
+            {method: 'POST',
+            body: JSON.stringify({game:game, gameRoomID:gameRoomID})}
+        ).then((res) => {return res.body});
+    }
+    catch(err){
+        console.error();
+        console.error(err);
+    }
     //if (!response.body) {console.error('there was probably an error creating a room...'); return;}
-    //return response.body;
+    //return response.body;*/
 }
