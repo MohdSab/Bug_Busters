@@ -2,15 +2,18 @@ import React from 'react';
 import ChatMessages from './chatMessages';
 import ChatInput from './chatInput';
 import Message from '../types/message'
-import { useSocket } from '@bb/socket-hook-lib';
+import { useChatSocket } from '@bb/socket-hook-lib';
+import { Socket } from 'socket.io';
 
 interface ChatContainerProps {
-  // empty for now
+    socket: Socket,
+  roomCode: string,
+  username: string
 }
 
 const ChatContainer: React.FC<ChatContainerProps> = (props) => {
     const [messages, setMessages] = React.useState<Message[]>([]);
-    const { socket, loading} = useSocket();
+    const { socket, loading} = useChatSocket();
 
     const handleNewMessage = (message: Message) => {
         setMessages((prevMessages) => [...prevMessages, message]);
@@ -29,7 +32,7 @@ const ChatContainer: React.FC<ChatContainerProps> = (props) => {
     return (
         <div>
             <ChatMessages messages={messages} />
-            <ChatInput />
+            <ChatInput socket={props.socket} roomCode={props.roomCode} username={props.username}/>
         </div>
   );
 };

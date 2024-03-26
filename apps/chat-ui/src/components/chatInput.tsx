@@ -1,14 +1,18 @@
-import React, { useState } from 'react';
+import React, { useState} from 'react';
+import sendMessage from '../api/sendMessage';
+import { Socket } from 'socket.io';
 
 interface ChatInputProps {
-  // empty for now
+  socket: Socket
+  roomCode: string,
+  username: string
 }
 
 const ChatInput: React.FC<ChatInputProps> = (props) => {
   const [inputValue, setInputValue] = useState('');
 
   const handleMessageSend = () => {
-    // emit to room here? then empty input box
+    sendMessage(props.socket, props.roomCode, props.username, inputValue);
     setInputValue('');
   };
 
