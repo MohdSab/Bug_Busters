@@ -6,6 +6,7 @@ import React, { useEffect } from 'react';
 import { useState } from 'react';
 import { useLocation, useParams } from 'react-router';
 import { Navbar } from '@bb/auth-hook-lib';
+import { ChatContainer } from '@bb/chat-ui-lib/components'
 
 function Square({
   value,
@@ -54,7 +55,19 @@ function Board({
   );
 }
 
-export default function TicTacToe() {
+export default function TTTPage() {
+  return <div style={{
+    display: 'flex',
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center'
+  }}>
+    <TicTacToe />
+    <ChatContainer />
+  </div>;
+}
+
+function TicTacToe() {
   const { id } = useParams();
   const { socket, loading } = useSocket();
   const [squares, setSquares] = useState(Array(9).fill(null));
@@ -140,3 +153,4 @@ export default function TicTacToe() {
     </div>
   );
 }
+

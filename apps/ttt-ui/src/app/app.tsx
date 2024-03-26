@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import { createBrowserRouter, RouterProvider } from 'react-router-dom';
-import TicTacToe from './components/game';
+import TTTPage from './components/game';
 import { TttLandingPage } from './pages/ttt-landing-page';
 import { ErrorPage } from './pages/error-page';
 import { AccountProvider, SignIn, SignUp } from '@bb/auth-hook-lib';
@@ -12,7 +12,7 @@ import { WebsocketChatProvider } from '@bb/socket-hook-lib';
 
 const router = createBrowserRouter([
   { path: '/', Component: TttLandingPage },
-  { path: '/game/:id', element: <TicTacToe /> },
+  { path: '/game/:id', element: <TTTPage /> },
   { path: '/error', element: <ErrorPage /> },
   { path: '/signin', element: <SignIn /> },
   { path: '/signup', element: <SignUp /> },
