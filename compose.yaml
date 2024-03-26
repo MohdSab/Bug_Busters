@@ -1,48 +1,34 @@
-services:
-  gateway:
-    build: 
-      context: .
-      dockerfile: ./apps/api-gateway/Dockerfile
-    depends_on:
-      - auth-db
-    ports:
-      - 3000:3000
-    environment:
-      PORT: 3000
+include:
+  - compose.base.yaml
 
-  auth-service:
+services:
+  game-service:
     build:
       context: .
-      dockerfile: ./apps/auth-service/Dockerfile
+      dockerfile: ./apps/game-service/Dockerfile
     depends_on:
-      - auth-db
       - gateway
+      - game-db
     environment:
-      PG_HOST: auth-db
-      PG_PORT: 5432
-      PG_USER: test
-      PG_PW: test
-      PG_DB: auth
+      DB_HOST: game-db
+      DB_PORT: 5432
+      DB_USER: game
+      DB_PW: game
+      DB_DB: game
       GATEWAY_HOST: gateway
       GATEWAY_PORT: 3000
-      PORT: 4321
-
-  auth-db:
+      PORT: 4030
+      SERVICE_KEY: game-service
+    ports:
+      - 4030:4030
+  
+  game-db:
     image: postgres:alpine
-    restart: always
+    restart: unless-stopped
     environment:
-      POSTGRES_USER: test
-      POSTGRES_PASSWORD: test
-      POSTGRES_DB: auth
-
-  gamehub:
-    build:
-      context: .
-      dockerfile: ./apps/gamehub/Dockerfile
-    depends_on:
-      - auth-service
-    environment:
-      PORT: 3020
+      POSTGRES_USER: game
+      POSTGRES_PASSWORD: game
+      POSTGRES_DB: game
 
   ttt-db:
     image: postgres:alpine
@@ -59,6 +45,7 @@ services:
     depends_on:
       - auth-service
       - ttt-db
+      - gateway
     environment:
       DB_HOST: ttt-db
       DB_PORT: 5432
@@ -71,15 +58,6 @@ services:
       PORT: 4031
       WS_SERVICE_KEY: ttt-ws-service
       WS_PORT: 8031
-      WS_PATH: /ttt
-
-  ttt-ui:
-    build: 
-      context: .
-      dockerfile: ./apps/ttt-ui/Dockerfile
-    depends_on:
-      - auth-service
-      - ttt-service
 
   c4-db:
     image: postgres:alpine
@@ -96,6 +74,7 @@ services:
     depends_on:
       - auth-service
       - c4-db
+      - gateway
     environment:
       DB_HOST: c4-db
       DB_PORT: 5432
@@ -108,12 +87,3 @@ services:
       PORT: 4032
       WS_SERVICE_KEY: c4-ws-service
       WS_PORT: 8032
-      WS_PATH: /c4
-
-  c4-fe:
-    build: 
-      context: .
-      dockerfile: ./apps/c4-fe/Dockerfile
-    depends_on:
-      - auth-service
-      - c4-service

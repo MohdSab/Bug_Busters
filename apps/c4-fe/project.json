@@ -49,7 +49,8 @@
       "options": {
         "buildTarget": "c4-fe:build",
         "hmr": true,
-        "host": "0.0.0.0"
+        "host": "0.0.0.0",
+        "port": 4202
       },
       "configurations": {
         "development": {

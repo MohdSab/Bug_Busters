@@ -8,13 +8,20 @@ import { ErrorPage } from './pages/error-page';
 import { AccountProvider, SignIn, SignUp } from '@bb/auth-hook-lib';
 import { GatewayProvider, useGateway } from '@bb/gateway-hook-lib';
 import { WebsocketProvider } from '@bb/socket-hook-lib';
+import Layout from './components/Layout';
 
 const router = createBrowserRouter([
-  { path: '/', Component: TttLandingPage },
-  { path: '/game/:id', element: <TicTacToe /> },
-  { path: '/error', element: <ErrorPage /> },
-  { path: '/signin', element: <SignIn /> },
-  { path: '/signup', element: <SignUp /> },
+  {
+    path: '/',
+    element: <Layout />,
+    children: [
+      { index: true, Component: TttLandingPage },
+      { path: '/game/:id', element: <TicTacToe /> },
+      { path: '/error', element: <ErrorPage /> },
+      { path: '/signin', element: <SignIn /> },
+      { path: '/signup', element: <SignUp /> },
+    ],
+  },
 ]);
 
 function GetHostForProviders() {

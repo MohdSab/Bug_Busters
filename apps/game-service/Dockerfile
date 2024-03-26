@@ -6,19 +6,14 @@
 # Run the container with `docker run -p 3000:3000 -t game-service`.
 FROM docker.io/node:lts-alpine
 
-ENV HOST=0.0.0.0
-ENV PORT=3000
-
 WORKDIR /app
 
-RUN addgroup --system game-service && \
-          adduser --system -G game-service game-service
+COPY package.json .
+RUN npm --omit=dev install
 
 COPY dist/apps/game-service game-service
-RUN chown -R game-service:game-service .
 
 # You can remove this install step if you build with `--bundle` option.
 # The bundled output will include external dependencies.
-RUN npm --prefix game-service --omit=dev -f install
 
-CMD [ "node", "game-service" ]
+CMD [ "node", "game-service/main.js" ]

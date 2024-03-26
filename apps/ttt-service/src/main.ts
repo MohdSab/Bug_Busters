@@ -18,6 +18,8 @@ async function bootstrap() {
   Logger.log(
     `🚀 Application is running on: http://localhost:${port}/${globalPrefix}`
   );
+
+  console.log('Nothing fking changeddddddddd');
 }
 
 bootstrap();

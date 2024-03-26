@@ -97,6 +97,9 @@ export class TTTService {
    */
   async MakeMove(currentPlayer: number, ind: number, roomId: number) {
     const ttt = await this.findGame(roomId);
+    if (this.checkFull(ttt)) {
+      ttt.winner = 'tie';
+    }
     if (ttt.winner != null) return ttt;
     if (ttt.board[ind] !== ' ') return ttt;
     if (ttt.oPlayer != -1) {
@@ -117,19 +120,26 @@ export class TTTService {
       }
     } else {
       ttt.board[ind] = 'x';
-      ttt.xIsPlaying = false;
       this.CheckWin(ttt);
+      ttt.xIsPlaying = false;
       if (ttt.wonBy != null) {
         ttt.winner = 'x';
         return this.tttRepo.save(ttt);
       }
+      if (this.checkFull(ttt)) {
+        ttt.winner = 'tie';
+        return this.tttRepo.save(ttt);
+      }
+      console.log('Before', ttt.board);
       let ai_ind: number = Math.floor(Math.random() * 9);
-      while (ttt.board[ai_ind] !== ' ' && ttt.board[ai_ind] !== 'x') {
+      while (ttt.board[ai_ind] !== ' ') {
         ai_ind = Math.floor(Math.random() * 9);
       }
+      console.log('fuk', ttt.board[ai_ind]);
       ttt.board[ai_ind] = 'o';
-      ttt.xIsPlaying = true;
+      console.log('After', ttt.board);
       this.CheckWin(ttt);
+      ttt.xIsPlaying = true;
       if (ttt.wonBy != null) {
         ttt.winner = 'o';
       }
@@ -181,6 +191,13 @@ export class TTTService {
   async findGame(roomId: number) {
     const room = await this.roomRepo.findOneBy({ id: roomId });
     return room.currentGame;
+  }
+
+  checkFull(ttt: TicTacToe): boolean {
+    for (let i = 0; i < 9; i++) {
+      if (ttt.board[i] === ' ') return false;
+    }
+    return true;
   }
 
   async ResetBoard(roomId: number) {

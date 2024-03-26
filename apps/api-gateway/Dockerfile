@@ -9,7 +9,6 @@ FROM docker.io/node:lts-alpine
 WORKDIR /app
 
 COPY package.json .
-COPY package-lock.json .
 
 # You can remove this install step if you build with `--bundle` option.
 # The bundled output will include external dependencies.
