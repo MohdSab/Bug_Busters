@@ -1,32 +1,38 @@
 name: CI
 on:
-  push:
-    branches:
-      # Change this if your primary branch is not main
-      - dev/*
-      - bug/*
-      - main
+
+  # This workflow is triggered on pushes to the repository. Uncomment to run on push requests.
+  pull_request:
+    types: [opened, reopened, review_requested, review_request_removed, edited]
+
+# This workflow will do a clean installation of node dependencies, cache/restore them, build the source code and run tests across different versions of node
+# For more information see: https://docs.github.com/en/actions/automating-builds-and-tests/building-and-testing-nodejs
 
 jobs:
-  main:
+  build:
+
     runs-on: ubuntu-latest
+
+    strategy:
+      matrix:
+        node-version: [18.x]
+        # See supported Node.js release schedule at https://nodejs.org/en/about/releases/
+
     steps:
-      # Checkout the code
-      - name: Checkout code
-        uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
-
-      # Setup pnpm
-      - name: Setup pnpm
-        uses: pnpm/action-setup@v2
-        with:
-          version: 8
-
-      # install dependencies
-      - name: Install dependencies
-        run: pnpm install --no-frozen-lockfile
-
-      # run tests
-      - name: Run tests
-        run: pnpm nx run-many --all --target=test
+    - uses: actions/checkout@v3
+    - name: Use Node.js ${{ matrix.node-version }}
+      uses: actions/setup-node@v3
+      with:
+        node-version: ${{ matrix.node-version }}
+        cache: 'npm'
+    - name: Install dependencies
+      run: npm i
+    - name: use nx
+      uses: MansaGroup/nrwl-nx-action@v3.2.2
+      with:
+        # Comma-separated list of targets to execute
+        targets: test
+        # Run the targets on all projects
+        all: true
+        # Enable support for Nx Cloud
+        nxCloud: true

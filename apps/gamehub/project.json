@@ -49,7 +49,8 @@
       "options": {
         "buildTarget": "gamehub:build",
         "hmr": true,
-        "proxyConfig": "apps/gamehub/proxy.conf.json"
+        "proxyConfig": "apps/gamehub/proxy.conf.json",
+        "host": "0.0.0.0"
       },
       "configurations": {
         "development": {
@@ -78,6 +79,10 @@
         "codeCoverage": true,
         "jestConfig": "apps/gamehub/jest.config.ts"
       }
+    },
+    "docker-build": {
+      "dependsOn": ["build"],
+      "command": "docker build -f apps/gamehub/Dockerfile . -t gamehub"
     }
   },
   "tags": []
