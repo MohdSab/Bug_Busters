@@ -25,7 +25,7 @@ export class ChatController{
     constructor(private chatService: ChatService) {
         //register this controller on the apigateway
         
-        /*
+        console.log("attempting to register on gateway");
         new Gateway(`${process.env.GATEWAY_HOST}:${process.env.GATEWAY_PORT}`)
         .RegisterService({
             key: key,
@@ -33,7 +33,7 @@ export class ChatController{
         }).then((route) => {
             console.log('CHAT SERVICE registered with key', route.key, 'on endpoint', route.endpoint);
         }).catch(console.error);
-        */
+        
 
     }
 

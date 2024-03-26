@@ -1,5 +1,8 @@
 version: "3.8"
 
+include:
+  - path: ./compose.ttt.yaml
+
 services:
   chat-service:
     build:
@@ -15,7 +18,7 @@ services:
         - action: rebuild
           path: package.json
     environment:
-      GATEWAY_HOST: localhost
+      GATEWAY_HOST: gateway
       GATEWAY_PORT: 3000
       PORT: 4000
       SERVICE_KEY: chat-service

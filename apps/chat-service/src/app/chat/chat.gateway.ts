@@ -26,9 +26,6 @@ type ResponseDTO<T> = {
 //NOTE: MAY NEED TO CHANGE THESE VALUES
 const key = process.env.WS_SERVICE_KEY || 'chat-ws-service';
 const port = Number(process.env.CHAT_WS_PORT) || 9000;
-const gtwyHost = process.env.GATEWAY_HOST || 'localhost';
-const gtwyPort = Number(process.env.GATEWAY_PORT) || 3000;
-
 
 @WebSocketGateway(
     port,
@@ -51,18 +48,17 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayInit, OnGatewa
         nestjs default gateway function
         */
         console.log('WebSocket chat server running on port:', port);
-        //register this gateway onto the apigateway
         
-        /*
-        new Gateway(`${gtwyHost}:${gtwyPort}`)
+        //register this gateway onto the apigateway
+        console.log("attempting to register ws on gateway");
+
+        new Gateway(`${process.env.GATEWAY_HOST}:${process.env.GATEWAY_PORT}`)
         .RegisterService({
             key: key,
             port: port
         }).then((route) => {
             console.log('CHAT WS registered with key', route.key, 'on endpoint', route.endpoint);
         }).catch(console.error);
-        */
-
     }
     
     handleConnection(client: Socket) {
@@ -86,26 +82,25 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayInit, OnGatewa
     }
 
     @SubscribeMessage('join')
-    onJoin(@ConnectedSocket() client:Socket, @MessageBody() data: MessageDTO): ResponseDTO<boolean>{
+    onJoin(@ConnectedSocket() client:Socket, @MessageBody() data: MessageDTO): ResponseDTO<string>{
         /* 
         Attempts to join the room found in <data>
-        Returns true on successful join
-        Returns false on invalid roomcode
+        Returns room which was joined if successful
         */
 
         try{
-            const res = this.chatService.joinRoom(client.handshake.auth.uid ,data.roomCode);
+            const res:string = this.chatService.joinRoom(client.handshake.auth.uid ,data.roomCode);
             client.join(data.roomCode);
+            return {
+                data: res
+            };
         }
         catch (err){
             return {
                 error: err,
-                data: false
+                data: null
             };
         }
-        return {
-            data: true
-        };
     }
 
     @SubscribeMessage('message')

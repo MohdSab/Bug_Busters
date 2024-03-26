@@ -68,5 +68,7 @@ services:
       NX_TTT_WS_SERVICE_KEY: ttt-ws-service
       NX_GATEWAY_HOST: localhost
       NX_GATEWAY_PORT: 3000
+      NX_CHAT_SERVICE_KEY: chat-service
+      NX_CHAT_WS_SERVICE_KEY: chat-ws-service
 
 # TODO setup volume for db

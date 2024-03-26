@@ -18,14 +18,14 @@ export class ChatService{
         return true;
     }
 
-    joinRoom(uid: number, roomCode: string): boolean{
+    joinRoom(uid: number, roomCode: string): string{
         //check if room exists
         if(!this.checkRoomExists(roomCode)){
             throw new BadRequestException('trying to join a room that doesnt exist!!');
         }
         //add user to room
         ChatService.roomCodes.get(roomCode).set(uid, true);
-        return true;
+        return roomCode;
     }
     
     leaveAllRooms(uid: number): string[]{
