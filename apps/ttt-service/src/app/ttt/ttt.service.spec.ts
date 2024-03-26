@@ -16,6 +16,7 @@ describe('TttService', () => {
   let tttRepo: TTTRepo;
 
   const newGame: TicTacToe = new TicTacToe();
+  newGame.board = [' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '];
   const newRoom: Room = new Room();
   newRoom.id = 1;
   newRoom.currentGame = newGame;
@@ -81,7 +82,7 @@ describe('TttService', () => {
   });
 
   describe('joinRoom', () => {
-    it('should return a room', () => {
+    it('should return a room with p1 modified', () => {
       jest.spyOn(service, 'checkInRoom').mockResolvedValueOnce(false);
       jest
         .spyOn(roomRepo, 'findOneBy')
@@ -96,6 +97,47 @@ describe('TttService', () => {
 
       return service.joinRoom(1, 1).then((room) => {
         expect(room).toEqual(newRoom);
+      });
+    });
+
+    it('should return a room with p2 modified', () => {
+      const before: Room = { ...newRoom };
+      before.p1 = 1;
+      before.id = 1;
+      const after: Room = { ...before };
+      after.p1 = 1;
+      after.p2 = 2;
+      after.id = 1;
+      
+      jest.spyOn(service, 'checkInRoom').mockResolvedValueOnce(false);
+      jest
+        .spyOn(roomRepo, 'findOneBy')
+        .mockResolvedValueOnce(Promise.resolve(before));
+      jest
+        .spyOn(roomRepo, 'save')
+        .mockImplementation((x) => Promise.resolve(x) as any);
+
+      return service.joinRoom(2, 1).then((room) => {
+        expect(room).toEqual(after);
+      });
+    });
+
+    it('should return a room without modifications', () => {
+      const before: Room = { ...newRoom };
+      before.p1 = 1;
+      before.p2 = 2;
+      before.id = 1;
+      
+      jest.spyOn(service, 'checkInRoom').mockResolvedValueOnce(false);
+      jest
+        .spyOn(roomRepo, 'findOneBy')
+        .mockResolvedValueOnce(Promise.resolve(before));
+      jest
+        .spyOn(roomRepo, 'save')
+        .mockImplementation((x) => Promise.resolve(x) as any);
+
+      return service.joinRoom(3, 1).then((room) => {
+        expect(room).toEqual(before);
       });
     });
 
@@ -130,25 +172,53 @@ describe('TttService', () => {
       const x: Room = { ...newRoom };
       x.p1 = 1;
       x.id = 1;
+      x.currentGame.xPlayer = 1;
+      x.currentGame.oPlayer = 2;
+      x.currentGame.board = [' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '];
 
       jest.spyOn(service, 'findGame').mockResolvedValueOnce(x.currentGame);
       const expected: Room = { ...x };
+      expected.currentGame = new TicTacToe();
+      expected.currentGame.board = [' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '];
       expected.currentGame.board[1] = 'x';
+      expected.currentGame.xPlayer = 1;
+      expected.currentGame.oPlayer = 2;
       expected.currentGame.xIsPlaying = false;
+      expected.currentGame.wonBy = null; 
       jest
         .spyOn(tttRepo, 'save')
-        .mockResolvedValueOnce(Promise.resolve(expected.currentGame));
+        .mockImplementation((x) => Promise.resolve(x) as any);
 
       return service
         .MakeMove(1, 1, 1)
         .then((game) => expect(game).toEqual(expected.currentGame));
     });
 
-    it('should return a game that has o on index 1', () => {
+  //   it('should return a game that has o on index 1', () => {
+  //     const x: Room = { ...newRoom };
+  //     x.p1 = 1;
+  //     x.p2 = 2;
+  //     x.currentGame.xIsPlaying = false;
+  //     x.id = 1;
+
+  //     jest.spyOn(service, 'findGame').mockResolvedValueOnce(x.currentGame);
+  //     const expected: Room = { ...x };
+  //     expected.currentGame.board[1] = 'o';
+  //     expected.currentGame.xIsPlaying = true;
+  //     jest
+  //       .spyOn(tttRepo, 'save')
+  //       .mockResolvedValueOnce(Promise.resolve(expected.currentGame));
+
+  //     return service
+  //       .MakeMove(1, 1, 1)
+  //       .then((game) => expect(game).toEqual(expected.currentGame));
+  //   });
+
+    it('should return a game unchanged as a winner exists', () => {
       const x: Room = { ...newRoom };
       x.p1 = 1;
       x.p2 = 2;
-      x.currentGame.xIsPlaying = false;
+      x.currentGame.winner = 'x';
       x.id = 1;
 
       jest.spyOn(service, 'findGame').mockResolvedValueOnce(x.currentGame);
@@ -157,12 +227,53 @@ describe('TttService', () => {
       expected.currentGame.xIsPlaying = true;
       jest
         .spyOn(tttRepo, 'save')
-        .mockResolvedValueOnce(Promise.resolve(expected.currentGame));
+        .mockImplementation((x) => Promise.resolve(x) as any);
 
       return service
         .MakeMove(1, 1, 1)
         .then((game) => expect(game).toEqual(expected.currentGame));
     });
+
+    it('should return a game unchanged as index is occupied', () => {
+      const x: Room = { ...newRoom };
+      x.p1 = 1;
+      x.p2 = 2;
+      x.currentGame.board[1] = 'x';
+      x.currentGame.winner = null;
+      x.currentGame.xIsPlaying = true;
+      x.id = 1;
+
+      jest.spyOn(service, 'findGame').mockResolvedValueOnce(x.currentGame);
+      jest
+        .spyOn(tttRepo, 'save')
+        .mockImplementation((x) => Promise.resolve(x) as any);
+
+      return service
+        .MakeMove(1, 1, 1)
+        .then((game) => expect(game).toEqual(x.currentGame));
+    });
+
+    // it('should return a game with two moves', () => {
+    //   const x: Room = { ...newRoom };
+    //   x.p1 = 1;
+    //   x.p2 = -1;
+    //   x.currentGame.xIsPlaying = true;
+    //   x.id = 1;
+
+    //   jest.spyOn(service, 'findGame').mockResolvedValueOnce(x.currentGame);
+    //   const expected: Room = { ...x };
+    //   expected.currentGame.board[1] = 'x';
+    //   expected.currentGame.board[0] = 'o';
+    //   expected.currentGame.xIsPlaying = false;
+    //   jest.spyOn(global.Math, 'random').mockReturnValue(0);
+    //   jest
+    //     .spyOn(tttRepo, 'save')
+    //     .mockImplementation((x) => Promise.resolve(x) as any);
+
+    //   return service
+    //     .MakeMove(1, 1, 1)
+    //     .then((game) => expect(game).toEqual(expected.currentGame));
+    // });
   });
 
   describe('onDisconnect', () => {
@@ -251,6 +362,30 @@ describe('TttService', () => {
       service.CheckWin(game as TicTacToe);
 
       expect(game.wonBy).toEqual(null);
+    });
+  });
+
+  
+  describe('makeRoomAI', () => {
+    it('it should return a room', () => {
+      const before: Room = { ...newRoom };
+      before.p1 = 1;
+      before.id = 1;
+      jest
+        .spyOn(service, 'createRoom')
+        .mockResolvedValueOnce(Promise.resolve(newRoom));
+      jest
+        .spyOn(tttRepo, 'save')
+        .mockImplementation((x) => Promise.resolve(x) as any);
+      jest
+        .spyOn(roomRepo, 'save')
+        .mockImplementation((x) => Promise.resolve(x) as any);
+      const after: Room = { ...newRoom };
+      after.p1 = 1;
+      after.p2 = -1;
+      after.id = 1;
+
+      return service.makeRoomAI(1).then((res) => expect(res).toEqual(after));
     });
   });
 
