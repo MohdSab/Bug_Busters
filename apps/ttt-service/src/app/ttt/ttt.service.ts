@@ -123,7 +123,10 @@ export class TTTService {
         ttt.winner = 'x';
         return this.tttRepo.save(ttt);
       }
-      const ai_ind: number = Math.floor(Math.random() * 9);
+      let ai_ind: number = Math.floor(Math.random() * 9);
+      while (ttt.board[ai_ind] !== ' ' && ttt.board[ai_ind] !== 'x') {
+        ai_ind = Math.floor(Math.random() * 9);
+      }
       ttt.board[ai_ind] = 'o';
       ttt.xIsPlaying = true;
       this.CheckWin(ttt);
@@ -140,11 +143,11 @@ export class TTTService {
   CheckWin(ttt: TicTacToe) {
     for (let i = 0; i < 3; i++) {
       if (
-        ttt.board[3*i] !== ' ' && // check row
-        ttt.board[3*i] === ttt.board[3*i + 1] &&
-        ttt.board[3*i] === ttt.board[3*i + 2]
+        ttt.board[3 * i] !== ' ' && // check row
+        ttt.board[3 * i] === ttt.board[3 * i + 1] &&
+        ttt.board[3 * i] === ttt.board[3 * i + 2]
       ) {
-        ttt.wonBy = [3*i, 3*i + 1, 3*i + 2];
+        ttt.wonBy = [3 * i, 3 * i + 1, 3 * i + 2];
         return;
       }
       if (

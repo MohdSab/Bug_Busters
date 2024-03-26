@@ -48,6 +48,10 @@
         "jestConfig": "apps/game-service/jest.config.ts",
         "codeCoverage": true
       }
+    },
+    "docker-build": {
+      "dependsOn": ["build"],
+      "command": "docker build -f apps/game-service/Dockerfile . -t game-service"
     }
   },
   "tags": []

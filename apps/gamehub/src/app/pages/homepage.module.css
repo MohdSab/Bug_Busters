@@ -1,0 +1,47 @@
+.content {
+  height: 100%;
+}
+
+.backdrop {
+  margin-top: 40px;
+  height: 80%;
+  background-color: #ccc;
+  background-position: center;
+  background-size: cover;
+  background-repeat: no-repeat;
+  background-blend-mode: color;
+
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+
+.quotes {
+  padding: 64px 32px;
+}
+
+.heading {
+  font-size: 3rem;
+}
+
+.subheading {
+  font-size: 1.1rem;
+}
+
+.action {
+  background-color: green;
+  padding: 16px 32px;
+  border-radius: 8px;
+  box-sizing: border-box;
+  width: 220px;
+  text-align: center;
+  text-transform: uppercase;
+
+  transition: background-color 0.5s;
+}
+
+.action:hover {
+  background-color: lime;
+  cursor: pointer;
+}

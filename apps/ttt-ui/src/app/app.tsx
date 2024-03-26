@@ -21,7 +21,6 @@ function GetHostForProviders() {
   const { getService, getHost } = useGateway();
   const [authHost, setAuthHost] = useState('');
   const [hostWs, setHostWs] = useState('');
-  const [wsPath, setWsPath] = useState('');
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -34,7 +33,6 @@ function GetHostForProviders() {
     Promise.all(ps).then(([auth, routeWs]) => {
       setAuthHost(`${getHost()}${auth.endpoint}`);
       setHostWs(`${getHost()}${routeWs.endpoint}`);
-      setWsPath(routeWs.prefix || '');
       setLoading(false);
     });
   }, [getService, getHost]);
@@ -58,8 +56,8 @@ function GetHostForProviders() {
 export function App() {
   return (
     <GatewayProvider
-      host={`${process.env.NX_GATEWAY_HOST}:${
-        process.env.NX_GATEWAY_PORT || ''
+      host={`${process.env.NX_GATEWAY_HOST || 'localhost'}:${
+        process.env.NX_GATEWAY_PORT || '3000'
       }`}
     >
       <GetHostForProviders />

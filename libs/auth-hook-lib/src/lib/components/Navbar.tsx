@@ -1,6 +1,7 @@
 import { Link } from 'react-router-dom';
 import styles from './navbar.module.css';
-import { Account, useAccount } from '@bb/auth-hook-lib';
+import { useAccount } from '../auth-hook';
+import { Account } from '../account.type';
 
 function Badge({ account }: { account: Account }) {
   return (
@@ -42,11 +43,13 @@ export function Navbar() {
           justifyContent: 'space-between',
           alignContent: 'center',
           alignItems: 'center',
-          padding: '0 40px',
+          padding: '20px 40px 16px 40px',
         }}
       >
         <div>
-          <h1>Bug Buster</h1>
+          <Link to="/">
+            <h1 className={styles.logo}>Bug Buster</h1>
+          </Link>
         </div>
 
         {loading ? (
@@ -55,7 +58,6 @@ export function Navbar() {
           <div
             style={{
               display: 'flex',
-              padding: '16px',
               alignItems: 'center',
               gap: '32px',
               justifyContent: 'flex-end',
@@ -72,14 +74,15 @@ export function Navbar() {
             style={{
               display: 'flex',
               justifyContent: 'space-around',
+              gap: '12px',
             }}
           >
-            <div className={styles['nav-link']}>
-              <Link to="/signin">Sign in</Link>
-            </div>
-            <div className={styles['nav-link']}>
-              <Link to="/signup">Sign up</Link>
-            </div>
+            <Link to="/signin">
+              <div className={styles['nav-link']}>Sign in</div>
+            </Link>
+            <Link to="/signup">
+              <div className={styles['nav-link']}>Sign up</div>
+            </Link>
           </div>
         )}
       </div>
