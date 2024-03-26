@@ -6,9 +6,9 @@ import React, { useEffect, useContext } from 'react';
 import { useState } from 'react';
 import { useParams } from 'react-router';
 import { AccountContext, Navbar } from '@bb/auth-hook-lib';
-import { joinRoom } from '@bb/chat-ui-lib';
+import { joinRoom } from '@bb/chat-api-lib';
 import { WebsocketChatContext } from '@bb/socket-hook-lib';
-import { ChatContainer } from '@bb/chat-ui-lib/lib/components/ChatContainer';
+import { ChatContainer } from '@bb/chat-ui-lib';
 
 function Square({
   value,

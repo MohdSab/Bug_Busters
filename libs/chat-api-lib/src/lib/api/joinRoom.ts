@@ -1,5 +1,5 @@
 import { Socket } from 'socket.io-client'
-import ResponseDTO from '../types/Response';
+import { ResponseDTO } from '../types/Response';
 
 export function joinRoom(socket:Socket | null, roomCode:string, username:string | undefined) {
     if (!socket || !username) return;

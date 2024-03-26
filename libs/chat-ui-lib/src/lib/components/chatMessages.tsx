@@ -1,5 +1,5 @@
 import React from 'react';
-import Message from '../types/message';
+import { Message } from '@bb/chat-api-lib';
 
 interface ChatMessagesProps {
   messages: Message[];

@@ -1,7 +1,7 @@
 import React from 'react';
 import ChatMessages from './chatMessages';
 import ChatInput from './chatInput';
-import Message from '../types/message'
+import { Message } from '@bb/chat-api-lib';
 import { useChatSocket } from '@bb/socket-hook-lib';
 import { Socket } from 'socket.io-client';
 

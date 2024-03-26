@@ -1,5 +1,5 @@
 import React, { useState} from 'react';
-import sendMessage from '../api/sendMessage';
+import { sendMessage } from '@bb/chat-api-lib';
 import { Socket } from 'socket.io-client';
 
 interface ChatInputProps {

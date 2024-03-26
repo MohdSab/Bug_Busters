@@ -3,7 +3,7 @@ import { Repository } from 'typeorm';
 import { Room } from './room.entity';
 import { InjectRepository } from '@nestjs/typeorm';
 import { TicTacToe } from './ttt.entity';
-import { createRoom } from '@bb/chat-ui-lib'
+import { createRoom } from '@bb/chat-api-lib'
 
 @Injectable()
 export class TTTService {
