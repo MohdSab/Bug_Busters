@@ -2,10 +2,13 @@
 import { useSocket } from '@bb/socket-hook-lib';
 import styles from './game.module.css';
 
-import React, { useEffect } from 'react';
+import React, { useEffect, useContext } from 'react';
 import { useState } from 'react';
-import { useLocation, useParams } from 'react-router';
-import { Navbar } from '@bb/auth-hook-lib';
+import { useParams } from 'react-router';
+import { AccountContext, Navbar } from '@bb/auth-hook-lib';
+import { joinRoom } from '@bb/chat-api-lib';
+import { WebsocketChatContext } from '@bb/socket-hook-lib';
+import { ChatContainer } from '@bb/chat-ui-lib';
 
 function Square({
   value,
@@ -54,12 +57,31 @@ function Board({
   );
 }
 
-export default function TicTacToe() {
+export default function TTTPage() {
+
+  const acc = useContext(AccountContext);
+  const chatContext = useContext(WebsocketChatContext);
+  const { id } = useParams();
+
+  return <div style={{
+    display: 'flex',
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center'
+  }}>
+    <TicTacToe />
+    <ChatContainer socket={chatContext.socket} roomCode={'ttt'+ id} username={acc.account?.username} />
+  </div>;
+}
+
+function TicTacToe() {
   const { id } = useParams();
   const { socket, loading } = useSocket();
+  const chatContext = useContext(WebsocketChatContext);
   const [squares, setSquares] = useState(Array(9).fill(null));
   const [winner, setWinner] = useState('');
   const [xIsNext, setXIsNext] = useState(true);
+  const acc = useContext(AccountContext);
 
   function handlePlay(nextSquares: string[]) {
     setSquares(nextSquares);
@@ -115,6 +137,7 @@ export default function TicTacToe() {
         return;
       }
 
+      joinRoom(chatContext.socket, 'ttt' + id, acc.account?.username);
       setSquares(res.data.currentGame.board);
     });
 
@@ -140,3 +163,4 @@ export default function TicTacToe() {
     </div>
   );
 }
+

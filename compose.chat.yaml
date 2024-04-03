@@ -1,0 +1,29 @@
+version: "3.8"
+
+include:
+  - path: ./compose.ttt.yaml
+
+services:
+  chat-service:
+    build:
+      context: .
+      dockerfile: ./apps/chat-service/Dockerfile.dev
+    develop:
+      watch:
+        - action: sync
+          path: ./apps/chat-service/src
+          target: /app/apps/chat-service/src
+          ignore:
+            - node_modules/
+        - action: rebuild
+          path: package.json
+    environment:
+      GATEWAY_HOST: gateway
+      GATEWAY_PORT: 3000
+      PORT: 4000
+      SERVICE_KEY: chat-service
+      WS_SERVICE_KEY: chat-ws-service
+      WS_PORT: 9000
+    ports:
+      - 4000:4000
+      - 9000:9000

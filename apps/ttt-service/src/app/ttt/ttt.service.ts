@@ -3,6 +3,7 @@ import { Repository } from 'typeorm';
 import { Room } from './room.entity';
 import { InjectRepository } from '@nestjs/typeorm';
 import { TicTacToe } from './ttt.entity';
+import { createRoom } from '@bb/chat-api-lib'
 
 @Injectable()
 export class TTTService {
@@ -27,7 +28,10 @@ export class TTTService {
     await this.tttRepo.save(newGame);
 
     newRoom.currentGame = newGame;
-
+    
+    console.log("ttt is calling function to create a chat room");
+    await createRoom('ttt', newRoom.id, process.env.CHAT_SERVICE_KEY, process.env.GATEWAY_HOST+':'+process.env.GATEWAY_PORT);
+    console.log("function called by ttt has completed");
     return this.roomRepo.save(newRoom);
   }
 

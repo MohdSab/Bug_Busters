@@ -17,6 +17,9 @@ services:
             - node_modules/
         - action: rebuild
           path: package.json
+        - action: sync
+          path: ./libs
+          target: /app/libs
     depends_on:
       - gateway
       - ttt-db
@@ -33,6 +36,10 @@ services:
       WS_SERVICE_KEY: ttt-ws-service
       WS_PORT: 8031
       WS_PATH: /ttt
+      CHAT_SERVICE_KEY: chat-service
+      CHAT_SERVICE_PORT: 4000
+      CHAT_WS_SERVICE_KEY: chat-ws-service
+      CHAT_WS_SERVICE_PORT: 9000
     ports:
       - 4031:4031
       - 8031:8031
@@ -68,5 +75,7 @@ services:
       NX_TTT_WS_SERVICE_KEY: ttt-ws-service
       NX_GATEWAY_HOST: localhost
       NX_GATEWAY_PORT: 3000
+      NX_CHAT_SERVICE_KEY: chat-service
+      NX_CHAT_WS_SERVICE_KEY: chat-ws-service
 
 # TODO setup volume for db
